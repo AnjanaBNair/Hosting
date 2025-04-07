@@ -40,7 +40,6 @@ from django.db.models import Count, Q
 import pandas as pd
 from django.core.files.storage import FileSystemStorage
 import speech_recognition as sr
-from googletrans import Translator
 from moviepy import VideoFileClip
 from deep_translator import GoogleTranslator
 from pydub import AudioSegment

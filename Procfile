@@ -1,1 +1,1 @@
-web: gunicorn nextedge.wsgi:application 
+gunicorn nextedge.wsgi:application 
