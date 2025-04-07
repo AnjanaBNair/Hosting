@@ -1,0 +1,656 @@
+{% load static %}
+{% include 'instructor/instructorindex.html' %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Next-Edge</title>
+    <style>
+       /* Global Styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f6f9;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    width: 1000px;
+    margin: 50px auto;
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    color: #007bff;
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+input[type="text"] {
+    width: calc(100% - 24px);
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-size: 16px;
+    background-color: #f9f9f9;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+input[type="text"]:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    outline: none;
+}
+
+button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+.table-container {
+    margin-top: 30px;
+}
+
+.modules-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.modules-table th {
+    background-color: #007bff;
+    color: white;
+    padding: 12px;
+    border-bottom: 2px solid #dee2e6;
+    text-align: left;
+}
+
+.modules-table td {
+    padding: 12px;
+    border-bottom: 1px solid #dee2e6;
+    vertical-align: top;
+}
+
+.no-modules {
+    text-align: center;
+    padding: 20px;
+    font-style: italic;
+    color: #999;
+    margin-top: 30px;
+}
+/* General Button Styles */
+.action-btn {
+    display: inline-block;
+    padding: 8px 16px;
+    margin: 4px;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    text-align: center;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Ensure font consistency */
+}
+.topics-row {
+    display: none; /* Hidden by default */
+}
+
+.topics-row.visible {
+    display: table-row; /* Show when 'visible' class is added */
+}
+
+/* Add Topic Button */
+.add-topic-btn {
+    background-color: #28a745; /* Green */
+}
+
+.add-topic-btn:hover {
+    background-color: #218838; /* Darker green */
+}
+
+/* View Topic Button */
+.view-topic-btn {
+    background-color: #007bff; /* Blue */
+}
+
+.view-topic-btn:hover {
+    background-color: #0056b3; /* Darker blue */
+}
+
+/* Optional: Add box shadow for a 3D effect */
+.action-btn:focus, .action-btn:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Additional styles for button states */
+.action-btn:disabled {
+    background-color: #c0c0c0; /* Gray for disabled state */
+    cursor: not-allowed;
+}
+
+.view-topic-btn i {
+    margin-right: 5px; /* Space between icon and text */
+    transition: transform 0.3s ease; /* Smooth transition for rotation */
+}
+
+.view-topic-btn .fa-plus {
+    transform: rotate(0deg); /* Default state */
+}
+
+.view-topic-btn .fa-minus {
+    transform: rotate(45deg); /* Rotated state */
+}
+.finish-btn {
+    background-color: #008080; /* Teal */
+    color: white;
+    border: none;
+    padding: 10px 10px;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top:20px;
+}
+
+.finish-btn:hover {
+    background-color: #006666; /* Darker Teal */
+}
+.delete{
+    background-color:red;
+}
+.delete:hover {
+    background-color:rgb(223, 8, 8);
+}
+.delete-topic-btn, .edit-topic-btn {
+    background-color: #dc3545; /* Red color for delete, blue for edit */
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 12px; /* Smaller font size */
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 0; /* Remove margin-top to avoid stacking */
+    margin-left: 0; /* Remove margin-left to keep buttons together */
+}
+
+.delete-topic-btn {
+    background-color: red; /* Red color for delete */
+}
+
+.edit-topic-btn {
+    background-color: blue; /* Blue color for edit */
+}
+
+.button-container {
+    display: flex;
+    align-items: center;
+    margin-left: 650px;
+}
+
+
+.delete-topic-btn:hover {
+    background-color: #c82333; /* Darker red */
+}
+
+.delete-topic-btn i {
+    margin-right: 5px; /* Space between icon and button edge */
+}
+ /* Modal Styles */
+ .modal {
+    display: none; /* Hidden by default */
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.6); /* Black w/ opacity */
+    animation: fadeIn 0.3s ease-out;
+    overflow: auto; /* Allow scrolling if needed */
+}
+.modal-content {
+    background-color: #fff;
+    margin: 5% auto; /* Move modal upwards and center it */
+    padding: 10px; /* Reduced padding */
+    border: 1px solid #888;
+    border-radius: 8px;
+    width: 80%; /* Adjust width based on screen size */
+    max-width: 600px;
+    max-height: 90%; /* Set maximum height */
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    overflow-y: auto; /* Enable scrolling if content exceeds max-height */
+    animation: slideIn 0.3s ease-out;
+}
+
+.modal-header, .modal-body, .modal-footer {
+    padding: 10px;
+}
+.modal-header {
+    border-bottom: 1px solid #ddd;
+}
+.modal-footer {
+    border-top: 1px solid #ddd;
+    text-align: right;
+}
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-left:500px;
+}
+.close:hover,
+.close:focus {
+    color: #000;
+    text-decoration: none;
+}
+.modal-title {
+    font-size: 1.5em;
+    margin: 0;
+}
+.modal-body input, .modal-body textarea,.modal-body select {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+.modal-body textarea {
+    resize: vertical;
+}
+.modal-footer button {
+    background-color: #007bff;
+    border: none;
+    color: #fff;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+.modal-footer button:hover {
+    background-color: #0056b3;
+}
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+@keyframes slideIn {
+    from { transform: translateY(-50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+
+    </style>
+    <script>
+        function toggleTopics(moduleId) {
+            var row = document.getElementById('topics-row-' + moduleId);
+            var icon = document.getElementById('toggle-icon-' + moduleId);
+
+            if (row.classList.contains('visible')) {
+                row.classList.remove('visible');
+                icon.classList.remove('fa-minus');
+                icon.classList.add('fa-plus');
+            } else {
+                row.classList.add('visible');
+                icon.classList.remove('fa-plus');
+                icon.classList.add('fa-minus');
+            }
+        }
+    </script>
+</head>
+<body>
+  <h6><i> <a href="{% url 'course_details_view_staff' course.id %}" style="margin-top: 10px;">
+    Course / Course Details
+</a></i></h6> 
+    <div class="container" style="margin-top: 10px;">
+        
+        
+        <div id="courseSection">
+            
+            <button class="btn btn-primary edit-btn" data-id="{{ course.id }}" data-name="{{ course.name }}" data-description="{{ course.description }}" data-mode="{{ course.mode }}" data-payment="{{ course.payment }}">
+                <i class="fas fa-edit"></i> Edit Details
+            </button>
+            <h2>Add a Module to {{ course.name }}</h2>
+<form id="add-module-form" method="POST" action="{% url 'add_module' course.id %}">
+    {% csrf_token %}
+    <input type="text" id="module-name" name="name" placeholder="Module Name" required>
+    <span id="module-error" style="color: red; display: none;">Module name already exists.</span><br>
+    <button type="submit" id="add-module-btn" style="margin-top:10px;">
+        <i class="fas fa-plus-circle"></i>Add Module
+    </button>
+</form>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#module-name').on('input', function() {
+            var moduleName = $(this).val();
+            var courseId = "{{ course.id }}"; // Assuming you have course.id available
+            
+            if (moduleName) {
+                $.ajax({
+                    url: '/check_module_name/' + courseId + '/', // Adjust the URL as necessary
+                    data: {
+                        'name': moduleName
+                    },
+                    dataType: 'json',
+                    success: function(data) {
+                        if (data.exists) {
+                            $('#add-module-btn').prop('disabled', true);
+                            $('#module-error').show(); // Show the error message
+                        } else {
+                            $('#add-module-btn').prop('disabled', false);
+                            $('#module-error').hide(); // Hide the error message
+                        }
+                    }
+                });
+            } else {
+                $('#add-module-btn').prop('disabled', false); // Enable button if input is empty
+                $('#module-error').hide(); // Hide error when input is empty
+            }
+        });
+    });
+    </script>
+
+            {% if modules %}
+                <div class="table-container">
+                    <h3 style="color:#0056b3;font-weight:bold;">Modules for {{ course.name }}</h3>
+                    <table class="modules-table">
+                        <thead>
+                            <tr>
+                                <th>Module</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for module in modules %}
+                                <tr>
+                                    
+                                    <td><b> {{ forloop.counter }}. {{ module.name }}</b> </td>
+                                    <td>
+                                        <a href="{% url 'add_topic' module.id course.id %}">
+                                            <button type="button" class="action-btn add-topic-btn"><i class="fas fa-plus-square"></i> Add Topic</button>
+                                        </a>
+                                        <button type="button" class="action-btn view-topic-btn" onclick="toggleTopics({{ module.id }})">
+                                            <i id="toggle-icon-{{ module.id }}" class="fas fa-plus"></i> View Topics
+                                        </button>
+                                        <a href="{% url 'delete_module' module.id course.id %}">
+                                            <button type="button" class="action-btn delete"><i class="fas fa-trash"></i>  Delete Module</button>
+                                        </a>
+                                    </td>
+                                </tr>
+                                <tr id="topics-row-{{ module.id }}" class="topics-row">
+                                    <td colspan="2">
+                                        <ul>
+                                            {% if module.module.all %}
+                                                {% for topic in module.module.all %}
+
+                                                    <li style="position: relative; padding-right: 60px;">
+                                                         <strong>{{ topic.name }}</strong><br>
+                                                            {{ topic.description }}<br>
+                                                        <div class="video-container" style="display: flex; align-items: center; margin-top: 10px;">
+                                                            
+                                                            <video controls style="max-width: 200px; max-height: 150px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+                                                                <source src="{{ topic.content.url }}" type="video/mp4">
+                                                                Your browser does not support the video tag.
+                                                            </video>
+                                                            <div class="video-info" style="margin-left: 15px;">
+                                                                <p style="font-weight: bold; color: #333;">Video Duration: <span id="video-duration-{{ topic.id }}">--:--</span></p>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                            
+                                                            <script>
+                                                                document.addEventListener('DOMContentLoaded', function() {
+                                                                    var videos = document.querySelectorAll('video'); // Select all video elements
+                                                                    
+                                                                    videos.forEach(function(video) {
+                                                                        video.addEventListener('loadedmetadata', function() {
+                                                                            var duration = video.duration;
+                                                                            var minutes = Math.floor(duration / 60);
+                                                                            var seconds = Math.floor(duration % 60);
+                                                                            var durationText = minutes + ":" + (seconds < 10 ? '0' : '') + seconds;
+                                                                            
+                                                                            // Find the corresponding duration element by ID and update its text
+                                                                            var durationElementId = 'video-duration-' + video.closest('.video-container').querySelector('span').id.split('-')[2];
+                                                                            var durationElement = document.getElementById(durationElementId);
+                                                                            
+                                                                            if (durationElement) {
+                                                                                durationElement.textContent = durationText;
+                                                                            }
+                                                                        });
+                                                                    });
+                                                                });
+                                                                
+                                                                
+                                                            </script>
+                                                            
+                                                            
+                                                        </div>
+                                                        <div class="button-container" style="display: flex; align-items: center; margin-top: -10px;">
+                                                            <!-- Edit Button -->
+                                                            <button type="button" class="edit-topic-btn" onclick="openEditModal('{{ topic.id }}', '{{ topic.name }}', '{{ topic.description }}','{{ course.id }}')">
+                                                                <i class="fas fa-edit"></i> Edit Topic
+                                                            </button>
+                                                            &nbsp;
+                                                            <!-- Delete Button -->
+                                                            <a href="{% url 'delete_topic' topic.id course.id %}">
+                                                                <button type="submit" class="delete-topic-btn" style="background-color: red; color: white;">
+                                                                    <i class="fas fa-trash"></i> Delete
+                                                                </button>
+                                                            </a>
+                                                        </div>
+                                                        
+                                                       
+                                                    </li>
+                                                     <hr>
+                                                {% endfor %}
+                                            {% else %}
+                                                <li>No topics available.</li>
+                                            {% endif %}
+                                        </ul>
+                                        
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="no-modules">No modules found for this course.</p>
+            {% endif %}
+        </div>
+        <a href="{% url 'course_approval' %}">
+            <button type="button" class="action-btn finish-btn" style="margin-left:740px;"><i class="fas fa-paper-plane"></i> Finish Course Submission</button>
+        </a>
+      
+     
+    </div>
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 class="modal-title">Edit Course Details</h2>
+            <form id="editForm" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="hidden" id="course-id" name="course_id">
+                <div class="modal-body">
+                    <div>
+                        <label for="course-name">Course Name:</label>
+                        <input type="text" id="course-name" name="name" required>
+                    </div>
+                    <div>
+                        <label for="course-description">Description:</label>
+                        <textarea id="course-description" name="description" required></textarea>
+                    </div>
+                    <div>
+                        <label for="course-mode">Mode:</label>
+                        <select id="course-mode" name="mode" required>
+                            <option value="Basic" {% if course.mode == "Basic" %}selected{% endif %}>Basic</option>
+                            <option value="Intermediate" {% if course.mode == "Intermediate" %}selected{% endif %}>Intermediate</option>
+                            <option value="Advanced" {% if course.mode == "Advanced" %}selected{% endif %}>Advanced</option>
+                            <!-- Add more options as needed -->
+                        </select>
+                    </div>
+                    <div>
+                        <label for="course-payment">Payment:</label>
+                        <select id="course-payment" name="payment" required>
+                            <option value="free" {% if course.payment == "free" %}selected{% endif %}>Free</option>
+                            <option value="paid" {% if course.payment == "paid" %}selected{% endif %}>Paid</option>
+                            <!-- Add more options as needed -->
+                        </select>
+                    </div>
+                    <div>
+                        <label for="course-image">Title Image:(if you want to change,upload new image )</label>
+                        <input type="file" id="course-image" name="image">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal for Editing Topic -->
+<div id="editTopicModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h4 class="modal-title">Edit Topic</h4>
+            <span class="close" onclick="closeModal()">&times;</span>
+        </div>
+        <div class="modal-body">
+            <form id="editTopicForm" method="POST">
+                {% csrf_token %}
+                <input type="hidden" id="editTopicId" name="topic_id">
+                <input type="hidden" id="courseId" name="course_id">
+                <label for="editTopicName">Topic Name:</label>
+                <input type="text" id="editTopicName" name="name" required>
+                
+                <label for="editTopicDescription">Description:</label>
+                <textarea id="editTopicDescription" name="description" rows="4" required></textarea>
+                
+                <button type="submit" class="action-btn finish-btn">Save Changes</button>
+            </form>
+        </div>
+    </div>
+</div>
+<script>// Open the modal with current topic data
+    function openEditModal(topicId, topicName, topicDescription, courseId) {
+        // Set the values in the form
+        document.getElementById('editTopicId').value = topicId;
+        document.getElementById('courseId').value = courseId;
+        document.getElementById('editTopicName').value = topicName;
+        document.getElementById('editTopicDescription').value = topicDescription;
+        
+        // Dynamically set the form action
+        var form = document.getElementById('editTopicForm');
+        form.action = `/edit_topic/${courseId}/${topicId}/`;
+    
+        // Open the modal (assuming there's a modal logic)
+        document.getElementById('editTopicModal').style.display = 'block';
+    }
+    
+    // Close the modal
+    function closeModal() {
+        document.getElementById('editTopicModal').style.display = 'none';
+    }
+    
+    // Close modal when clicking outside of it
+    window.onclick = function(event) {
+        var modal = document.getElementById('editTopicModal');
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+    </script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            var modal = document.getElementById("editModal");
+            var span = document.getElementsByClassName("close")[0];
+    
+            $('.edit-btn').on('click', function() {
+                var id = $(this).data('id');
+                var name = $(this).data('name');
+                var description = $(this).data('description');
+                var mode = $(this).data('mode');
+                var payment = $(this).data('payment');
+    
+                var baseUrl = "{% url 'edit_course' 0 %}".replace('0', id);
+                console.log("Base URL:", baseUrl); // Debugging URL
+                
+                $('#editForm').attr('action', baseUrl);
+    
+                $('#course-id').val(id);
+                $('#course-name').val(name);
+                $('#course-description').val(description);
+                $('#course-mode').val(mode);
+                $('#course-payment').val(payment);
+    
+                modal.style.display = "block";
+                console.log("Modal displayed"); // Debugging modal display
+            });
+    
+            $('.close').on('click', function() {
+                $('#editModal').hide();
+                console.log("Modal hidden"); // Debugging modal hiding
+            });
+    
+            span.onclick = function() {
+                modal.style.display = "none";
+                console.log("Modal hidden by span"); // Debugging modal hiding
+            }
+    
+            window.onclick = function(event) {
+                if (event.target == modal) {
+                    modal.style.display = "none";
+                    console.log("Modal hidden by clicking outside"); // Debugging modal hiding
+                }
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    {% if messages %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            {% for message in messages %}
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: '{{ message }}',
+                    confirmButtonText: 'OK'
+                });
+            {% endfor %}
+        });
+    </script>
+{% endif %}
+
+</body>
+</html>
+

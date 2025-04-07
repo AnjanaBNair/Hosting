@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quiz</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+    <style>
+        * { padding: 0; margin: 0; box-sizing: border-box; font-family: "Poppins", sans-serif; }
+        body { height: 100vh; background: linear-gradient(184deg, #8754ff, #8E2DE2); }
+        .start-screen, .score-container { position: absolute; top: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        button { border: none; outline: none; cursor: pointer; }
+        #start-button, #restart, #back { font-size: 1.3em; padding: 0.5em 1.8em; border-radius: 0.2em; box-shadow: 0 20px 30px rgba(0, 0, 0, 0.4); }
+        #restart, #back { margin-top: 0.9em; }
+        #display-container { background-color: #ffffff; padding: 3.1em 1.8em; width: 80%; max-width: 800px; margin: 0 auto; position: absolute; transform: translate(-50%, -50%); top: 50%; left: 50%; border-radius: 0.6em; }
+        .header { margin-bottom: 1.8em; display: flex; justify-content: space-between; align-items: center; padding-bottom: 0.6em; border-bottom: 0.1em solid #c0bfd2; }
+        .timer-div { background-color: #e1f5fe; width: 7.5em; border-radius: 1.8em; display: flex; align-items: center; justify-content: space-between; padding: 0.7em 1.8em; }
+        .question { margin-bottom: 1.25em; font-weight: 600; }
+        .option-div { font-size: 0.9em; width: 100%; padding: 1em; margin: 0.3em 0; text-align: left; outline: none; background: transparent; border: 1px solid #c0bfd2; border-radius: 0.3em; cursor: pointer; }
+        .option-div:disabled { color: #000000; cursor: not-allowed; }
+        #next-button { font-size: 1em; margin-top: 1.5em; background-color: #8754ff; color: #ffffff; padding: 0.7em 1.8em; border-radius: 0.3em; float: right; box-shadow: 0px 20px 40px rgba(0, 0, 0, 0.3); }
+        .hide { display: none; }
+        .incorrect { background-color: #ffdde0; color: #d32f2f; border-color: #d32f2f; }
+        .correct { background-color: #e7f6d5; color: #689f38; border-color: #689f38; }
+        #user-score { font-size: 1.5em; color: #ffffff; }
+        .start-screen { background-color: #ffffff; margin-top: 30px; padding: 40px; border-radius: 10px; height: 550px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); max-width: 800px; margin-left: 300px; text-align: center; }
+        .instructions { text-align: left; font-size: 14px; color: #333; }
+        #start-button { background-color: #28a745; color: white; padding: 12px 20px; border: none; border-radius: 5px; font-size: 18px; cursor: pointer; transition: background-color 0.3s ease; margin-top: 20px; }
+        #start-button:hover { background-color: #218838; }
+        #user-score {
+            font-size: 1.5em;
+            color: #ffffff;
+            transition: opacity 0.5s ease; /* Transition for smooth fade */
+        }
+        .pot {
+            width: 120px;
+            height: 200px;
+            border: 5px solid #8B4513; /* Brown color for the pot */
+            border-radius: 20px; /* Round edges */
+            position: relative;
+            overflow: hidden; /* Prevent water from overflowing */
+            margin: 20px auto;
+            background: linear-gradient(to top, #d0e4f7, #fff); /* Glass-like effect */
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        }
+        
+        .water {
+            background: linear-gradient(to top, rgba(30, 144, 255, 0.9), rgba(30, 144, 255, 0.5)); /* Water gradient */
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 0; /* Start with no water */
+            transition: height 1s ease; /* Smooth transition for filling */
+            border-radius: 20px; /* Round edges to match the pot */
+            animation: wave 1.5s infinite; /* Add wave animation */
+        }
+        
+        /* Animation for water movement */
+        @keyframes wave {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+            100% { transform: translateY(0); }
+        }
+        
+        #user-score {
+            font-size: 1.5em;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        
+        
+        
+    </style>
+</head>
+<body>
+    <div class="start-screen">
+        <h2>Welcome to the Quiz!</h2>
+        <p class="instructions">
+            <strong>1. Unlimited Attempts:</strong><br>
+            You can take the quiz as many times as you like. Feel free to practice until you feel confident!<br><br>
+            <strong>2. Score Requirement:</strong><br>
+            To successfully complete the quiz, you need to achieve a minimum score of <strong>80%</strong>.<br><br>
+            <strong>3. Total Questions:</strong><br>
+            The quiz consists of <strong>10 questions</strong>, each designed to assess your understanding of the course material you’ve completed.<br><br>
+            <strong>4. Course-Based Questions:</strong><br>
+            All questions are directly related to the course you have finished, ensuring relevance and comprehension.<br><br>
+            <strong>5. Certification:</strong><br>
+            Upon achieving a score of <strong>80% or higher</strong>, you will be awarded a certificate to recognize your achievement!<br><br>
+            Good luck, and enjoy the quiz!
+        </p>
+        <button id="start-button">Start Quiz</button>
+    </div>
+    <div id="display-container" class="hide">
+        <div class="header">
+            <div class="number-of-count">
+                <span class="number-of-question">1 of 10 questions</span>
+            </div>
+            <div class="timer-div">
+                <span class="time-left">10s</span>
+            </div>
+        </div>
+        <div id="container">
+            <h2>Quiz for Course ID: {{ course_id }}</h2>
+            <!-- Quiz Questions will be dynamically generated here -->
+        </div>
+        <button id="next-button" class="hide">Next</button>
+    </div>
+    <div class="score-container hide">
+        <div id="user-score">Your Score: </div>
+        <div class="pot">
+            <div class="water" id="water-fill"></div>
+        </div>
+        <button id="restart" style="display:none;">Restart</button>
+        <form method="POST" action="{% url 'update_score' course.id %}">
+            {% csrf_token %}
+            <input type="hidden" name="latest_score" id="latest_score_input"> <!-- Hidden input for score -->
+            <button type="submit" id="back">Back To Home</button>
+        </form>
+    </div>
+    <script>
+        let quizArray = {{ quiz_array|safe }}; // Initialize quizArray with data from Django
+
+        let timeLeft = document.querySelector(".time-left");
+        let quizContainer = document.getElementById("container");
+        let nextBtn = document.getElementById("next-button");
+        let countOfQuestion = document.querySelector(".number-of-question");
+        let displayContainer = document.getElementById("display-container");
+        let scoreContainer = document.querySelector(".score-container");
+        let restart = document.getElementById("restart");
+        let userScore = document.getElementById("user-score");
+        let startScreen = document.querySelector(".start-screen");
+        let startButton = document.getElementById("start-button");
+        let questionCount;
+        let scoreCount = 0;
+        let count = 11;
+        let countdown;
+
+        // Restart Quiz
+        restart.addEventListener("click", () => {
+            initial();
+            displayContainer.classList.remove("hide");
+            scoreContainer.classList.add("hide");
+        });
+
+        // Next Button
+       // Next Button
+       nextBtn.addEventListener("click", () => {
+        questionCount++;
+        clearInterval(countdown);
+    
+        if (questionCount === quizArray.length) {
+            displayContainer.classList.add("hide");
+            scoreContainer.classList.remove("hide");
+            
+            let percentageScore = Math.floor((scoreCount / quizArray.length) * 100); // Use Math.floor for integer
+            
+            // Update score text
+            userScore.innerHTML = `Your Score: ${scoreCount} out of ${quizArray.length} (${percentageScore}%)`;
+            
+            // Set the calculated score in the hidden input field
+            document.getElementById("latest_score_input").value = percentageScore; // Save as integer
+            
+            // Fill the water based on the percentage score
+            let waterFill = document.getElementById("water-fill");
+            waterFill.style.height = `${percentageScore}%`;
+            
+            // Fade in effect
+            userScore.style.opacity = 0; 
+            setTimeout(() => {
+                userScore.style.opacity = 1; 
+            }, 100); 
+        } else {
+            nextQuestion();
+        }
+    });
+    
+    
+
+        // Start Button
+        startButton.addEventListener("click", () => {
+            initial();
+            startScreen.classList.add("hide");
+            displayContainer.classList.remove("hide");
+            nextQuestion();
+        });
+
+        function initial() {
+            questionCount = 0;
+            scoreCount = 0;
+            count = 11; // Set this to the total time you want
+            timeLeft.innerHTML = `${count}s`;
+            nextBtn.classList.add("hide");
+            scoreContainer.classList.add("hide");
+        }
+
+        function nextQuestion() {
+            let currentQuestion = quizArray[questionCount];
+            let options = [currentQuestion.option1, currentQuestion.option2, currentQuestion.option3];
+            quizContainer.innerHTML = `
+                <div class="question">${currentQuestion.question}</div>
+                <button class="option-div" onclick="checkAnswer('a', '${currentQuestion.correct_answer}')">${options[0]}</button>
+                <button class="option-div" onclick="checkAnswer('b', '${currentQuestion.correct_answer}')">${options[1]}</button>
+                <button class="option-div" onclick="checkAnswer('c', '${currentQuestion.correct_answer}')">${options[2]}</button>
+            `;
+            count = 11; // Reset timer
+            countdown = setInterval(() => {
+                count--;
+                timeLeft.innerHTML = `${count}s`;
+                if (count <= 0) {
+                    clearInterval(countdown);
+                    nextBtn.classList.remove("hide");
+                    // Disable options
+                    document.querySelectorAll('.option-div').forEach(button => button.disabled = true);
+                }
+            }, 1000);
+            countOfQuestion.innerHTML = `${questionCount + 1} of ${quizArray.length} questions`;
+        }
+
+        function checkAnswer(selectedLabel, correctLabel) {
+            let currentQuestion = quizArray[questionCount];
+            // Disable all options first
+            document.querySelectorAll('.option-div').forEach((button, index) => {
+                button.disabled = true;
+                // Map the index to the correct label
+                let label = String.fromCharCode(97 + index); // 97 is 'a'
+                
+                // Add class based on correctness
+                if (label === correctLabel) {
+                    button.classList.add('correct'); // Correct answer
+                } else {
+                    button.classList.add('incorrect'); // Incorrect answer
+                }
+            });
+
+            // Check if the selected answer matches the correct answer
+            if (selectedLabel === correctLabel) {
+                scoreCount++;
+            } else {
+                // Highlight the selected option in red
+                const selectedOption = Array.from(document.querySelectorAll('.option-div')).find((button, index) => {
+                    return String.fromCharCode(97 + index) === selectedLabel; // Match the label with selected
+                });
+                if (selectedOption) {
+                    selectedOption.classList.add('incorrect');
+                }
+            }
+
+            nextBtn.classList.remove("hide");
+        }
+    </script>
+</body>
+</html>

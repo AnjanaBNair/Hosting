@@ -1,0 +1,488 @@
+{% include 'user/studentindex.html' %}
+{% load static %}
+
+<!-- Add SweetAlert CDN in the head section -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<div class="program-detail-container">
+    <!-- Hero Section -->
+    <div class="program-hero">
+        <div class="hero-content">
+            <div class="program-status">
+                {% if is_registered %}
+                    <span class="status-badge registered">Registered</span>
+                {% else %}
+                    <span class="status-badge {% if program.status == 'upcoming' %}upcoming{% endif %}">
+                        {{ program.status|title }}
+                    </span>
+                {% endif %}
+                <span class="seats-badge">
+                    {{ registration_message }}
+                </span>
+            </div>
+            
+            <h1>{{ program.title }}</h1>
+            
+            <div class="program-meta">
+                <div class="meta-item">
+                    <i class='bx bx-calendar'></i>
+                    <span>{{ program.start_date|date:"M d" }} - {{ program.end_date|date:"M d, Y" }}</span>
+                </div>
+                <div class="meta-item">
+                    <i class='bx bx-time'></i>
+                    <span>{{ program.session_time|time:"g:i A" }}</span>
+                </div>
+                <div class="meta-item">
+                    <i class='bx bx-timer'></i>
+                    <span>{{ program.duration }} hours</span>
+                </div>
+            </div>
+
+            {% if can_register %}
+                <button class="register-now-btn" onclick="registerProgram({{ program.id }})">
+                    Register Now
+                </button>
+            {% elif is_registered %}
+                <button class="already-registered-btn" disabled>
+                    Already Registered
+                </button>
+                {% if program.status == 'ongoing' %}
+                    <a href="{% url 'program_attendance' program.id %}" class="mark-attendance-btn">
+                        Mark Your Attendance
+                    </a>
+                {% endif %}
+            {% else %}
+                <button class="register-disabled-btn" disabled>
+                    {{ registration_message }}
+                </button>
+            {% endif %}
+        </div>
+        
+        <div class="program-image">
+            {% if program.speaker_image %}
+                <img src="{{ program.speaker_image.url }}" alt="{{ program.speaker_name }}" class="speaker-image">
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Program Details Grid -->
+    <div class="program-details-grid">
+        <!-- Speaker Info -->
+        <div class="detail-card speaker-card">
+            <div class="card-header">
+                <i class='bx bx-user-voice'></i>
+                <h3>Speaker Profile</h3>
+            </div>
+            <div class="speaker-profile">
+                <h4>{{ program.speaker_name }}</h4>
+                <p class="designation">{{ program.speaker_designation }} at {{ program.speaker_organization }}</p>
+                <p class="bio">{{ program.speaker_profile }}</p>
+            </div>
+        </div>
+
+        <!-- Program Overview -->
+        <div class="detail-card overview-card">
+            <div class="card-header">
+                <i class='bx bx-info-circle'></i>
+                <h3>Program Overview</h3>
+            </div>
+            <p>{{ program.description }}</p>
+        </div>
+
+        <!-- Learning Outcomes -->
+        <div class="detail-card outcomes-card">
+            <div class="card-header">
+                <i class='bx bx-target-lock'></i>
+                <h3>What You'll Learn</h3>
+            </div>
+            <ul class="outcomes-list">
+                {% for outcome in learning_outcomes %}
+                    <li><i class='bx bx-check-circle'></i> {{ outcome }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <!-- Prerequisites -->
+        {% if prerequisites %}
+        <div class="detail-card prerequisites-card">
+            <div class="card-header">
+                <i class='bx bx-list-check'></i>
+                <h3>Prerequisites</h3>
+            </div>
+            <ul class="prerequisites-list">
+                {% for prerequisite in prerequisites %}
+                    <li><i class='bx bx-right-arrow'></i> {{ prerequisite }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <!-- Meeting Link (Only for registered users) -->
+        {% if is_registered and program.meeting_link %}
+        <div class="detail-card meeting-link-card">
+            <div class="card-header">
+                <i class='bx bx-video'></i>
+                <h3>Meeting Link</h3>
+            </div>
+            <div class="meeting-link">
+                <a href="{{ program.meeting_link }}" target="_blank" class="meeting-link-btn">
+                    <i class='bx bx-link'></i> Join Meeting
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+.program-detail-container {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 0 20px;
+}
+
+.program-hero {
+    background: linear-gradient(135deg, #4361ee, #3a52d8);
+    border-radius: 20px;
+    padding: 40px;
+    color: white;
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 40px;
+    margin-bottom: 40px;
+    box-shadow: 0 10px 30px rgba(67, 97, 238, 0.2);
+}
+
+.hero-content h1 {
+    font-size: 2.5rem;
+    margin: 20px 0;
+    line-height: 1.2;
+}
+
+.program-status {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.status-badge {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+}
+
+.status-badge.registered {
+    background: #2ecc71;
+}
+
+.program-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin: 25px 0;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.register-now-btn {
+    background: white;
+    color: #4361ee;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 25px;
+    font-weight: bold;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 20px;
+}
+
+.register-now-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.register-disabled-btn, .already-registered-btn {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 12px 30px;
+    border-radius: 25px;
+    font-size: 1.1rem;
+    margin-top: 20px;
+}
+
+.already-registered-btn {
+    background: #2ecc71;
+    border: none;
+}
+
+.program-image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.speaker-image {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.program-details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    margin-top: 40px;
+}
+
+.detail-card {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    color: #4361ee;
+}
+
+.card-header h3 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.card-header i {
+    font-size: 1.8rem;
+}
+
+.outcomes-list, .prerequisites-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.outcomes-list li, .prerequisites-list li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+    color: #333;
+    font-size: 1.1rem;
+}
+
+.outcomes-list i, .prerequisites-list i {
+    color: #4361ee;
+    font-size: 1.2rem;
+}
+
+.speaker-profile h4 {
+    font-size: 1.3rem;
+    margin: 0 0 10px 0;
+    color: #333;
+}
+
+.speaker-profile .designation {
+    color: #666;
+    margin-bottom: 15px;
+}
+
+.speaker-profile .bio {
+    line-height: 1.6;
+    color: #444;
+}
+
+.mark-attendance-btn {
+    background: #ffd700;
+    color: #333;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 25px;
+    font-weight: bold;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+    margin-left: 10px;
+}
+
+.mark-attendance-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    background: #ffc800;
+}
+
+@media (max-width: 768px) {
+    .program-hero {
+        grid-template-columns: 1fr;
+    }
+    
+    .program-image {
+        order: -1;
+    }
+    
+    .hero-content h1 {
+        font-size: 2rem;
+    }
+}
+
+.meeting-link-card {
+    background: #f8f9ff;
+}
+
+.meeting-link {
+    margin-top: 15px;
+}
+
+.meeting-link-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #4361ee;
+    color: white;
+    padding: 12px 25px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.meeting-link-btn:hover {
+    background: #3a52d8;
+    transform: translateY(-2px);
+    color: white;
+    text-decoration: none;
+}
+
+.meeting-link-btn i {
+    font-size: 1.2rem;
+}
+</style>
+
+<script>
+function registerProgram(programId) {
+    Swal.fire({
+        title: 'Register for Program',
+        text: 'Are you sure you want to register for this program?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#4361ee',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, register me!',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch(`/register-program/${programId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    Swal.fire({
+                        title: 'Success!',
+                        text: data.message,
+                        icon: 'success',
+                        confirmButtonColor: '#4361ee'
+                    }).then(() => {
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: data.message,
+                        icon: 'error',
+                        confirmButtonColor: '#4361ee'
+                    });
+                }
+            })
+            .catch(error => {
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Error registering for program',
+                    icon: 'error',
+                    confirmButtonColor: '#4361ee'
+                });
+            });
+        }
+    });
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+function markAttendance(programId) {
+    Swal.fire({
+        title: 'Mark Attendance',
+        text: 'Are you sure you want to mark your attendance for today?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#4361ee',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, mark attendance!',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch(`/mark-attendance/${programId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    Swal.fire({
+                        title: 'Success!',
+                        text: data.message,
+                        icon: 'success',
+                        confirmButtonColor: '#4361ee'
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: data.message,
+                        icon: 'error',
+                        confirmButtonColor: '#4361ee'
+                    });
+                }
+            })
+            .catch(error => {
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Error marking attendance',
+                    icon: 'error',
+                    confirmButtonColor: '#4361ee'
+                });
+            });
+        }
+    });
+}
+</script>

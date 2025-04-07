@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Verify Program Certificate | Next Edge Academy</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .verification-container {
+            width: 90%;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 40px;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .verification-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(90deg, #3498db, #2980b9);
+        }
+        
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+        
+        .page-header h1 {
+            color: #2980b9;
+            margin-bottom: 15px;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+        
+        .page-header p {
+            color: #666;
+            margin: 0;
+            font-size: 1.1rem;
+        }
+        
+        .logo {
+            max-width: 180px;
+            margin-bottom: 20px;
+        }
+
+        .verification-details {
+            margin-top: 40px;
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+        
+        .detail-row span:first-child {
+            font-weight: 600;
+            color: #2c3e50;
+            min-width: 180px;
+        }
+        
+        .detail-row span:last-child {
+            color: #34495e;
+            text-align: right;
+            font-weight: 500;
+        }
+
+        .verified-badge {
+            background: linear-gradient(135deg, #43c6ac 0%, #27ae60 100%);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 50px;
+            display: inline-block;
+            margin-bottom: 30px;
+            font-weight: 600;
+            box-shadow: 0 4px 10px rgba(39, 174, 96, 0.3);
+        }
+        
+        .verified-badge i {
+            margin-right: 8px;
+        }
+
+        .scanner-container {
+            margin-bottom: 40px;
+            text-align: center;
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .scan-instructions {
+            margin-bottom: 25px;
+            color: #555;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .scan-instructions i {
+            margin-right: 10px;
+            color: #3498db;
+            font-size: 1.3rem;
+        }
+        
+        .section-title {
+            margin-top: 30px;
+            margin-bottom: 20px;
+            color: #2980b9;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title i {
+            margin-right: 10px;
+            color: #3498db;
+        }
+        
+        .error-message {
+            color: #dc3545;
+            padding: 20px;
+            background-color: #f8d7da;
+            border-radius: 8px;
+            margin-top: 25px;
+            text-align: center;
+            font-weight: 500;
+            box-shadow: 0 4px 10px rgba(220, 53, 69, 0.1);
+        }
+        
+        #reader {
+            margin: 0 auto;
+            max-width: 500px;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .certificate-stamp {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 120px;
+            height: auto;
+            opacity: 0.8;
+        }
+        
+        .certificate-details {
+            background: #fff;
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border-left: 4px solid #3498db;
+        }
+        
+        .manual-verify {
+            margin-top: 40px;
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid #eee;
+        }
+        
+        .manual-verify h3 {
+            color: #555;
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .form-group input:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+            outline: none;
+        }
+        
+        .verify-btn {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
+        }
+        
+        .verify-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(52, 152, 219, 0.4);
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            justify-content: center;
+        }
+        
+        .download-btn {
+            background: linear-gradient(135deg, #43c6ac 0%, #27ae60 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 10px rgba(39, 174, 96, 0.3);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+        }
+        
+        .download-btn i {
+            margin-right: 8px;
+        }
+        
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(39, 174, 96, 0.4);
+        }
+        
+        .back-btn {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 10px rgba(230, 126, 34, 0.3);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+        }
+        
+        .back-btn i {
+            margin-right: 8px;
+        }
+        
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(230, 126, 34, 0.4);
+        }
+        
+        @media (max-width: 768px) {
+            .verification-container {
+                padding: 25px;
+                width: 95%;
+            }
+            
+            .page-header h1 {
+                font-size: 2rem;
+            }
+            
+            .detail-row {
+                flex-direction: column;
+                padding: 12px;
+            }
+            
+            .detail-row span:first-child {
+                margin-bottom: 5px;
+            }
+            
+            .detail-row span:last-child {
+                text-align: left;
+            }
+            
+            .certificate-stamp {
+                width: 80px;
+                top: 15px;
+                right: 15px;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="verification-container">
+        <img src="/static/img/stamp.png" class="certificate-stamp" alt="Official Stamp">
+        
+        <div class="page-header">
+            <img src="/static/img/logo.png" alt="Next Edge Academy" class="logo">
+            <h1>Certificate Verification</h1>
+            <p>Verify the authenticity of Next Edge Academy program certificates</p>
+        </div>
+        
+        <div class="scanner-container">
+            <p class="scan-instructions">
+                <i class="fas fa-qrcode"></i>
+                Please scan the QR code on the certificate to verify its authenticity
+            </p>
+            <div id="reader"></div>
+        </div>
+        
+        <div id="result" class="verification-details"></div>
+        
+        <div class="manual-verify">
+            <h3>Or Verify Manually</h3>
+            <div class="form-group">
+                <label for="certificate-id">Certificate ID</label>
+                <input type="text" id="certificate-id" placeholder="Enter the certificate ID from the document">
+            </div>
+            <button class="verify-btn" onclick="manualVerify()">Verify Certificate</button>
+        </div>
+        
+        <div class="action-buttons">
+            <a href="{% url 'student_programs' %}" class="back-btn">
+                <i class="fas fa-arrow-left"></i> Back to Student Programs
+            </a>
+        </div>
+    </div>
+
+    <script>
+        function onScanSuccess(decodedText) {
+            try {
+                // Fetch certificate details from the verification URL
+                fetch(decodedText)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Certificate verification failed');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        displayCertificateDetails(data);
+                    })
+                    .catch(error => {
+                        console.error("Error fetching certificate data:", error);
+                        document.getElementById('result').style.display = 'block';
+                        document.getElementById('result').innerHTML = `
+                            <div class="error-message">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <strong>Verification Failed:</strong> Invalid or expired certificate verification link
+                            </div>
+                        `;
+                    });
+            } catch (error) {
+                console.error("Error processing QR code:", error);
+                document.getElementById('result').style.display = 'block';
+                document.getElementById('result').innerHTML = `
+                    <div class="error-message">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <strong>Error:</strong> Could not process QR code
+                    </div>
+                `;
+            }
+        }
+
+        function displayCertificateDetails(data) {
+            // Extract program_id and student_id from the verification URL
+            const urlParts = window.location.pathname.split('/');
+            let programId = null;
+            let studentId = null;
+            
+            // Try to extract IDs from URL if available
+            if (urlParts.length >= 4) {
+                programId = urlParts[urlParts.length - 3];
+                studentId = urlParts[urlParts.length - 2];
+            }
+            
+            const resultHtml = `
+                <div style="text-align: center;">
+                    <div class="verified-badge">
+                        <i class="fas fa-check-circle"></i> Certificate Verified
+                    </div>
+                </div>
+                
+                <div class="certificate-details">
+                    <h2 class="section-title">
+                        <i class="fas fa-award"></i> Program Certificate Details
+                    </h2>
+                    <div class="detail-row">
+                        <span>Program Title:</span>
+                        <span>${data.program.title}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span>Duration:</span>
+                        <span>${data.program.start_date} to ${data.program.end_date}</span>
+                    </div>
+                    
+                    <h2 class="section-title">
+                        <i class="fas fa-user-graduate"></i> Student Information
+                    </h2>
+                    <div class="detail-row">
+                        <span>Name:</span>
+                        <span>${data.student.username}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span>Attendance:</span>
+                        <span>${data.attendance_percentage}%</span>
+                    </div>
+                    
+                    <h2 class="section-title">
+                        <i class="fas fa-info-circle"></i> Program Details
+                    </h2>
+                    <div class="detail-row">
+                        <span>Program Coordinator:</span>
+                        <span>${data.program.speaker_name}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span>Issue Date:</span>
+                        <span>${data.issue_date}</span>
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    ${programId && studentId ? 
+                        `<a href="/program_certificate_pdf/${programId}/" class="download-btn">
+                            <i class="fas fa-download"></i> Download PDF Certificate
+                        </a>` : ''
+                    }
+                    <a href="{% url 'student_programs' %}" class="back-btn">
+                        <i class="fas fa-arrow-left"></i> Back to Student Programs
+                    </a>
+                </div>
+            `;
+
+            document.getElementById('result').style.display = 'block';
+            document.getElementById('result').innerHTML = resultHtml;
+            
+            // Update the action buttons at the bottom
+            document.querySelector('.action-buttons').style.display = 'none';
+            
+            // Stop scanning after successful verification
+            html5QrcodeScanner.clear();
+            
+            // Hide the manual verification section
+            document.querySelector('.manual-verify').style.display = 'none';
+        }
+        
+        function manualVerify() {
+            const certificateId = document.getElementById('certificate-id').value;
+            if (!certificateId) {
+                alert('Please enter a certificate ID');
+                return;
+            }
+            
+            // Parse the certificate ID to extract program_id and student_id
+            // Format should be something like "CERT-{program_id}-{student_id}"
+            const parts = certificateId.split('-');
+            if (parts.length < 3) {
+                alert('Invalid certificate ID format');
+                return;
+            }
+            
+            const programId = parts[1];
+            const studentId = parts[2];
+            
+            // Construct verification URL
+            const verificationUrl = `/verify-certificate/${programId}/${studentId}/`;
+            
+            // Fetch certificate details
+            fetch(verificationUrl)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Certificate verification failed');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Add program_id and student_id to the data for download link
+                    data.programId = programId;
+                    data.studentId = studentId;
+                    displayCertificateDetails(data);
+                })
+                .catch(error => {
+                    console.error("Error fetching certificate data:", error);
+                    document.getElementById('result').style.display = 'block';
+                    document.getElementById('result').innerHTML = `
+                        <div class="error-message">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <strong>Verification Failed:</strong> Invalid certificate ID or certificate not found
+                        </div>
+                    `;
+                });
+        }
+
+        let html5QrcodeScanner = new Html5QrcodeScanner(
+            "reader", 
+            { 
+                fps: 10, 
+                qrbox: {width: 250, height: 250},
+                rememberLastUsedCamera: true,
+                showTorchButtonIfSupported: true
+            }
+        );
+        html5QrcodeScanner.render(onScanSuccess);
+    </script>
+</body>
+</html>

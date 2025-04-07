@@ -1,0 +1,550 @@
+{% include 'admin/adminindex.html' %}
+
+<div class="program-listing-container">
+    <div class="page-header">
+        <div class="header-left">
+            <a href="{% url 'program_list' %}" class="btn btn-back">
+                <i class='bx bx-arrow-back'></i> Program Management
+            </a>
+            <h2 class="main-title">Program Overview</h2>
+        </div>
+        <div class="header-actions">
+            <div class="action-buttons">
+                <div class="divider"></div>
+                <a href="{% url 'create_program' %}" class="btn btn-create">
+                    <i class='bx bx-plus-circle'></i>
+                    New Program
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Program Categories -->
+    <div class="program-categories">
+        <!-- Pending Approval Programs -->
+        <div class="category-section pending">
+            <div class="category-header">
+                <div class="header-icon">
+                    <i class='bx bx-time-five'></i>
+                </div>
+                <div class="header-content">
+                    <h3>Pending Approval</h3>
+                    <p>Awaiting admin approval</p>
+                </div>
+                <span class="program-count">{{ pending_count }}</span>
+            </div>
+            
+            <div class="programs-list">
+                {% for program in pending_programs %}
+                <div class="program-item pending" onclick="viewProgramDetails({{ program.id }})">
+                    {% include 'admin/program_item.html' with program=program status="pending" %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Approved Programs -->
+        <div class="category-section approved">
+            <div class="category-header">
+                <div class="header-icon">
+                    <i class='bx bx-check-circle'></i>
+                </div>
+                <div class="header-content">
+                    <h3>Approved Programs</h3>
+                    <p>Ready to start</p>
+                </div>
+                <span class="program-count">{{ approved_count }}</span>
+            </div>
+            
+            <div class="programs-list">
+                {% for program in approved_programs %}
+                <div class="program-item approved" onclick="viewProgramDetails({{ program.id }})">
+                    {% include 'admin/program_item.html' with program=program status="approved" %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Ongoing Programs -->
+        <div class="category-section ongoing">
+            <div class="category-header">
+                <div class="header-icon">
+                    <i class='bx bx-play-circle'></i>
+                </div>
+                <div class="header-content">
+                    <h3>Ongoing Programs</h3>
+                    <p>Currently in progress</p>
+                </div>
+                <span class="program-count">{{ ongoing_count }}</span>
+            </div>
+            
+            <div class="programs-list">
+                {% for program in ongoing_programs %}
+                <div class="program-item ongoing" onclick="viewProgramDetails({{ program.id }})">
+                    {% include 'admin/program_item.html' with program=program status="ongoing" %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Completed Programs -->
+        <div class="category-section completed">
+            <div class="category-header">
+                <div class="header-icon">
+                    <i class='bx bx-trophy'></i>
+                </div>
+                <div class="header-content">
+                    <h3>Completed Programs</h3>
+                    <p>Successfully finished</p>
+                </div>
+                <span class="program-count">{{ completed_count }}</span>
+            </div>
+            
+            <div class="programs-list">
+                {% for program in completed_programs %}
+                <div class="program-item completed" onclick="viewProgramDetails({{ program.id }})">
+                    {% include 'admin/program_item.html' with program=program status="completed" %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Rejected/Cancelled Programs -->
+        <div class="category-section cancelled">
+            <div class="category-header">
+                <div class="header-icon">
+                    <i class='bx bx-x-circle'></i>
+                </div>
+                <div class="header-content">
+                    <h3>Rejected/Cancelled Programs</h3>
+                    <p>Not approved or cancelled</p>
+                </div>
+                <span class="program-count">{{ cancelled_count }}</span>
+            </div>
+            
+            <div class="programs-list">
+                {% for program in cancelled_programs %}
+                <div class="program-item cancelled" onclick="viewProgramDetails({{ program.id }})">
+                    {% include 'admin/program_item.html' with program=program status="cancelled" %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.program-listing-container {
+    margin-left: 270px;
+    padding: 30px;
+    background: #f8f9ff;
+    min-height: 100vh;
+    width: calc(100% - 270px);
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+    padding: 20px 30px;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    margin-bottom: 30px;
+}
+
+.header-left {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.btn-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: rgba(67, 97, 238, 0.1);
+    color: #4361ee;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-back:hover {
+    transform: translateX(-5px);
+    background: rgba(67, 97, 238, 0.15);
+    box-shadow: 0 4px 15px rgba(67, 97, 238, 0.1);
+}
+
+.main-title {
+    font-size: 1.8rem;
+    background: linear-gradient(45deg, #4361ee, #7209b7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 0;
+}
+
+.subtitle {
+    color: #718096;
+    margin: 0;
+}
+
+.program-categories {
+    display: grid;
+    gap: 30px;
+}
+
+.category-section {
+    margin-bottom: 30px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    position: relative;
+    border-top: 5px solid;
+}
+
+.pending { border-top-color: #ffc107; }
+.approved { border-top-color: #28a745; }
+.ongoing { border-top-color: #007bff; }
+.completed { border-top-color: #6c757d; }
+.cancelled { border-top-color: #dc3545; }
+
+.category-header {
+    padding: 25px;
+    border-bottom: 2px solid #eee;
+    display: flex;
+    align-items: center;
+    background: linear-gradient(to right, rgba(248,249,255,0.5), transparent);
+}
+
+.header-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    margin-right: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.pending .header-icon { background: rgba(255, 193, 7, 0.1); color: #ffc107; }
+.approved .header-icon { background: rgba(40, 167, 69, 0.1); color: #28a745; }
+.ongoing .header-icon { background: rgba(0, 123, 255, 0.1); color: #007bff; }
+.completed .header-icon { background: rgba(108, 117, 125, 0.1); color: #6c757d; }
+.cancelled .header-icon { background: rgba(220, 53, 69, 0.1); color: #dc3545; }
+
+.header-content {
+    flex: 1;
+}
+
+.header-content h3 {
+    margin: 0 0 8px 0;
+    font-size: 1.5rem;
+    color: #1a202c;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.header-content p {
+    margin: 0;
+    color: #718096;
+    font-size: 0.9rem;
+}
+
+.program-count {
+    padding: 8px 20px;
+    border-radius: 25px;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.programs-list {
+    padding: 25px;
+    display: grid;
+    gap: 20px;
+}
+
+.program-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background: #f8f9ff;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.program-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+}
+
+.program-info {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex: 1;
+}
+
+.date-badge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    padding: 10px;
+    border-radius: 12px;
+    min-width: 60px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.date-badge .month {
+    font-size: 0.8rem;
+    color: #4361ee;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.date-badge .day {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #2d3748;
+}
+
+.program-details h4 {
+    margin: 0 0 8px 0;
+    color: #2d3748;
+    font-size: 1.1rem;
+}
+
+.program-meta {
+    display: flex;
+    gap: 15px;
+    font-size: 0.9rem;
+    color: #718096;
+}
+
+.program-meta span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.program-speaker {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding-left: 20px;
+    border-left: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.speaker-image {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #f1f5f9;
+}
+
+.speaker-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.speaker-info h5 {
+    margin: 0 0 3px 0;
+    font-size: 0.95rem;
+    color: #2d3748;
+}
+
+.speaker-info p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #718096;
+}
+
+@media (max-width: 768px) {
+    .program-listing-container {
+        margin-left: 0;
+        width: 100%;
+        padding: 15px;
+    }
+
+    .program-item {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+
+    .program-speaker {
+        border-left: none;
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+        padding: 15px 0 0 0;
+    }
+
+    .page-header {
+        flex-direction: column;
+        gap: 20px;
+        padding: 20px;
+    }
+
+    .header-actions {
+        width: 100%;
+    }
+
+    .action-buttons {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .btn-create {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .program-categories {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Action Buttons */
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.action-buttons {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #f8f9ff;
+    padding: 5px;
+    border-radius: 12px;
+    border: 1px solid rgba(67, 97, 238, 0.1);
+}
+
+.btn-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    border: none;
+    background: transparent;
+    color: #4361ee;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.btn-icon:hover {
+    background: rgba(67, 97, 238, 0.1);
+    transform: translateY(-2px);
+}
+
+.btn-icon i {
+    font-size: 1.3rem;
+}
+
+.btn-icon:hover::after {
+    content: attr(title);
+    position: absolute;
+    bottom: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #2d3748;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    z-index: 1000;
+}
+
+.divider {
+    width: 1px;
+    height: 25px;
+    background: rgba(67, 97, 238, 0.1);
+    margin: 0 5px;
+}
+
+.btn-create {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: linear-gradient(45deg, #4361ee, #3a52d8);
+    color: white;
+    border-radius: 10px;
+    border: none;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.btn-create:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(67, 97, 238, 0.2);
+}
+
+/* Animation for tooltips */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, 5px);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
+}
+
+.btn-icon:hover::after {
+    animation: fadeIn 0.2s ease-out forwards;
+}
+
+/* Adding sticky headers for better navigation */
+@media (min-width: 769px) {
+    .category-header {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background: white;
+        border-top-left-radius: 15px;
+        border-top-right-radius: 15px;
+    }
+}
+</style>
+<script>
+    function viewProgramDetails(programId) {
+        fetch(`/program-details/${programId}/`)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("program-title").innerText = data.title;
+                document.getElementById("program-description").innerText = data.description;
+                document.getElementById("program-status").innerText = data.status;
+                document.getElementById("program-date").innerText = data.start_date + " - " + data.end_date;
+                document.getElementById("program-modal").style.display = "block";
+            })
+            .catch(error => console.error("Error loading program details:", error));
+    }
+
+    function closeProgramModal() {
+        document.getElementById("program-modal").style.display = "none";
+    }
+</script>
+
+<script>
+function viewProgramDetails(programId) {
+    window.location.href = `/program-details/${programId}/`;
+}
+</script>
+

@@ -1,0 +1,47 @@
+Selenium Program Creation Test - Started at 2025-03-23 20:09:00
+[2025-03-23 20:09:00] Starting the Selenium test for expert login and program creation...
+[2025-03-23 20:09:00] Initializing Chrome WebDriver...
+[2025-03-23 20:09:05] Chrome WebDriver initialized successfully.
+[2025-03-23 20:09:05] Navigating to the expert auth page...
+[2025-03-23 20:09:05] Navigated to the expert auth page.
+[2025-03-23 20:09:06] Login form is visible.
+[2025-03-23 20:09:06] Entering login credentials...
+[2025-03-23 20:09:06] Login credentials entered.
+[2025-03-23 20:09:06] Submitting login form...
+[2025-03-23 20:09:08] Login form submitted.
+[2025-03-23 20:09:08] Successfully logged in and redirected to dashboard.
+[2025-03-23 20:09:08] Navigating to create program page...
+[2025-03-23 20:09:08] Navigated to create program page.
+[2025-03-23 20:09:08] Program creation form loaded.
+[2025-03-23 20:09:08] Filling program details...
+[2025-03-23 20:09:19] All program details filled successfully
+[2025-03-23 20:09:19] Submitting program creation form...
+[2025-03-23 20:09:20] Program creation form submitted.
+[2025-03-23 20:09:30] No success alert found: Message: 
+Stacktrace:
+	GetHandleVerifier [0x00E5C7F3+24435]
+	(No symbol) [0x00DE2074]
+	(No symbol) [0x00CB06E3]
+	(No symbol) [0x00CF8B39]
+	(No symbol) [0x00CF8E8B]
+	(No symbol) [0x00D41AC2]
+	(No symbol) [0x00D1D804]
+	(No symbol) [0x00D3F20A]
+	(No symbol) [0x00D1D5B6]
+	(No symbol) [0x00CEC54F]
+	(No symbol) [0x00CED894]
+	GetHandleVerifier [0x011670A3+3213347]
+	GetHandleVerifier [0x0117B0C9+3295305]
+	GetHandleVerifier [0x0117558C+3271948]
+	GetHandleVerifier [0x00EF7360+658144]
+	(No symbol) [0x00DEB27D]
+	(No symbol) [0x00DE8208]
+	(No symbol) [0x00DE83A9]
+	(No symbol) [0x00DDAAC0]
+	BaseThreadInitThunk [0x767E5D49+25]
+	RtlInitializeExceptionChain [0x77B7CE3B+107]
+	RtlGetAppContainerNamedObjectPath [0x77B7CDC1+561]
+
+[2025-03-23 20:09:30] Redirected to dashboard after program creation.
+[2025-03-23 20:09:30] Test Passed: Successfully created a new program!
+[2025-03-23 20:09:38] Browser closed. Test completed.

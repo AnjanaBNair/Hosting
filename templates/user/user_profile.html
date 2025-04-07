@@ -1,0 +1,151 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Next-Edge</title>
+    <link href="{% static 'css/user_pro.css' %}" rel="stylesheet">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+    <script>
+        function first_name() {
+            const firstName = document.getElementById('first_name').value.trim();
+            const firstNameError = document.getElementById('first_name-error');
+            const regex = /^[a-zA-Z]+$/;
+
+            if (!firstName || !regex.test(firstName)) {
+                firstNameError.style.display = 'block';
+                return false;
+            } else {
+                firstNameError.style.display = 'none';
+                return true;
+            }
+        }
+
+        function last_name() {
+            const lastName = document.getElementById('last_name').value.trim();
+            const lastNameError = document.getElementById('last_name-error');
+            const regex = /^[a-zA-Z]+$/;
+
+            if (!lastName || !regex.test(lastName)) {
+                lastNameError.style.display = 'block';
+                return false;
+            } else {
+                lastNameError.style.display = 'none';
+                return true;
+            }
+        }
+
+        function country() {
+            const country = document.getElementById('country').value.trim();
+            const countryError = document.getElementById('country-error');
+            const regex = /^[a-zA-Z]+$/;
+
+            if (!country || !regex.test(country)) {
+                countryError.style.display = 'block';
+                return false;
+            } else {
+                countryError.style.display = 'none';
+                return true;
+            }
+        }
+
+        function phonenumber() {
+            const phoneNumber = document.getElementById('phone_number').value.trim();
+            const phoneNumberError = document.getElementById('phone_number-error');
+            const regex = /^[6-9]\d{9}$/;
+
+            if (!phoneNumber || !regex.test(phoneNumber)) {
+                phoneNumberError.style.display = 'block';
+                return false;
+            } else {
+                phoneNumberError.style.display = 'none';
+                return true;
+            }
+        }
+
+        function validate_user_profile_Form(event) {
+            const isFirstNameValid = first_name();
+            const isLastNameValid = last_name();
+            const isCountryValid = country();
+            const isPhoneNumberValid = phonenumber();
+
+            if (!isFirstNameValid || !isLastNameValid || !isCountryValid || !isPhoneNumberValid) {
+                alert('Please fill the form correctly.');
+                event.preventDefault();
+                return false;
+            }
+            return true;
+        }
+    </script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script type="text/javascript" >
+        function preventBack(){window.history.forward();}
+         setTimeout("preventBack()", 0);
+         window.onunload=function(){null};
+     </script>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row no-gutter">
+            <!-- The image half -->
+            <div class="col-md-5 d-none d-md-flex bg-light" style="background-image: url('{% static 'img/profile.jpg' %}');
+            background-size: cover;
+            background-position: left center;"></div>
+    
+            <!-- The content half -->
+            <div class="col-md-7 bg-light">
+                <div class="login d-flex align-items-center py-5">
+                    <!-- Demo content -->
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-lg-9 col-xl-7 mx-auto">
+                                <h4>Profile Completion!</h4><hr>
+                                <p class="text-muted mb-4">Hey {{ user.username }}! Complete your profile now...</p>
+                                <form action="{% url 'user_profile' %}" method="POST" enctype="multipart/form-data" onsubmit="return validate_user_profile_Form(event)">
+                                    {% csrf_token %}
+                                    <div class="form-group mb-3">
+                                        <input id="first_name" type="text" name="first_name" placeholder="First Name" required autofocus class="form-control rounded-pill border-0 shadow-sm px-4" onkeyup="first_name()"/>
+                                    </div>
+                                    <span id="first_name-error" style="display: none; color: red; font-size: 12px;"><b>Enter a valid first name</b></span>
+                                
+                                    <div class="form-group mb-3">
+                                        <input id="last_name" type="text" name="last_name" placeholder="Last Name" required autofocus class="form-control rounded-pill border-0 shadow-sm px-4" onkeyup="last_name()"/>
+                                    </div>
+                                    <span id="last_name-error" style="display: none; color: red; font-size: 12px;"><b>Enter a valid last name</b></span>
+                                
+                                    <div class="form-group mb-3">
+                                        <input id="country" type="text" name="country" placeholder="Country" required autofocus class="form-control rounded-pill border-0 shadow-sm px-4" onkeyup="country()"/>
+                                    </div>
+                                    <span id="country-error" style="display: none; color: red; font-size: 12px;"><b>Enter a valid country name</b></span>
+                                
+                                    <div class="form-group mb-3">
+                                        <input id="phone_number" type="text" name="phone_number" placeholder="Mobile Number" required class="form-control rounded-pill border-0 shadow-sm px-4 text-primary" onkeyup="phonenumber()"/>
+                                    </div>
+                                    <span id="phone_number-error" style="display: none; color: red; font-size: 12px;"><b>Number should be 10 digits</b></span>
+                                
+                                    <div class="form-group mb-3">
+                                        <input id="bio" type="text" name="bio" placeholder="Bio" required autofocus class="form-control rounded-pill border-0 shadow-sm px-4"/>
+                                    </div>
+                                
+                                    <div class="form-group mb-3">
+                                        <input id="profile_picture" type="file" name="profile_picture" placeholder="Profile Picture (optional)" autofocus class="form-control rounded-pill border-0 shadow-sm px-4" accept=".jpg, .jpeg, .png"/>
+                                    </div>
+                                
+                                    <button type="submit" class="btn btn-primary btn-block text-uppercase mb-2 rounded-pill shadow-sm">Continue</button>
+                                    <a href="{% url 'logout' %}">
+                                        <i class='bx bx-log-out'></i>
+                                        Logout
+                                    </a>
+                                </form>
+                            </div>
+                        </div>
+                    </div><!-- End -->
+                </div>
+            </div><!-- End -->
+        </div>
+    </div>
+</body>
+</html>

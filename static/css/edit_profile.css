@@ -1,0 +1,32 @@
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color:blue;
+}
+input[type="text"], textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+textarea {
+    resize: vertical;
+}
+button {
+    padding: 8px 8px;
+    border: none;
+    border-radius: 4px;
+    background-color: #0f44a7;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+}
+button:hover {
+    background-color: #26913d;
+}
+h2 {
+    color: blue; 
+}

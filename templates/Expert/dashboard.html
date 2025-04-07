@@ -1,0 +1,607 @@
+{% extends 'expert/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="dashboard-content">
+    <!-- Stats Cards -->
+    <div class="stats-container">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-calendar-check"></i>
+            </div>
+            <div class="stat-info">
+                <h3>{{ stats.ongoing }}</h3>
+                <p>Ongoing Programs</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-calendar"></i>
+            </div>
+            <div class="stat-info">
+                <h3>{{ stats.upcoming }}</h3>
+                <p>Upcoming Programs</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="stat-info">
+                <h3>{{ stats.completed }}</h3>
+                <p>Completed Programs</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Programs Tabs -->
+    <div class="programs-section">
+        <ul class="nav nav-tabs" id="programTabs" role="tablist">
+            <li class="nav-item">
+                <a  style="color:red"class="nav-link active" id="ongoing-tab" data-bs-toggle="tab" href="#ongoing">
+                    Ongoing Programs
+                </a>
+            </li>
+            <li class="nav-item">
+                <a  style="color:red" class="nav-link" id="upcoming-tab" data-bs-toggle="tab" href="#upcoming">
+                    Upcoming Programs
+                </a>
+            </li>
+            <li class="nav-item">
+                <a  style="color:red" class="nav-link" id="completed-tab" data-bs-toggle="tab" href="#completed">
+                    Completed Programs
+                </a>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="programTabsContent">
+            <!-- Ongoing Programs -->
+            <div class="tab-pane fade show active" id="ongoing">
+                {% for program in ongoing_programs %}
+                <div class="program-card">
+                    <div class="program-info">
+                        <h4>{{ program.title }}</h4>
+                        <div class="program-details">
+                            <p><i class="fas fa-calendar"></i> {{ program.start_date|date:"M d, Y" }} - {{ program.end_date|date:"M d, Y" }}</p>
+                            <p><i class="fas fa-clock"></i> {{ program.session_time }}</p>
+                            <p><i class="fas fa-users"></i> Max Participants: {{ program.max_participants }}</p>
+                            
+                            <!-- Program Status Badge -->
+                            {% if program.status_program == 'pending' %}
+                                <span class="badge bg-warning">Pending Approval</span>
+                            {% elif program.status_program == 'approved' %}
+                                <span class="badge bg-success">Approved</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="program-actions">
+                        {% if program.status_program == 'pending' %}
+                            <!-- Full edit button for pending programs -->
+                            <button class="btn btn-sm btn-info" onclick="editProgram('{{ program.id }}')">
+                                <i class="fas fa-edit"></i> Edit Program
+                            </button>
+                        {% elif program.status_program == 'approved' %}
+                            <!-- Only show schedule edit for approved programs -->
+                            <button class="btn btn-sm btn-primary" onclick="editSchedule('{{ program.id }}')">
+                                <i class="fas fa-clock"></i> Edit Schedule
+                            </button>
+                        {% endif %}
+                        <button class="btn btn-primary" onclick="window.location.href='{% url 'manage_attendance' program.id %}'">
+                            <i class="fas fa-users"></i> Manage Attendance
+                        </button>
+                    </div>
+                </div>
+                {% empty %}
+                <p class="text-center text-muted">No programs found</p>
+                {% endfor %}
+            </div>
+
+            <!-- Upcoming Programs -->
+            <div class="tab-pane fade show active" id="upcoming">
+                {% for program in upcoming_programs %}
+                <div class="program-card">
+                    <div class="program-info">
+                        <h4>{{ program.title }}</h4>
+                        <div class="program-details">
+                            <p><i class="fas fa-calendar"></i> {{ program.start_date|date:"M d, Y" }} - {{ program.end_date|date:"M d, Y" }}</p>
+                            <p><i class="fas fa-clock"></i> {{ program.session_time }}</p>
+                            <p><i class="fas fa-users"></i> Max Participants: {{ program.max_participants }}</p>
+                            
+                            <!-- Program Status Badge -->
+                            {% if program.status_program == 'pending' %}
+                                <span class="badge bg-warning">Pending Approval</span>
+                            {% elif program.status_program == 'approved' %}
+                                <span class="badge bg-success">Approved</span>
+                            {% elif program.status_program == 'rejected' %}
+                                <span class="badge bg-danger">Rejected</span>
+                                <div class="rejection-reason mt-2">
+                                    <p><strong>Rejection Reason:</strong></p>
+                                    <p class="text-danger">{{ program.rejection_reason }}</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="program-actions">
+                        {% if program.status_program == 'approved' %}
+                            <!-- Edit button for approved programs -->
+                            <button class="btn btn-sm btn-warning" onclick="editProgram('{{ program.id }}')">
+                                <i class="fas fa-edit"></i> Edit Program
+                            </button>
+                        {% elif program.status_program == 'rejected' %}
+                            <!-- Edit and resubmit button for rejected programs -->
+                            <button class="btn btn-sm btn-primary" onclick="editProgram('{{ program.id }}')">
+                                <i class="fas fa-edit"></i> Edit & Resubmit
+                            </button>
+                        {% elif program.status_program == 'pending' %}
+                            <!-- Edit button for pending programs -->
+                            <button class="btn btn-sm btn-info" onclick="editProgram('{{ program.id }}')">
+                                <i class="fas fa-edit"></i> Edit Program
+                            </button>
+                        {% endif %}
+                        
+                        <!-- Other action buttons -->
+                        {% comment %} <button class="btn btn-sm btn-primary" onclick="showDayMaterials('{{ program.id }}')">
+                            <i class="fas fa-book"></i> Materials
+                        </button>
+                        <button class="btn btn-sm btn-info" onclick="showAttendance('{{ program.id }}')">
+                            <i class="fas fa-users"></i> Attendance
+                        </button> {% endcomment %}
+                        <a href="{% url 'manage_attendance' program.id %}" class="btn btn-sm btn-primary">
+                            <i class="fas fa-user-check"></i> Attendance
+                        </a>
+                    </div>
+                </div>
+                {% empty %}
+                <p class="text-center text-muted">No upcoming programs</p>
+                {% endfor %}
+            </div>
+
+            <!-- Completed Programs -->
+            <div class="tab-pane fade" id="completed">
+                {% for program in completed_programs %}
+                <div class="program-card">
+                    <div class="program-info">
+                        <h4>{{ program.title }}</h4>
+                        <div class="program-details">
+                            <p><i class="fas fa-calendar"></i> {{ program.start_date|date:"M d, Y" }} - {{ program.end_date|date:"M d, Y" }}</p>
+                            <p><i class="fas fa-clock"></i> {{ program.session_time }}</p>
+                            <p><i class="fas fa-users"></i> Max Participants: {{ program.max_participants }}</p>
+                            
+                            <!-- Program Status Badge -->
+                            {% if program.status_program == 'pending' %}
+                                <span class="badge bg-warning">Pending Approval</span>
+                            {% elif program.status_program == 'approved' %}
+                                <span class="badge bg-success">Approved</span>
+                            {% elif program.status_program == 'rejected' %}
+                                <span class="badge bg-danger">Rejected</span>
+                                <div class="rejection-reason mt-2">
+                                    <p><strong>Rejection Reason:</strong></p>
+                                    <p class="text-danger">{{ program.rejection_reason }}</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="program-actions">
+                        {% if program.status_program == 'approved' %}
+                            <!-- Edit button for approved programs -->
+                            {% comment %} <button class="btn btn-sm btn-warning" onclick="editProgram('{{ program.id }}')">
+                                <i class="fas fa-edit"></i> Edit Program
+                            </button> {% endcomment %}
+                        {% elif program.status_program == 'rejected' %}
+                            <!-- Edit and resubmit button for rejected programs -->
+                            <button class="btn btn-sm btn-primary" onclick="editProgram('{{ program.id }}')">
+                                <i class="fas fa-edit"></i> Edit & Resubmit
+                            </button>
+                        {% elif program.status_program == 'pending' %}
+                            <!-- Edit button for pending programs -->
+                            <button class="btn btn-sm btn-info" onclick="editProgram('{{ program.id }}')">
+                                <i class="fas fa-edit"></i> Edit Program
+                            </button>
+                        {% endif %}
+                        
+                        <!-- Other action buttons -->
+                        {% comment %} <button class="btn btn-sm btn-primary" onclick="showDayMaterials('{{ program.id }}')">
+                            <i class="fas fa-book"></i> Materials
+                        </button>
+                        <button class="btn btn-sm btn-info" onclick="showAttendance('{{ program.id }}')">
+                            <i class="fas fa-users"></i> Attendance
+                        </button> {% endcomment %}
+                        <a href="{% url 'manage_attendance' program.id %}" class="btn btn-sm btn-primary">
+                            <i class="fas fa-user-check"></i> Attendance
+                        </a>
+                    </div>
+                </div>
+                {% empty %}
+                <p class="text-center text-muted">No completed programs</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Study Materials Modal -->
+<div class="modal fade" id="studyMaterialsModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Study Materials</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="daysList"></div>
+                <form id="uploadMaterialForm" class="mt-3">
+                    <div class="mb-3">
+                        <label>Title</label>
+                        <input type="text" class="form-control" name="title" required>
+                    </div>
+                    <div class="mb-3">
+                        <label>Description</label>
+                        <textarea class="form-control" name="description"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label>File</label>
+                        <input type="file" class="form-control" name="file" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Upload</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Schedule Edit Modal -->
+<div class="modal fade" id="scheduleEditModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Schedule Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="scheduleEditForm">
+                    {% csrf_token %}
+                    <input type="hidden" id="schedule_program_id" name="program_id">
+                    
+                    <div class="mb-3">
+                        <label for="session_time" class="form-label">Session Time</label>
+                        <input type="time" class="form-control" id="session_time" name="session_time" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="meeting_platform" class="form-label">Meeting Platform</label>
+                        <select class="form-control" id="meeting_platform" name="meeting_platform" required>
+                            <option value="zoom">Zoom</option>
+                            <option value="google_meet">Google Meet</option>
+                            <option value="microsoft_teams">Microsoft Teams</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3" id="other_platform_div" style="display: none;">
+                        <label for="other_platform" class="form-label">Other Platform</label>
+                        <input type="text" class="form-control" id="other_platform" name="other_platform">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="meeting_link" class="form-label">Meeting Link</label>
+                        <input type="url" class="form-control" id="meeting_link" name="meeting_link" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="saveScheduleChanges()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function showDayMaterials(programId) {
+    fetch(`/api/program/${programId}/materials/`)
+        .then(response => response.json())
+        .then(data => {
+            const daysList = document.getElementById('daysList');
+            daysList.innerHTML = data.days.map(day => `
+                <div class="day-card">
+                    <h5>Day ${day.day_number} - ${day.date}</h5>
+                    <div class="materials-list">
+                        ${day.materials.map(material => `
+                            <div class="material-item">
+                                <a href="${material.file_url}" target="_blank">${material.title}</a>
+                                <small>${material.description}</small>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+            $('#studyMaterialsModal').modal('show');
+        });
+}
+
+function uploadAttendance(programId) {
+    // Implement attendance upload functionality
+}
+
+function editProgram(programId) {
+    window.location.href = `/expert/program/${programId}/edit/`;
+}
+
+function toggleProgramStatus(programId) {
+    // Implement program status toggle functionality
+}
+
+// Function to edit schedule
+function editSchedule(programId) {
+    // Fetch current schedule details
+    fetch(`/get-program-schedule/${programId}/`)
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('schedule_program_id').value = programId;
+            document.getElementById('session_time').value = data.session_time;
+            document.getElementById('meeting_platform').value = data.meeting_platform;
+            document.getElementById('meeting_link').value = data.meeting_link;
+            
+            if (data.meeting_platform === 'other') {
+                document.getElementById('other_platform_div').style.display = 'block';
+                document.getElementById('other_platform').value = data.other_platform;
+            }
+            
+            // Show modal
+            new bootstrap.Modal(document.getElementById('scheduleEditModal')).show();
+        });
+}
+
+// Function to save schedule changes
+function saveScheduleChanges() {
+    const form = document.getElementById('scheduleEditForm');
+    const formData = new FormData(form);
+
+    fetch('/update-program-schedule/', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            Swal.fire({
+                title: 'Success!',
+                text: 'Schedule updated successfully',
+                icon: 'success',
+                confirmButtonText: 'OK'
+            }).then(() => {
+                location.reload();
+            });
+        } else {
+            Swal.fire({
+                title: 'Error!',
+                text: data.message,
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+        }
+    });
+}
+
+// Show/hide other platform input
+document.getElementById('meeting_platform').addEventListener('change', function() {
+    document.getElementById('other_platform_div').style.display = 
+        this.value === 'other' ? 'block' : 'none';
+});
+
+// Function to resubmit program
+function resubmitProgram(programId) {
+    Swal.fire({
+        title: 'Resubmit Program?',
+        text: 'This will submit the program for review again.',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, resubmit',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch(`/resubmit-program/${programId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    Swal.fire('Success!', 'Program has been resubmitted.', 'success')
+                    .then(() => {
+                        location.reload();
+                    });
+                }
+            });
+        }
+    });
+}
+
+function checkAttendanceStatus(programId) {
+    const now = new Date();
+    const programStart = new Date(document.getElementById(`start-${programId}`).dataset.startTime);
+    const programEnd = new Date(programStart);
+    programEnd.setHours(programEnd.getHours() + 12);
+
+    const attendanceBtn = document.getElementById(`attendance-btn-${programId}`);
+    if (now >= programStart && now <= programEnd) {
+        attendanceBtn.classList.remove('btn-secondary');
+        attendanceBtn.classList.add('btn-primary');
+        attendanceBtn.disabled = false;
+    } else {
+        attendanceBtn.classList.remove('btn-primary');
+        attendanceBtn.classList.add('btn-secondary');
+        attendanceBtn.disabled = true;
+    }
+}
+
+// Update attendance button status every minute
+setInterval(() => {
+    document.querySelectorAll('[id^="attendance-btn-"]').forEach(btn => {
+        const programId = btn.id.split('-')[2];
+        checkAttendanceStatus(programId);
+    });
+}, 60000);
+
+// Initial check
+document.querySelectorAll('[id^="attendance-btn-"]').forEach(btn => {
+    const programId = btn.id.split('-')[2];
+    checkAttendanceStatus(programId);
+});
+</script>
+
+<style>
+    /* Add to existing styles */
+    .program-details {
+        margin: 10px 0;
+    }
+
+    .program-details p {
+        margin: 5px 0;
+        color: #666;
+    }
+
+    .program-details i {
+        width: 20px;
+        color: var(--primary-color);
+    }
+
+    .badge {
+        padding: 5px 10px;
+        border-radius: 15px;
+    }
+
+    .program-actions .btn {
+        padding: 6px 12px;
+        margin: 0 2px;
+    }
+
+    .program-actions .btn i {
+        margin-right: 5px;
+    }
+
+    .rejection-reason {
+        background: #fff3f3;
+        padding: 10px;
+        border-radius: 5px;
+        margin-top: 10px;
+    }
+    
+    .badge {
+        font-size: 0.9em;
+        padding: 8px 12px;
+    }
+
+    .program-card {
+        background: #fff;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .program-info h4 {
+        color: #2575fc;
+        margin-bottom: 15px;
+    }
+
+    .program-details {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-bottom: 15px;
+    }
+
+    .program-details p {
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .program-actions {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+    }
+
+    .modal-content {
+        border-radius: 15px;
+    }
+
+    .modal-header {
+        background: #f8f9fa;
+        border-radius: 15px 15px 0 0;
+    }
+
+    .form-control {
+        border-radius: 8px;
+    }
+
+    .program-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+    }
+
+    .program-actions .btn {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        padding: 8px 15px;
+        border-radius: 5px;
+        font-size: 0.9em;
+        transition: all 0.3s ease;
+    }
+
+    .program-actions .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .btn-primary {
+        background-color: #4361ee;
+        color: white !important;
+        text-decoration: none !important;
+    }
+
+    .btn-primary:hover {
+        background-color: #3a52d8;
+        transform: translateY(-2px);
+    }
+
+    .btn i {
+        font-size: 1em;
+    }
+
+    /* Badge styles for attendance status */
+    .attendance-badge {
+        padding: 5px 10px;
+        border-radius: 15px;
+        font-size: 0.8em;
+        margin-left: 10px;
+    }
+
+    .attendance-active {
+        background-color: #2ecc71;
+        color: white;
+    }
+
+    .attendance-inactive {
+        background-color: #95a5a6;
+        color: white;
+    }
+
+    .program-actions .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+</style>
+{% endblock %} 

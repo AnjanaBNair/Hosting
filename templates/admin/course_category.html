@@ -1,0 +1,481 @@
+{% load static %}
+{% include 'admin/adminindex.html' %}
+<link rel="stylesheet" href="https://cdn.datatables.net/2.1.7/css/dataTables.bootstrap5.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<style>
+    /* Adjusts the container margin and width */
+    .table-container {
+        margin-left: 300px;
+        width: 1000px;
+        margin-top: 20px;
+        
+    }
+    /* Remove underline from nav-tabs */
+    .nav-tabs .nav-link {
+        text-decoration: none;
+    }
+    /* Remove focus outline for a cleaner look */
+    .nav-tabs .nav-link:focus {
+        outline: none;
+    }
+    /* Ensure proper table width */
+    .table {
+        width: 100%;
+    }
+    /* Align button to the right */
+    .button-container {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+    }
+    /* Button styling */
+    .btn-custom {
+        background-color: #007bff;
+        color: white;
+        border-radius: 4px;
+        padding: 6px 12px;
+    }
+    /* Button icons */
+    .btn-custom i {
+        margin-right: 5px;
+    }
+    /* Custom search input styling */
+    .custom-search-box {
+        display: inline-block;
+        width: 800px; 
+    }
+    .custom-search-box input {
+        padding: 5px;
+        border-radius: 5px;
+        border: 1px solid #ddd;
+        width: 800px; 
+    }
+    .custom-search-box button {
+        padding: 5px 10px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+    }
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgb(0,0,0);
+        background-color: rgba(0,0,0,0.4);
+        padding-top: 60px;
+    }
+    .modal-content {
+        background-color: #fefefe;
+        margin: 1% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 100%;
+        margin-left: 400px;
+        max-width: 800px;
+        border-radius: 10px;
+    }
+    .modal-header, .modal-footer {
+        padding: 10px;
+        color: #007bff;
+    }
+    .modal-header {
+        border-bottom: 1px solid #007bff;
+    }
+    .modal-footer {
+        border-top: 1px solid #007bff;
+        text-align: right;
+    }
+    .modal-close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+    .modal-close:hover,
+    .modal-close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+    }
+    .modal-body input, .modal-body select {
+        width: 100%; 
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #ddd;
+        margin-bottom: 20px;
+        transition: border-color 0.3s;
+    }
+    .modal-body input:focus, .modal-body select:focus {
+        border-color: #007bff; 
+        outline: none;
+    }
+    .finish-btn, .modal-footer button {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 20px; 
+        border-radius: 5px; 
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        font-size: 16px; 
+    }
+    .finish-btn:hover, .modal-footer button:hover {
+        background-color: #0056b3; 
+    }
+
+
+    .button-cell {
+        display: flex; /* Use flexbox for inline alignment */
+        align-items: center; /* Center buttons vertically */
+    }
+    
+    .btn {
+        padding: 10px 15px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: background-color 0.3s, transform 0.2s;
+        margin: 0 5px; /* Space between buttons */
+    }
+    
+    .edit-btn {
+        background-color: #155717; /* Green */
+        color: white;
+    }
+    
+    .edit-btn:hover {
+        background-color: #326935; /* Darker green */
+        transform: scale(1.05);
+    }
+    
+    .remove-btn {
+        background-color: #991c13; /* Red */
+        color: white;
+    }
+    
+    .remove-btn:hover {
+        background-color: #721211; /* Darker red */
+        transform: scale(1.05);
+    }
+    
+</style>
+
+<script>
+    $(document).ready(function() {
+        // Initialize DataTables
+        var table1 = $('#myTable1').DataTable({
+            paging: true,
+            searching: true,
+            scrollCollapse: true,
+            scrollY: 200
+        });
+        var table3 = $('#myTable3').DataTable({
+            paging: true,
+            searching: true,
+            scrollCollapse: true,
+            scrollY: 200
+        });
+
+        var table2 = $('#myTable2').DataTable({
+            paging: true,
+            searching: true,
+            scrollCollapse: true,
+            scrollY: 200
+        });
+
+        $('#customSearch1').on('keyup', function() {
+            table1.search(this.value).draw();
+        });
+
+        $('#customSearch3').on('keyup', function() {
+            table3.search(this.value).draw();
+        });
+
+
+        $('#customSearch2').on('keyup', function() {
+            table2.search(this.value).draw();
+        });
+
+        $('button[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+            $.fn.dataTable.tables({ visible: true, api: true }).columns.adjust();
+        });
+    });
+
+    function openAddModal() {
+        document.getElementById("addQuestionModal").style.display = "block";
+    }
+
+    function closeAddModal() {
+        document.getElementById("addQuestionModal").style.display = "none";
+    }
+
+    function openAddSubCategoryModal() {
+        document.getElementById("addSubCategoryModal").style.display = "block";
+    }
+
+    function closeAddSubCategoryModal() {
+        document.getElementById("addSubCategoryModal").style.display = "none";
+    }
+
+    window.onclick = function(event) {
+        if (event.target == document.getElementById("addQuestionModal")) {
+            closeAddModal();
+        } else if (event.target == document.getElementById("addSubCategoryModal")) {
+            closeAddSubCategoryModal();
+        }
+    }
+</script>
+{% if messages %}
+<script>
+    {% for message in messages %}
+        Swal.fire({
+            icon: 'success',
+            title: 'Success!',
+            text: "{{ message }}",
+            timer: 3000,  // Auto close after 3 seconds
+            showConfirmButton: false
+        });
+    {% endfor %}
+</script>
+{% endif %}
+
+<div class="table-container">
+    <ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="tab-table1-tab" data-bs-toggle="tab" data-bs-target="#tab-table1" type="button" role="tab" aria-controls="tab-table1" aria-selected="true"><b>Main Course Details</b></button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab-table2-tab" data-bs-toggle="tab" data-bs-target="#tab-table2" type="button" role="tab" aria-controls="tab-table2" aria-selected="false"><b>Sub Course Details</b></button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab-table3-tab" data-bs-toggle="tab" data-bs-target="#tab-table3" type="button" role="tab" aria-controls="tab-table3" aria-selected="false"><b>Deactivated Departments</b></button>
+        </li>
+    </ul>
+
+    <div class="tab-content pt-2">
+        <div class="tab-pane fade show active" id="tab-table1" role="tabpanel" aria-labelledby="tab-table1-tab">
+            <div class="button-container">
+                <button class="btn btn-custom" onclick="openAddModal()">
+                    <i class="fas fa-plus"></i> Add Category
+                </button>
+            </div>
+            <table id="myTable1" class="table table-striped table-bordered" cellspacing="0" width="100%">
+                <thead>
+                    <tr>
+                        <th>SlNo.</th>
+                        <th>Category</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for subdept in departments %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td> <!-- Serial number -->
+                        <td>{{ subdept.department }}</td> 
+                        <td class="button-cell">
+                            <button class="btn edit-btn" onclick="editCategory('{{ subdept.id }}', '{{ subdept.department }}')"><b>Edit</b></button>
+                            <button class="btn remove-btn" onclick="confirmRemove('{{ subdept.id }}')"><b>Remove</b></button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="tab-pane fade" id="tab-table2" role="tabpanel" aria-labelledby="tab-table2-tab">
+            <div class="button-container">
+                <button class="btn btn-custom" onclick="openAddSubCategoryModal()">
+                    <i class="fas fa-plus"></i> Add Sub Category
+                </button>
+            </div>
+            <table id="myTable2" class="table table-striped table-bordered" cellspacing="0" width="100%">
+                <thead>
+                    <tr>
+                        <th>SlNo</th>
+                        <th>Sub Category</th>
+                        <th>Category</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for subdepts in subdept %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td> <!-- Automatically generates the serial number -->
+                            <td>{{ subdepts.subdept }}</td> <!-- Subcategory name -->
+                            <td>{{ subdepts.dept.department }}</td> 
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+
+        
+        <div class="tab-pane fade" id="tab-table3" role="tabpanel" aria-labelledby="tab-table3-tab">
+            <div class="button-container">
+            </div>
+            <table id="myTable3" class="table table-striped table-bordered" cellspacing="0" width="100%">
+                <thead>
+                    <tr>
+                        <th>SlNo</th>
+                        <th>Category</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for deactivate in deactivated %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td> <!-- Automatically generates the serial number -->
+                            <td>{{ deactivate.department }}</td>
+                            <td> <button class="btn success-btn" onclick="confirmActive('{{ deactivate.id }}')" 
+                                style="background-color: #28a745; color: white; font-weight: bold; padding: 10px 20px; border-radius: 5px; border: none;">
+                                <b>Activate</b>
+                            </button></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+    
+    <div id="addQuestionModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="modal-close" onclick="closeAddModal()">&times;</span>
+                <h2>Main Course</h2>
+            </div>
+            <div class="modal-body">
+                <form id="addCategoryForm" method="POST" action="{% url 'add_department' %}">
+                    {% csrf_token %}
+                    <label for="category">Category</label>
+                    <input type="text" id="category" name="category" required>
+                    <button type="submit" class="btn-custom finish-btn">Add Category</button>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-custom" onclick="closeAddModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="editCategoryModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="modal-close" onclick="closeEditModal()">&times;</span>
+                <h2>Edit Category</h2>
+            </div>
+            <div class="modal-body">
+                <form id="editCategoryForm" method="POST" action="{% url 'edit_category' %}">
+                    {% csrf_token %}
+                    <input type="hidden" id="editCategoryId" name="category_id">
+                    <label for="category">Category</label>
+                    <input type="text" id="editCategory" name="category" required>
+                    <button type="submit" class="btn-custom finish-btn">Save Changes</button>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-custom" onclick="closeEditModal()">Close</button>
+            </div>
+        </div>
+    </div>
+<script>
+    function editCategory(id, department) {
+        document.getElementById("editCategoryId").value = id; // Set the hidden field with the category ID
+        document.getElementById("editCategory").value = department; // Set the input field with the current department name
+        document.getElementById("editCategoryModal").style.display = "block"; // Show the modal
+    }
+    
+    function closeEditModal() {
+        document.getElementById("editCategoryModal").style.display = "none"; // Hide the modal
+    }
+    
+    // Close the modal when clicking outside of it
+    window.onclick = function(event) {
+        const modal = document.getElementById("editCategoryModal");
+        if (event.target === modal) {
+            closeEditModal();
+        }
+    }
+    
+</script>
+    <div id="addSubCategoryModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="modal-close" onclick="closeAddSubCategoryModal()">&times;</span>
+                <h2>Add Sub Category</h2>
+            </div>
+            <div class="modal-body">
+                <form id="addSubCategoryForm" method="POST" action="{% url 'add_subdept' %}">
+                    {% csrf_token %}
+                    <label for="subcategory">Sub Category</label>
+                    <input type="text" id="subcategory" name="subcategory" required>
+                    <label for="categorySelect">Category</label>
+                    <select id="categorySelect" name="category" required>
+                        <option value="" disabled selected>Select a Department</option> <!-- Placeholder option -->
+                        {% for subdept in departments %}
+                            <option value="{{ subdept.department }}">{{ subdept.department }}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit" class="btn-custom finish-btn">Add Sub Category</button>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-custom" onclick="closeAddSubCategoryModal()">Close</button>
+            </div>
+        </div>
+    </div>
+    
+</div>
+<script>
+    function confirmRemove(categoryId) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "This will deactivate the department and associated subdepartments and staff members!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, remove it!',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // If confirmed, redirect to the remove_category URL with the department ID
+                window.location.href = '/remove_category/' + categoryId + '/';
+            }
+        })
+    }
+
+    function confirmActive(categoryId) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "This will Activate the department and associated subdepartments and staff members!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, Activate It!',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // If confirmed, redirect to the remove_category URL with the department ID
+                window.location.href = '/active_category/' + categoryId + '/';
+            }
+        })
+    }
+</script>

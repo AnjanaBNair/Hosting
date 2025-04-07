@@ -1,0 +1,290 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certificate of Completion</title>
+    <style>
+        body {
+            font-family: 'Georgia', serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        /* PDF Download Button */
+        .button-container {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        
+        .download-btn {
+            padding: 10px 20px;
+            background-color: #2980b9;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+        
+        .download-btn:hover {
+            background-color: #21618c;
+        }
+
+        .certificate {
+            width: 1000px;
+            height: 600px;
+            padding: 40px;
+            background-color: #fff;
+            border: 15px solid #2980b9;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            border-radius: 15px;
+            margin: 20px auto;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        .certificate-header {
+            padding-top: 10px;
+        }
+
+        .certificate-header h1 {
+            font-size: 45px;
+            font-weight: bold;
+            color: #2980b9;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .certificate-header .org-name {
+            font-size: 20px;
+            font-weight: bold;
+            color: #34495e;
+            margin-top: -5px;
+        }
+
+        .certificate-body p {
+            font-size: 20px;
+            color: #34495e;
+            margin: 10px 0;
+        }
+
+        .certificate-body h2 {
+            font-size: 34px;
+            font-weight: bold;
+            color: #2980b9;
+            margin-bottom: 0;
+        }
+
+        .certificate-body h3 {
+            font-size: 26px;
+            color: #e67e22;
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        .course-description {
+            font-size: 18px;
+            color: #7f8c8d;
+            margin-bottom: 25px;
+            font-style: italic;
+        }
+
+        .certificate-footer {
+            font-size: 20px;
+            color: #34495e;
+            margin-top: 30px;
+        }
+
+        .certificate-footer .completion-date {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .signature-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 40px;
+            position: relative;
+            padding: 0 20px;
+        }
+
+        /* Logo and Seal Positioning */
+        .logo {
+            position: absolute;
+            left: 0;
+            bottom: -10px;
+            width: 150px;
+            height: 50px;
+        }
+
+        .seal {
+            position: absolute;
+            right: 0;
+            bottom: -30px;
+            width: 100px;
+            height: 100px;
+        }
+
+        .seal-image {
+            width: 100%;
+            height: 100%;
+        }
+
+        .signature p {
+            margin: 0;
+            font-size: 18px;
+            color: #2c3e50;
+        }
+        /* QR Code Positioning */
+        .qr-code-container {
+            position: absolute;
+            left: 40px;
+            bottom: 10px;
+            background: white;
+            padding: 1px; /* Reduced padding */
+            border-radius: 6px; /* Slightly smaller border radius */
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Reduced shadow for a more compact look */
+        }
+        
+        #qr-code {
+            width: 50px; /* Reduced width */
+            height: 50px; /* Reduced height */
+        }
+        
+        
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.4.4/build/qrcode.min.js"></script>
+</head>
+<body>
+    <!-- Download as PDF Button -->
+    <div class="button-container">
+        <a href="{% url 'course_details_view' course.id %}" class="download-btn" style="display: inline-block; background-color: rgb(21, 168, 187); color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; transition: background-color 0.3s;">
+            Back To Home
+        </a>
+        <button class="download-btn" onclick="downloadPDF()">Download as PDF</button>
+    </div>
+
+    <!-- Certificate Content -->
+    <div class="certificate" id="certificate">
+        <div class="certificate-header">
+            <h1>Certificate of Completion</h1>
+            <p class="org-name">Next-Edge Learning Platform</p>
+        </div>
+
+        <div class="certificate-body">
+            <p>This certifies that</p>
+            <h2 class="student-name">{{ student.first_name }} {{ student.last_name}}</h2>
+            <p>has successfully completed the course</p>
+            <h3 class="course-name">{{ course.name }}</h3>
+            <p class="course-description">{{ course.description }}</p>
+        </div>
+
+        <div class="certificate-footer">
+            <p>Completed on <span class="completion-date">{{ date }}</span></p>
+            <div class="signature-section">
+                <div class="seal">
+                    <img src="{% static 'img/stamp.png' %}" alt="Official Seal" class="seal-image">
+                </div>
+            </div>
+        </div>
+        <div class="qr-code-container">
+            <canvas id="qr-code"></canvas>
+        </div>
+    </div>
+
+    
+    <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // URL you want to encode in the QR code
+            const qrData = "http://127.0.0.1:8000/certificate/14/";
+    
+            // Generate the QR code and display the URL when scanned
+            QRCode.toCanvas(document.getElementById('qr-code'), qrData, {
+                width: 50, // QR Code size
+                margin: 2, // QR Code margin
+                color: {
+                    dark: '#000000', // Dark modules color
+                    light: '#ffffff' // Light modules color
+                }
+            }, function (error) {
+                if (error) {
+                    console.error("Error generating QR code:", error);
+                } else {
+                    console.log("QR code successfully generated with the link:", qrData);
+                }
+            });
+        });
+    </script>
+    
+    
+    <!-- Import html2pdf.js library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
+
+    <!-- JavaScript to Download PDF and Generate QR Code -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+
+    <script>
+        /**
+         * Function to generate a QR code.
+         * @param {string} data - The data to be encoded in the QR code.
+         * @param {string} elementId - The ID of the canvas element to render the QR code into.
+         */
+        function generateQRCode(data, elementId) {
+            // Select the canvas element by its ID
+            var canvasElement = document.getElementById(elementId);
+    
+            // Generate the QR code and render it on the selected canvas
+            QRCode.toCanvas(canvasElement, data, function (error) {
+                if (error) {
+                    console.error("QR Code generation failed: ", error);
+                } else {
+                    console.log("QR Code successfully generated!");
+                }
+            });
+        }
+        document.addEventListener('DOMContentLoaded', function () {
+            // Replace with your dynamic data
+            var qrData = "Student: {{ student.first_name }} {{ student.last_name }}\n"
+                       + "Course: {{ course.name }}\n"
+                       + "Completion Date: {{ date }}";
+        
+            // Generate QR Code in the element with ID 'qr-code'
+            generateQRCode(qrData, 'qr-code');
+        });
+        
+        // Download PDF Function
+        function downloadPDF() {
+            var element = document.getElementById('certificate');
+            html2pdf()
+                .set({
+                    margin: [0.5, 0.5, 0.5, 0.5],
+                    filename: 'certificate_of_completion.pdf',
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: {
+                        scale: 4,
+                        useCORS: true,
+                        logging: true,
+                    },
+                    jsPDF: { unit: 'in', format: 'a4', orientation: 'landscape' }
+                })
+                .from(element)
+                .save();
+        }
+    </script>
+</body>
+</html>

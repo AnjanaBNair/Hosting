@@ -1,0 +1,46 @@
+Selenium Edit Schedule Test - Started at 2025-03-23 20:30:08
+[2025-03-23 20:30:08] Starting the Selenium test for expert login and schedule editing...
+[2025-03-23 20:30:08] Initializing Chrome WebDriver...
+[2025-03-23 20:30:12] Chrome WebDriver initialized successfully.
+[2025-03-23 20:30:12] Navigating to the expert auth page...
+[2025-03-23 20:30:12] Navigated to the expert auth page.
+[2025-03-23 20:30:12] Login form is visible.
+[2025-03-23 20:30:12] Entering login credentials...
+[2025-03-23 20:30:13] Login credentials entered.
+[2025-03-23 20:30:13] Submitting login form...
+[2025-03-23 20:30:13] Login form submitted.
+[2025-03-23 20:30:14] Successfully logged in and redirected to dashboard.
+[2025-03-23 20:30:16] Clicked on the Ongoing Programs tab.
+[2025-03-23 20:30:17] Looking for Edit Schedule buttons...
+[2025-03-23 20:30:17] Found 2 Edit Schedule buttons.
+[2025-03-23 20:30:18] Clicking the button at index 1 (button 2).
+[2025-03-23 20:30:19] Clicked the Edit Schedule button.
+[2025-03-23 20:30:19] Waiting for schedule edit modal...
+[2025-03-23 20:30:19] Schedule edit modal is visible.
+[2025-03-23 20:30:19] Looking for session time input field...
+[2025-03-23 20:30:29] An error occurred: Message: 
+Stacktrace:
+	GetHandleVerifier [0x00E5C7F3+24435]
+	(No symbol) [0x00DE2074]
+	(No symbol) [0x00CB06E3]
+	(No symbol) [0x00CF8B39]
+	(No symbol) [0x00CF8E8B]
+	(No symbol) [0x00D41AC2]
+	(No symbol) [0x00D1D804]
+	(No symbol) [0x00D3F20A]
+	(No symbol) [0x00D1D5B6]
+	(No symbol) [0x00CEC54F]
+	(No symbol) [0x00CED894]
+	GetHandleVerifier [0x011670A3+3213347]
+	GetHandleVerifier [0x0117B0C9+3295305]
+	GetHandleVerifier [0x0117558C+3271948]
+	GetHandleVerifier [0x00EF7360+658144]
+	(No symbol) [0x00DEB27D]
+	(No symbol) [0x00DE8208]
+	(No symbol) [0x00DE83A9]
+	(No symbol) [0x00DDAAC0]
+	BaseThreadInitThunk [0x767E5D49+25]
+	RtlInitializeExceptionChain [0x77B7CE3B+107]
+	RtlGetAppContainerNamedObjectPath [0x77B7CDC1+561]
+
+[2025-03-23 20:30:40] Browser closed. Test completed.

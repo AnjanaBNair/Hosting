@@ -1,0 +1,539 @@
+{% include 'admin/adminindex.html' %}
+
+<style>
+/* Main Container Styles */
+.form-container {
+    margin-left: 250px; /* Adjust based on your sidebar width */
+    padding: 30px;
+    background: linear-gradient(145deg, #ffffff, #f8f9ff);
+    min-height: 100vh;
+    margin-right: 0; /* Ensure no right margin */
+    width: calc(100% - 250px); /* Full width minus sidebar */
+    box-sizing: border-box; /* Include padding in width calculation */
+}
+
+/* Page Header Styles */
+.page-heading {
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+    margin-bottom: 25px;
+}
+
+.main-title {
+    color: #2d3748;
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin: 0;
+    background: linear-gradient(45deg, #4361ee, #3a52d8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.subtitle {
+    color: #718096;
+    margin: 8px 0 0 0;
+    font-size: 1rem;
+}
+
+/* Card Styles */
+.card {
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(67, 97, 238, 0.1);
+}
+
+/* Form Section Styles */
+.form-section {
+    margin-bottom: 30px;
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #f0f0f7;
+}
+
+.section-header i {
+    font-size: 24px;
+    color: #4361ee;
+}
+
+.section-header h3 {
+    color: #2d3748;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+/* Form Group Styles */
+.form-group {
+    margin-bottom: 25px;
+}
+
+label {
+    display: block;
+    color: #4a5568;
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #4361ee;
+    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+    outline: none;
+}
+
+.custom-select {
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px;
+}
+
+/* Error Message Styles */
+.error-message {
+    color: #ef476f;
+    font-size: 0.85rem;
+    margin-top: 5px;
+    display: block;
+}
+
+/* Button Container Styles */
+.btn-container {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #f0f0f7;
+}
+
+.btn {
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.btn i {
+    font-size: 1.2rem;
+}
+
+.btn-primary {
+    background: linear-gradient(45deg, #4361ee, #3a52d8);
+    color: white;
+    box-shadow: 0 4px 15px rgba(67, 97, 238, 0.2);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(67, 97, 238, 0.3);
+}
+
+.btn-secondary {
+    background: #f8f9fa;
+    color: #718096;
+}
+
+.btn-secondary:hover {
+    background: #e2e8f0;
+    transform: translateY(-2px);
+}
+
+/* Image Preview Styles */
+.image-preview {
+    width: 150px;
+    height: 150px;
+    border-radius: 10px;
+    object-fit: cover;
+    margin-top: 10px;
+    border: 3px solid #f0f0f7;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+/* Date and Time Input Styles */
+input[type="date"],
+input[type="time"] {
+    padding-right: 30px;
+}
+
+/* Textarea Styles */
+textarea.form-control {
+    min-height: 120px;
+    resize: vertical;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .form-container {
+        margin-left: 0;
+        padding: 15px;
+    }
+
+    .page-heading {
+        padding: 20px;
+    }
+
+    .main-title {
+        font-size: 1.5rem;
+    }
+
+    .card {
+        padding: 20px;
+    }
+
+    .btn-container {
+        flex-direction: column;
+    }
+
+    .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* Animation Styles */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.form-container {
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* Other Category Input Animation */
+#other_category {
+    transition: all 0.3s ease;
+}
+
+/* Form Validation Styles */
+.form-control:invalid {
+    border-color: #ef476f;
+}
+
+.form-control:invalid:focus {
+    box-shadow: 0 0 0 3px rgba(239, 71, 111, 0.1);
+}
+
+/* Success State Styles */
+.form-control.is-valid {
+    border-color: #06d6a0;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2306d6a0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='20 6 9 17 4 12'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px;
+    padding-right: 40px;
+}
+</style>
+
+<div class="form-container">
+    <div class="page-heading">
+        <h2 class="main-title">Edit Development Program</h2>
+        <p class="subtitle">Update program details and schedule</p>
+    </div>
+
+    <div class="card">
+        <form method="POST" action="{% url 'edit_program' program.id %}" enctype="multipart/form-data" id="programForm" novalidate>
+            {% csrf_token %}
+            
+            <!-- Program Basic Details Section -->
+            <div class="form-section">
+                <div class="section-header">
+                    <i class='bx bx-book-content'></i>
+                    <h3>Program Details</h3>
+                </div>
+                
+                <div class="form-group">
+                    <label for="title">Program Title*</label>
+                    <input type="text" class="form-control" id="title" name="title" 
+                        value="{{ program.title }}" required>
+                    <small class="error-message" id="title-error"></small>
+                </div>
+
+                <div class="form-group">
+                    <label for="category">Program Category*</label>
+                    <select class="form-control custom-select" id="category" name="category" required>
+                        <option value="" disabled>Select Category</option>
+                        <option value="technical" {% if program.category == 'technical' %}selected{% endif %}>Technical Skills</option>
+                        <option value="soft_skills" {% if program.category == 'soft_skills' %}selected{% endif %}>Soft Skills</option>
+                        <option value="leadership" {% if program.category == 'leadership' %}selected{% endif %}>Leadership</option>
+                        <option value="career" {% if program.category == 'career' %}selected{% endif %}>Career Development</option>
+                        <option value="industry" {% if program.category == 'industry' %}selected{% endif %}>Industry Specific</option>
+                        <option value="other" {% if program.category == 'other' %}selected{% endif %}>Other</option>
+                    </select>
+                    <input type="text" class="form-control mt-2" id="other_category" name="other_category" 
+                        value="{{ program.other_category }}" placeholder="Specify other category"
+                        style="display: {% if program.category == 'other' %}block{% else %}none{% endif %};">
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Program Description*</label>
+                    <textarea class="form-control" id="description" name="description" rows="4" required>{{ program.description }}</textarea>
+                </div>
+            </div>
+
+            <!-- Mentor Details Section -->
+            <div class="form-section">
+                <div class="section-header">
+                    <i class='bx bx-user-voice'></i>
+                    <h3>Mentor Details</h3>
+                </div>
+
+                <div class="form-group">
+                    <label for="speaker_name">Mentor Name*</label>
+                    <input type="text" class="form-control" id="speaker_name" name="speaker_name" 
+                        value="{{ program.speaker_name }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="speaker_designation">Designation*</label>
+                    <select class="form-control custom-select" id="speaker_designation" name="speaker_designation" required>
+                        <option value="" disabled>Select Designation</option>
+                        <option value="professor" {% if program.speaker_designation == 'professor' %}selected{% endif %}>Professor</option>
+                        <option value="industry_expert" {% if program.speaker_designation == 'industry_expert' %}selected{% endif %}>Industry Expert</option>
+                        <option value="consultant" {% if program.speaker_designation == 'consultant' %}selected{% endif %}>Consultant</option>
+                        <option value="other" {% if program.speaker_designation == 'other' %}selected{% endif %}>Other</option>
+                    </select>
+                    <input type="text" class="form-control mt-2" id="other_designation" name="other_designation" 
+                        value="{{ program.other_designation }}" placeholder="Specify other designation"
+                        style="display: {% if program.speaker_designation == 'other' %}block{% else %}none{% endif %};">
+                </div>
+
+                <div class="form-group">
+                    <label for="speaker_organization">Organization*</label>
+                    <input type="text" class="form-control" id="speaker_organization" name="speaker_organization" 
+                        value="{{ program.speaker_organization }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="speaker_profile">Mentor Profile</label>
+                    <textarea class="form-control" id="speaker_profile" name="speaker_profile" rows="3">{{ program.speaker_profile }}</textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="speaker_image">Mentor Image</label>
+                    <input type="file" class="form-control" id="speaker_image" name="speaker_image" accept="image/*">
+                    {% if program.speaker_image %}
+                        <img src="{{ program.speaker_image.url }}" alt="Current mentor image" class="image-preview mt-2">
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Schedule Section -->
+            <div class="form-section">
+                <div class="section-header">
+                    <i class='bx bx-calendar'></i>
+                    <h3>Program Schedule</h3>
+                </div>
+
+                <div class="form-group">
+                    <label for="start_date">Start Date*</label>
+                    <input type="date" class="form-control" id="start_date" name="start_date" 
+                        value="{{ program.start_date|date:'Y-m-d' }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="end_date">End Date*</label>
+                    <input type="date" class="form-control" id="end_date" name="end_date" 
+                        value="{{ program.end_date|date:'Y-m-d' }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="session_time">Session Time*</label>
+                    <input type="time" class="form-control" id="session_time" name="session_time" 
+                        value="{{ program.session_time|time:'H:i' }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="duration">Duration (hours)*</label>
+                    <input type="number" class="form-control" id="duration" name="duration" 
+                        value="{{ program.duration }}" min="0.5" step="0.5" required>
+                </div>
+            </div>
+
+            <!-- Platform Details -->
+            <div class="form-section">
+                <div class="section-header">
+                    <i class='bx bx-video'></i>
+                    <h3>Platform Details</h3>
+                </div>
+
+                <div class="form-group">
+                    <label for="meeting_platform">Meeting Platform*</label>
+                    <select class="form-control custom-select" id="meeting_platform" name="meeting_platform" required>
+                        <option value="" disabled>Select Platform</option>
+                        <option value="zoom" {% if program.meeting_platform == 'zoom' %}selected{% endif %}>Zoom</option>
+                        <option value="teams" {% if program.meeting_platform == 'teams' %}selected{% endif %}>Microsoft Teams</option>
+                        <option value="meet" {% if program.meeting_platform == 'meet' %}selected{% endif %}>Google Meet</option>
+                        <option value="other" {% if program.meeting_platform == 'other' %}selected{% endif %}>Other</option>
+                    </select>
+                    <input type="text" class="form-control mt-2" id="other_platform" name="other_platform" 
+                        value="{{ program.other_platform }}" placeholder="Specify other platform"
+                        style="display: {% if program.meeting_platform == 'other' %}block{% else %}none{% endif %};">
+                </div>
+
+                <div class="form-group">
+                    <label for="meeting_link">Meeting Link*</label>
+                    <input type="url" class="form-control" id="meeting_link" name="meeting_link" 
+                        value="{{ program.meeting_link }}" required>
+                </div>
+            </div>
+
+            <!-- Additional Details -->
+            <div class="form-section">
+                <div class="section-header">
+                    <i class='bx bx-detail'></i>
+                    <h3>Additional Details</h3>
+                </div>
+
+                <div class="form-group">
+                    <label for="learning_outcomes">Learning Outcomes</label>
+                    <textarea class="form-control" id="learning_outcomes" name="learning_outcomes" rows="3">{{ program.learning_outcomes }}</textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="prerequisites">Prerequisites</label>
+                    <textarea class="form-control" id="prerequisites" name="prerequisites" rows="3">{{ program.prerequisites }}</textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="max_participants">Maximum Participants</label>
+                    <input type="number" class="form-control" id="max_participants" name="max_participants" 
+                        value="{{ program.max_participants }}" min="1">
+                </div>
+            </div>
+
+            <div class="btn-container">
+                <button type="submit" class="btn btn-primary">
+                    <i class='bx bx-save'></i> Update Program
+                </button>
+                <a href="{% url 'program_list' %}" class="btn btn-secondary">
+                    <i class='bx bx-x-circle'></i> Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+// Handle category change
+document.getElementById('category').addEventListener('change', function() {
+    const otherCategory = document.getElementById('other_category');
+    otherCategory.style.display = this.value === 'other' ? 'block' : 'none';
+    otherCategory.required = this.value === 'other';
+});
+
+// Handle designation change
+document.getElementById('speaker_designation').addEventListener('change', function() {
+    const otherDesignation = document.getElementById('other_designation');
+    otherDesignation.style.display = this.value === 'other' ? 'block' : 'none';
+    otherDesignation.required = this.value === 'other';
+});
+
+// Handle platform change
+document.getElementById('meeting_platform').addEventListener('change', function() {
+    const otherPlatform = document.getElementById('other_platform');
+    otherPlatform.style.display = this.value === 'other' ? 'block' : 'none';
+    otherPlatform.required = this.value === 'other';
+});
+
+// Form validation and submission
+document.getElementById('programForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    let formData = new FormData(this);
+    
+    fetch(this.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            Swal.fire({
+                title: 'Success!',
+                text: data.message,
+                icon: 'success',
+                confirmButtonText: 'OK'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "{% url 'program_list' %}";
+                }
+            });
+        } else {
+            Swal.fire({
+                title: 'Error!',
+                text: data.message,
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+        }
+    })
+    .catch(error => {
+        Swal.fire({
+            title: 'Error!',
+            text: 'Something went wrong. Please try again.',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
+    });
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Add animation class to form groups
+    document.querySelectorAll('.form-group').forEach((group, index) => {
+        group.style.animation = `fadeIn 0.3s ease-out ${index * 0.1}s`;
+    });
+
+    // Image preview functionality
+    const imageInput = document.querySelector('input[type="file"]');
+    const imagePreview = document.querySelector('.image-preview');
+    
+    if (imageInput && imagePreview) {
+        imageInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imagePreview.src = e.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+});
+</script>
+
+

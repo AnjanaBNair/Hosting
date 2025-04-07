@@ -1,0 +1,488 @@
+{% include 'user/studentindex.html' %}
+{% load static %}
+
+<div class="programs-container">
+    <div class="programs-header">
+        <h1>My Development Programs</h1>
+        <div class="filter-controls">
+            <button id="active-btn" class="filter-btn active">Active Programs</button>
+            <button id="past-btn" class="filter-btn">Past Programs</button>
+        </div>
+    </div>
+
+    <div id="active-programs" class="programs-grid">
+        {% if active_programs %}
+            {% for program_data in active_programs %}
+                <div class="program-card">
+                    <div class="program-status">
+                        {% if program_data.program.status == 'upcoming' %}
+                            <span class="status-badge upcoming">Upcoming</span>
+                        {% elif program_data.program.status == 'ongoing' %}
+                            <span class="status-badge ongoing">Ongoing</span>
+                        {% endif %}
+                    </div>
+                    
+                    <h3>{{ program_data.program.title }}</h3>
+                    
+                    <div class="program-meta">
+                        <div class="meta-item">
+                            <i class='bx bx-calendar'></i>
+                            <span>{{ program_data.program.start_date|date:"M d" }} - {{ program_data.program.end_date|date:"M d, Y" }}</span>
+                        </div>
+                        <div class="meta-item">
+                            <i class='bx bx-time'></i>
+                            <span>{{ program_data.program.session_time|time:"g:i A" }}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="program-progress">
+                        <div class="progress-label">
+                            <span>Progress</span>
+                            <span>{{ program_data.attendance_percentage }}%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: {{ program_data.attendance_percentage }}%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="program-actions">
+                        <a href="{% url 'program_detail' program_data.program.id %}" class="action-btn details-btn">
+                            <i class='bx bx-info-circle'></i> Details
+                        </a>
+                        <a href="{% url 'program_attendance' program_data.program.id %}" class="action-btn attendance-btn">
+                            <i class='bx bx-check-square'></i> Attendance
+                        </a>
+                        {% if program_data.can_mark_today %}
+                            <button onclick="markAttendance({{ program_data.program.id }})" class="action-btn mark-btn">
+                                <i class='bx bx-check-circle'></i> Mark Today
+                            </button>
+                        {% endif %}
+                        {% if program_data.attendance_percentage >= 80 and program_data.session_ended %}
+                            <a href="{% url 'program_certificate' program_data.program.id %}" class="action-btn certificate-btn">
+                                <i class='bx bx-certification'></i> Generate Certificate
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="no-programs">
+                <i class='bx bx-calendar-x'></i>
+                <p>You are not enrolled in any active programs</p>
+                <a href="{% url 'baseindex' %}" class="browse-btn">Browse Programs</a>
+            </div>
+        {% endif %}
+    </div>
+
+    <div id="past-programs" class="programs-grid" style="display: none;">
+        {% if past_programs %}
+            {% for program_data in past_programs %}
+                <div class="program-card past">
+                    <div class="program-status">
+                        <span class="status-badge completed">Completed</span>
+                    </div>
+                    
+                    <h3>{{ program_data.program.title }}</h3>
+                    
+                    <div class="program-meta">
+                        <div class="meta-item">
+                            <i class='bx bx-calendar'></i>
+                            <span>{{ program_data.program.start_date|date:"M d" }} - {{ program_data.program.end_date|date:"M d, Y" }}</span>
+                        </div>
+                        <div class="meta-item">
+                            <i class='bx bx-time'></i>
+                            <span>{{ program_data.program.session_time|time:"g:i A" }}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="program-progress">
+                        <div class="progress-label">
+                            <span>Attendance</span>
+                            <span>{{ program_data.attendance_percentage }}%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: {{ program_data.attendance_percentage }}%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="program-actions">
+                        <a href="{% url 'program_detail' program_data.program.id %}" class="action-btn details-btn">
+                            <i class='bx bx-info-circle'></i> Details
+                        </a>
+                        {% if program_data.attendance_percentage >= 80 %}
+                            {% if program_data.session_ended %}
+                                 <a href="{% url 'program_certificate' program_data.program.id %}" class="action-btn certificate-btn">
+                                    <i class='bx bx-certification'></i> Download Certificate
+                                </a> 
+                            {% else %}
+                                <div class="certificate-info">
+                                    <i class='bx bx-time-five'></i>
+                                    <span>Certificate available after session ends</span>
+                                </div>
+                            {% endif %}
+                        {% else %}
+                            <div class="certificate-info">
+                                <i class='bx bx-error-circle'></i>
+                                <span>Certificate requires minimum 80% attendance</span>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="no-programs">
+                <i class='bx bx-history'></i>
+                <p>You have not attended any past programs</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+.programs-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 30px 20px;
+}
+
+.programs-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.programs-header h1 {
+    font-size: 2rem;
+    color: #333;
+    margin: 0;
+}
+
+.filter-controls {
+    display: flex;
+    gap: 10px;
+    background: #f5f7fa;
+    padding: 5px;
+    border-radius: 10px;
+}
+
+.filter-btn {
+    padding: 10px 20px;
+    border: none;
+    background: transparent;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.filter-btn.active {
+    background: #4361ee;
+    color: white;
+}
+
+.programs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 25px;
+}
+
+.program-card {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+    padding: 25px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.program-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.program-card.past {
+    background: #f8f9fa;
+}
+
+.program-status {
+    margin-bottom: 15px;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.status-badge.upcoming {
+    background: #e3f2fd;
+    color: #1976d2;
+}
+
+.status-badge.ongoing {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+.status-badge.completed {
+    background: #ede7f6;
+    color: #5e35b1;
+}
+
+.program-card h3 {
+    font-size: 1.3rem;
+    margin: 0 0 15px 0;
+    color: #333;
+    line-height: 1.4;
+}
+
+.program-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.meta-item i {
+    color: #4361ee;
+    font-size: 1.1rem;
+}
+
+.program-progress {
+    margin-bottom: 20px;
+}
+
+.progress-label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.progress-bar {
+    height: 8px;
+    background: #e9ecef;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(45deg, #4361ee, #3a52d8);
+    border-radius: 4px;
+}
+
+.program-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.action-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.details-btn {
+    background: #f1f3f9;
+    color: #4361ee;
+}
+
+.attendance-btn {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+.mark-btn {
+    background: #ffd700;
+    color: #333;
+    border: none;
+}
+
+.action-btn:hover {
+    transform: translateY(-2px);
+}
+
+.no-programs {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 50px 20px;
+    background: #f8f9fa;
+    border-radius: 15px;
+    text-align: center;
+}
+
+.no-programs i {
+    font-size: 3rem;
+    color: #adb5bd;
+    margin-bottom: 20px;
+}
+
+.no-programs p {
+    font-size: 1.1rem;
+    color: #6c757d;
+    margin-bottom: 20px;
+}
+
+.browse-btn {
+    padding: 10px 25px;
+    background: #4361ee;
+    color: white;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.browse-btn:hover {
+    background: #3a52d8;
+    transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+    .programs-header {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+    }
+    
+    .programs-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.certificate-btn {
+    background: #4CAF50;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: background-color 0.3s;
+}
+
+.certificate-btn:hover {
+    background: #45a049;
+}
+
+.certificate-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #666;
+    font-size: 0.9rem;
+    margin-top: 8px;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const activeBtn = document.getElementById('active-btn');
+    const pastBtn = document.getElementById('past-btn');
+    const activePrograms = document.getElementById('active-programs');
+    const pastPrograms = document.getElementById('past-programs');
+    
+    activeBtn.addEventListener('click', function() {
+        activeBtn.classList.add('active');
+        pastBtn.classList.remove('active');
+        activePrograms.style.display = 'grid';
+        pastPrograms.style.display = 'none';
+    });
+    
+    pastBtn.addEventListener('click', function() {
+        pastBtn.classList.add('active');
+        activeBtn.classList.remove('active');
+        pastPrograms.style.display = 'grid';
+        activePrograms.style.display = 'none';
+    });
+});
+
+function markAttendance(programId) {
+    Swal.fire({
+        title: 'Mark Attendance',
+        text: 'Are you sure you want to mark your attendance for today?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#4361ee',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, mark attendance!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch('/mark-attendance/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({
+                    program_id: programId
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    Swal.fire({
+                        title: 'Success!',
+                        text: data.message,
+                        icon: 'success',
+                        confirmButtonColor: '#4361ee'
+                    }).then(() => {
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: data.message,
+                        icon: 'error',
+                        confirmButtonColor: '#4361ee'
+                    });
+                }
+            });
+        }
+    });
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script> 

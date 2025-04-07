@@ -1,0 +1,361 @@
+{% load static %}
+{% include 'instructor/instructorindex.html' %}
+
+<div class="programs-container">
+    <div class="programs-header">
+        <h1>Development Programs</h1>
+        <div class="category-tabs">
+            {% for category, programs in program_categories.items %}
+            <button class="category-tab" onclick="showCategory('{{ category|slugify }}')">
+                {{ category }}
+            </button>
+            {% endfor %}
+        </div>
+    </div>
+
+    {% for category, statuses in program_categories.items %}
+    <div class="category-section" id="{{ category|slugify }}">
+        <h2 class="category-title">{{ category }}</h2>
+
+        <!-- Ongoing Programs -->
+        {% if statuses.ongoing %}
+        <div class="status-section">
+            <h3 class="status-title">
+                <i class='bx bx-play-circle'></i>
+                Currently Running Programs
+            </h3>
+            <div class="programs-grid">
+                {% for program in statuses.ongoing %}
+                <div class="program-card ongoing">
+                    <div class="program-header">
+                        <span class="status-badge ongoing">Ongoing</span>
+                        <span class="duration-badge">{{ program.duration }} hours</span>
+                    </div>
+                    
+                    <div class="program-body">
+                        <h4>{{ program.title }}</h4>
+                        
+                        <div class="program-details">
+                            <div class="detail-item">
+                                <i class='bx bx-calendar'></i>
+                                <span>{{ program.start_date|date:"M d" }} - {{ program.end_date|date:"M d, Y" }}</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class='bx bx-time'></i>
+                                <span>{{ program.session_time|time:"g:i A" }}</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class='bx bx-user-voice'></i>
+                                <span>{{ program.speaker_name }}</span>
+                                <small>{{ program.speaker_designation }}</small>
+                            </div>
+                            <div class="detail-item">
+                                <i class='bx bx-building'></i>
+                                <span>{{ program.speaker_organization }}</span>
+                            </div>
+                        </div>
+
+                        <p class="program-description">{{ program.description|truncatechars:150 }}</p>
+                        
+                        <div class="learning-outcomes">
+                            <h5>Key Learning Outcomes:</h5>
+                            <ul>
+                                {% for outcome in program.learning_outcomes.splitlines|slice:":3" %}
+                                <li>{{ outcome }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="program-footer">
+                        <a href="{% url 'program_detail' program.id %}" class="details-btn">
+                            View Full Details
+                        </a>
+                        {% if program.meeting_link %}
+                        <a href="{{ program.meeting_link }}" target="_blank" class="meeting-btn">
+                            <i class='bx bx-video'></i> Join Session
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Upcoming Programs -->
+        {% if statuses.upcoming %}
+        <div class="status-section">
+            <h3 class="status-title">
+                <i class='bx bx-calendar-event'></i>
+                Upcoming Programs
+            </h3>
+            <div class="programs-grid">
+                {% for program in statuses.upcoming %}
+                <div class="program-card upcoming">
+                    <div class="program-header">
+                        <span class="status-badge upcoming">Upcoming</span>
+                        <span class="seats-badge">
+                            {{ program.available_seats }} seats left
+                        </span>
+                    </div>
+                    
+                    <div class="program-body">
+                        <h4>{{ program.title }}</h4>
+                        
+                        <div class="program-details">
+                            <div class="detail-item">
+                                <i class='bx bx-calendar'></i>
+                                <span>{{ program.start_date|date:"M d" }} - {{ program.end_date|date:"M d, Y" }}</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class='bx bx-time'></i>
+                                <span>{{ program.session_time|time:"g:i A" }}</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class='bx bx-user-voice'></i>
+                                <span>{{ program.speaker_name }}</span>
+                                <small>{{ program.speaker_designation }}</small>
+                            </div>
+                        </div>
+
+                        <p class="program-description">{{ program.description|truncatechars:150 }}</p>
+                        
+                        <div class="learning-outcomes">
+                            <h5>Key Learning Outcomes:</h5>
+                            <ul>
+                                {% for outcome in program.learning_outcomes.splitlines|slice:":3" %}
+                                <li>{{ outcome }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="program-footer">
+                        <a href="{% url 'program_detail' program.id %}" class="details-btn">
+                            View Full Details
+                        </a>
+                        {% if program.available_seats > 0 %}
+                        <button onclick="registerProgram({{ program.id }})" class="register-btn">
+                            Register Now
+                        </button>
+                        {% else %}
+                        <button class="register-btn disabled" disabled>
+                            Fully Booked
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Past Programs -->
+        {% if statuses.completed %}
+        <div class="status-section">
+            <h3 class="status-title">
+                <i class='bx bx-check-circle'></i>
+                Completed Programs
+            </h3>
+            <div class="programs-grid">
+                {% for program in statuses.completed %}
+                <div class="program-card completed">
+                    <div class="program-header">
+                        <span class="status-badge completed">Completed</span>
+    </div>
+
+                    <div class="program-body">
+                        <h4>{{ program.title }}</h4>
+                        
+                        <div class="program-details">
+                            <div class="detail-item">
+                                <i class='bx bx-calendar'></i>
+                                <span>{{ program.start_date|date:"M d" }} - {{ program.end_date|date:"M d, Y" }}</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class='bx bx-user-voice'></i>
+                                <span>{{ program.speaker_name }}</span>
+                            </div>
+                        </div>
+
+                        <p class="program-description">{{ program.description|truncatechars:150 }}</p>
+                    </div>
+
+                    <div class="program-footer">
+                        <a href="{% url 'program_detail' program.id %}" class="details-btn">
+                            View Details
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+
+<style>
+.programs-container {
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+.programs-header {
+    margin-bottom: 40px;
+    text-align: center;
+}
+
+.programs-header h1 {
+    font-size: 2.5rem;
+    color: #2d3748;
+    margin-bottom: 20px;
+}
+
+.category-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.category-tab {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 25px;
+    background: #e2e8f0;
+    color: #4a5568;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.category-tab:hover,
+.category-tab.active {
+    background: #4361ee;
+    color: white;
+}
+
+.category-section {
+    margin-bottom: 50px;
+    display: none;
+}
+
+.category-section.active {
+    display: block;
+}
+
+.category-title {
+    font-size: 2rem;
+    color: #2d3748;
+    margin-bottom: 30px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.status-section {
+    margin-bottom: 40px;
+}
+
+.status-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.5rem;
+    color: #4a5568;
+    margin-bottom: 20px;
+}
+
+.programs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 30px;
+}
+
+.program-card {
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.program-card:hover {
+    transform: translateY(-5px);
+}
+
+/* Add more styles as needed */
+</style> 
+
+<script>
+function showCategory(categoryId) {
+    // Hide all category sections
+    document.querySelectorAll('.category-section').forEach(section => {
+        section.style.display = 'none';
+    });
+    
+    // Show selected category
+    document.getElementById(categoryId).style.display = 'block';
+    
+    // Update active tab
+    document.querySelectorAll('.category-tab').forEach(tab => {
+        tab.classList.remove('active');
+        if(tab.textContent.trim().toLowerCase() === categoryId.replace('-', ' ')) {
+            tab.classList.add('active');
+        }
+    });
+}
+
+function registerProgram(programId) {
+    // Show confirmation dialog using SweetAlert2
+    Swal.fire({
+        title: 'Register for Program',
+        text: 'Are you sure you want to register for this program?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#4361ee',
+        cancelButtonColor: '#718096',
+        confirmButtonText: 'Yes, register me!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Send registration request
+            fetch(`/register-program/${programId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    Swal.fire({
+                        title: 'Success!',
+                        text: data.message,
+                        icon: 'success'
+                    }).then(() => {
+                        window.location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: data.message,
+                        icon: 'error'
+                    });
+                }
+            });
+        }
+    });
+}
+
+// Show first category by default
+window.onload = function() {
+    const firstCategory = document.querySelector('.category-section');
+    if(firstCategory) {
+        firstCategory.style.display = 'block';
+        const categoryId = firstCategory.id;
+        document.querySelector(`[onclick="showCategory('${categoryId}')"]`).classList.add('active');
+    }
+}
+</script> 

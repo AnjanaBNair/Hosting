@@ -1,0 +1,474 @@
+{% extends 'expert/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="programs-container">
+    <!-- Header Section -->
+    <div class="section-header">
+        <h1><i class="fas fa-chalkboard-teacher"></i> My Programs</h1>
+        <p>Manage all your training programs in one place</p>
+    </div>
+    
+    <!-- Stats Overview -->
+    <div class="stats-overview">
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-calendar-alt"></i></div>
+            <div class="stat-content">
+                <h3>{{ stats.total }}</h3>
+                <p>Total Programs</p>
+            </div>
+        </div>
+        <div class="stat-card active">
+            <div class="stat-icon"><i class="fas fa-play-circle"></i></div>
+            <div class="stat-content">
+                <h3>{{ stats.ongoing }}</h3>
+                <p>Ongoing</p>
+            </div>
+        </div>
+        <div class="stat-card upcoming">
+            <div class="stat-icon"><i class="fas fa-hourglass-start"></i></div>
+            <div class="stat-content">
+                <h3>{{ stats.upcoming }}</h3>
+                <p>Upcoming</p>
+            </div>
+        </div>
+        <div class="stat-card completed">
+            <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+            <div class="stat-content">
+                <h3>{{ stats.past }}</h3>
+                <p>Completed</p>
+            </div>
+        </div>
+        <div class="stat-card cancelled">
+            <div class="stat-icon"><i class="fas fa-ban"></i></div>
+            <div class="stat-content">
+                <h3>{{ stats.cancelled }}</h3>
+                <p>Cancelled</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Program Tabs -->
+    <div class="program-tabs">
+        <ul class="nav nav-tabs" id="programTabs" role="tablist">
+            {% if ongoing_programs %}
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="ongoing-tab" data-bs-toggle="tab" data-bs-target="#ongoing" type="button" role="tab">
+                    <i class="fas fa-play-circle"></i> Ongoing
+                </button>
+            </li>
+            {% endif %}
+            
+            {% if upcoming_programs %}
+            <li class="nav-item" role="presentation">
+                <button class="nav-link {% if not ongoing_programs %}active{% endif %}" id="upcoming-tab" data-bs-toggle="tab" data-bs-target="#upcoming" type="button" role="tab">
+                    <i class="fas fa-hourglass-start"></i> Upcoming
+                </button>
+            </li>
+            {% endif %}
+            
+            {% if past_programs %}
+            <li class="nav-item" role="presentation">
+                <button class="nav-link {% if not ongoing_programs and not upcoming_programs %}active{% endif %}" id="past-tab" data-bs-toggle="tab" data-bs-target="#past" type="button" role="tab">
+                    <i class="fas fa-check-circle"></i> Past
+                </button>
+            </li>
+            {% endif %}
+            
+            {% if cancelled_programs %}
+            <li class="nav-item" role="presentation">
+                <button class="nav-link {% if not ongoing_programs and not upcoming_programs and not past_programs %}active{% endif %}" id="cancelled-tab" data-bs-toggle="tab" data-bs-target="#cancelled" type="button" role="tab">
+                    <i class="fas fa-ban"></i> Cancelled
+                </button>
+            </li>
+            {% endif %}
+        </ul>
+        
+        <div class="tab-content" id="programTabsContent">
+            <!-- Ongoing Programs Tab -->
+            <div class="tab-pane fade {% if ongoing_programs %}show active{% endif %}" id="ongoing" role="tabpanel" aria-labelledby="ongoing-tab">
+                {% if ongoing_programs %}
+                <div class="program-cards">
+                    {% for program_data in ongoing_programs %}
+                        {% include 'expert/program_card.html' with program_data=program_data status='ongoing' %}
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <img src="{% static 'images/empty-ongoing.svg' %}" alt="No ongoing programs" onerror="this.src='https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/icons/calendar2-x.svg'; this.style.width='80px';">
+                    <h3>No Ongoing Programs</h3>
+                    <p>You don't have any ongoing programs at the moment.</p>
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- Upcoming Programs Tab -->
+            <div class="tab-pane fade {% if not ongoing_programs and upcoming_programs %}show active{% endif %}" id="upcoming" role="tabpanel" aria-labelledby="upcoming-tab">
+                {% if upcoming_programs %}
+                <div class="program-cards">
+                    {% for program_data in upcoming_programs %}
+                        {% include 'expert/program_card.html' with program_data=program_data status='upcoming' %}
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <img src="{% static 'images/empty-upcoming.svg' %}" alt="No upcoming programs" onerror="this.src='https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/icons/calendar-plus.svg'; this.style.width='80px';">
+                    <h3>No Upcoming Programs</h3>
+                    <p>You don't have any upcoming programs scheduled.</p>
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- Past Programs Tab -->
+            <div class="tab-pane fade {% if not ongoing_programs and not upcoming_programs and past_programs %}show active{% endif %}" id="past" role="tabpanel" aria-labelledby="past-tab">
+                {% if past_programs %}
+                <div class="program-cards">
+                    {% for program_data in past_programs %}
+                        {% include 'expert/program_card.html' with program_data=program_data status='past' %}
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <img src="{% static 'images/empty-past.svg' %}" alt="No past programs" onerror="this.src='https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/icons/calendar-check.svg'; this.style.width='80px';">
+                    <h3>No Past Programs</h3>
+                    <p>You haven't completed any programs yet.</p>
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- Cancelled Programs Tab -->
+            <div class="tab-pane fade {% if not ongoing_programs and not upcoming_programs and not past_programs and cancelled_programs %}show active{% endif %}" id="cancelled" role="tabpanel" aria-labelledby="cancelled-tab">
+                {% if cancelled_programs %}
+                <div class="program-cards">
+                    {% for program_data in cancelled_programs %}
+                        {% include 'expert/program_card.html' with program_data=program_data status='cancelled' %}
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <img src="{% static 'images/empty-cancelled.svg' %}" alt="No cancelled programs" onerror="this.src='https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/icons/calendar-x.svg'; this.style.width='80px';">
+                    <h3>No Cancelled Programs</h3>
+                    <p>You don't have any cancelled programs.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+:root {
+    --primary-color: #2193b0;
+    --success-color: #2ecc71;
+    --info-color: #3498db;
+    --danger-color: #e74c3c;
+    --dark-color: #2c3e50;
+    --grey-color: #95a5a6;
+    --light-color: #f5f7fa;
+    --transition: all 0.3s ease;
+}
+
+.programs-container {
+    padding: 30px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.section-header {
+    margin-bottom: 30px;
+}
+
+.section-header h1 {
+    font-size: 2rem;
+    color: var(--dark-color);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.section-header h1 i {
+    margin-right: 15px;
+    color: var(--primary-color);
+}
+
+.section-header p {
+    color: var(--grey-color);
+    font-size: 1.1rem;
+}
+
+/* Stats cards with equal width */
+.stats-overview {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    display: flex;
+    align-items: center;
+    transition: var(--transition);
+    height: 100px; /* Fixed height for consistency */
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+}
+
+.stat-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+    font-size: 1.5rem;
+    color: white;
+    background: var(--primary-color);
+    flex-shrink: 0;
+}
+
+.stat-card.active .stat-icon {
+    background: var(--success-color);
+}
+
+.stat-card.upcoming .stat-icon {
+    background: var(--info-color);
+}
+
+.stat-card.completed .stat-icon {
+    background: var(--primary-color);
+}
+
+.stat-card.cancelled .stat-icon {
+    background: var(--danger-color);
+}
+
+.stat-content h3 {
+    font-size: 1.8rem;
+    margin: 0;
+    color: var(--dark-color);
+}
+
+.stat-content p {
+    margin: 0;
+    color: var(--grey-color);
+}
+
+.program-tabs {
+    margin-bottom: 30px;
+}
+
+.nav-tabs {
+    border-bottom: 2px solid var(--light-color);
+}
+
+.nav-tabs .nav-link {
+    border: none;
+    color: var(--grey-color);
+    font-weight: 600;
+    padding: 12px 20px;
+    border-radius: 0;
+    transition: var(--transition);
+}
+
+.nav-tabs .nav-link:hover {
+    color: var(--primary-color);
+}
+
+.nav-tabs .nav-link.active {
+    color: var(--primary-color);
+    border-bottom: 3px solid var(--primary-color);
+}
+
+/* Fixed width cards with proper spacing */
+.program-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+    gap: 30px;
+}
+
+/* Ensure each card has a minimum height */
+.program-card {
+    min-height: 350px;
+    display: flex;
+    flex-direction: column;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.empty-state img {
+    max-width: 200px;
+    margin-bottom: 20px;
+    opacity: 0.7;
+}
+
+.empty-state h3 {
+    color: var(--dark-color);
+    margin-bottom: 10px;
+}
+
+.empty-state p {
+    color: var(--grey-color);
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+    .stats-overview {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .program-cards {
+        grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+    }
+}
+
+@media (max-width: 992px) {
+    .program-cards {
+        grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .programs-container {
+        padding: 20px 15px;
+    }
+    
+    .stats-overview {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .program-cards {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 576px) {
+    .stats-overview {
+        grid-template-columns: 1fr;
+    }
+    
+    .stat-card {
+        height: auto;
+        padding: 15px;
+    }
+    
+    .section-header h1 {
+        font-size: 1.5rem;
+    }
+}
+</style>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // Function to manage attendance
+    function manageAttendance(programId) {
+        // Redirect to the attendance management page
+        window.location.href = `/expert/program/${programId}/attendance/`;
+    }
+    
+    // Function to manage materials
+    function manageMaterials(programId) {
+        Swal.fire({
+            title: 'Manage Program Materials',
+            text: 'This feature will be available soon!',
+            icon: 'info',
+            confirmButtonText: 'OK'
+        });
+    }
+    
+    // Function to view materials
+    function viewMaterials(programId) {
+        Swal.fire({
+            title: 'Program Materials',
+            text: 'This feature will be available soon!',
+            icon: 'info',
+            confirmButtonText: 'OK'
+        });
+    }
+    
+    // Function to update schedule
+    function updateSchedule(programId) {
+        Swal.fire({
+            title: 'Update Schedule',
+            text: 'This feature will be available soon!',
+            icon: 'info',
+            confirmButtonText: 'OK'
+        });
+    }
+    
+    // Function to cancel program
+    function cancelProgram(programId) {
+        Swal.fire({
+            title: 'Cancel Program',
+            text: 'Are you sure you want to cancel this program?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, cancel it!',
+            cancelButtonText: 'No, keep it'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire({
+                    title: 'Cancelled!',
+                    text: 'This feature will be implemented soon.',
+                    icon: 'success'
+                });
+            }
+        });
+    }
+    
+    // Function to view attendance report
+    function viewAttendanceReport(programId) {
+        Swal.fire({
+            title: 'Attendance Report',
+            text: 'This feature will be available soon!',
+            icon: 'info',
+            confirmButtonText: 'OK'
+        });
+    }
+    
+    // Function to reactivate program
+    function reactivateProgram(programId) {
+        Swal.fire({
+            title: 'Reactivate Program',
+            text: 'Are you sure you want to reactivate this program?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, reactivate it!',
+            cancelButtonText: 'No, keep it cancelled'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire({
+                    title: 'Reactivated!',
+                    text: 'This feature will be implemented soon.',
+                    icon: 'success'
+                });
+            }
+        });
+    }
+    
+    // Initialize any animations or effects
+    document.addEventListener('DOMContentLoaded', function() {
+        // Animate progress bars on load
+        const progressBars = document.querySelectorAll('.progress-bar');
+        progressBars.forEach(bar => {
+            const width = bar.style.width;
+            bar.style.width = '0%';
+            setTimeout(() => {
+                bar.style.width = width;
+            }, 300);
+        });
+    });
+</script>
+{% endblock %} 

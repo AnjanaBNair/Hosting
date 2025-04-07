@@ -1,0 +1,92 @@
+{% extends 'admin/base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>Program Approval</h2>
+    
+    {% for program in pending_programs %}
+    <div class="card mb-3">
+        <div class="card-header">
+            <h5>{{ program.title }}</h5>
+            <span class="badge bg-warning">Pending Approval</span>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-8">
+                    <p><strong>Expert:</strong> {{ program.speaker_name }}</p>
+                    <p><strong>Organization:</strong> {{ program.speaker_organization }}</p>
+                    <p><strong>Duration:</strong> {{ program.duration }} hours</p>
+                    <p><strong>Dates:</strong> {{ program.start_date }} to {{ program.end_date }}</p>
+                </div>
+                <div class="col-md-4">
+                    <button class="btn btn-success mb-2 w-100" onclick="approveProgram({{ program.id }})">
+                        Approve
+                    </button>
+                    <button class="btn btn-danger w-100" onclick="rejectProgram({{ program.id }})">
+                        Reject
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <p class="text-center">No programs pending approval</p>
+    {% endfor %}
+</div>
+
+<script>
+function approveProgram(programId) {
+    Swal.fire({
+        title: 'Approve Program?',
+        text: 'This will make the program visible to participants',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Approve'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch(`/admin/approve-program/${programId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    location.reload();
+                }
+            });
+        }
+    });
+}
+
+function rejectProgram(programId) {
+    Swal.fire({
+        title: 'Reject Program',
+        input: 'textarea',
+        inputLabel: 'Reason for rejection',
+        inputPlaceholder: 'Enter reason...',
+        showCancelButton: true,
+        confirmButtonText: 'Reject'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch(`/admin/reject-program/${programId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({
+                    reason: result.value
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    location.reload();
+                }
+            });
+        }
+    });
+}
+</script>
+{% endblock %} 

@@ -1,0 +1,36 @@
+<div class="program-info">
+    <div class="date-badge">
+        <span class="month">{{ program.start_date|date:"M" }}</span>
+        <span class="day">{{ program.start_date|date:"d" }}</span>
+    </div>
+    <div class="program-details">
+        <h4>{{ program.title }}</h4>
+        <div class="program-meta">
+            <span class="category">
+                <i class='bx bx-bookmark'></i>
+                {{ program.category }}
+            </span>
+            <span class="duration">
+                <i class='bx bx-time'></i>
+                {{ program.session_time|time:"g:i A" }}
+            </span>
+            <span class="status {{ status }}">
+                <i class='bx bx-info-circle'></i>
+                {{ status|title }}
+            </span>
+        </div>
+    </div>
+</div>
+<div class="program-speaker">
+    <div class="speaker-image">
+        {% if program.speaker_image %}
+            <img src="{{ program.speaker_image.url }}" alt="{{ program.speaker_name }}">
+        {% else %}
+            <i class='bx bx-user-circle'></i>
+        {% endif %}
+    </div>
+    <div class="speaker-info">
+        <h5>{{ program.speaker_name }}</h5>
+        <p>{{ program.speaker_designation }}</p>
+    </div>
+</div> 

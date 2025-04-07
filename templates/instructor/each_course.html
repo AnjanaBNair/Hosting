@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Next-Edge</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.0/sweetalert2.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.dataTables.min.css">
+    <style>
+        .container {
+            width: 800px;
+            margin-right: -300px;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        h1 {
+            color: #0a2e53;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+            text-align: center;
+            margin-left: 50px;
+        }
+
+        h2 {
+            color: #34495e;
+            font-size: 1.8em;
+            margin: -20px 0 10px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 5px;
+            display: inline-block;
+        }
+
+        .section {
+            width: 300px;
+            margin-left: 200px;
+        }
+
+        .details-section {
+            margin-bottom: 20px;
+            border-radius: 8px;
+            padding-left: 20px;
+            padding-bottom: 10px;
+            width: 900px;
+            margin-left: -150px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            background-color: #ecf0f1;
+
+        }
+
+        .details-section p {
+            margin: 10px 0;
+        }
+
+        .details-section strong {
+            color: #2c3e50;
+        }
+
+        .module {
+            margin-bottom: 15px;
+            background-color: #f9f9f9;
+            /* Update to your desired color */
+            border-radius: 5px;
+            width: 820px;
+            padding: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            color: #333;
+            /* Text color for better readability */
+        }
+
+        .module-header {
+            font-weight: bold;
+            cursor: pointer;
+            background-color: #3498db;
+            /* Background color for the header */
+            color: white;
+            /* Text color for the header */
+            padding: 10px;
+            width: 800px;
+            border-radius: 5px;
+            margin-bottom: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .module-header:hover {
+            background-color: #2980b9;
+            /* Hover color for the header */
+        }
+
+        .module-content {
+            display: none;
+            padding-left: 20px;
+            border-left: 2px solid #3498db;
+            /* Border color */
+            background-color: #f9f9f9;
+            /* Background color for the content */
+            color: #333;
+            /* Text color for the content */
+        }
+
+
+        .module-content ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .module-content ul li {
+            padding: 5px 0;
+        }
+
+        a {
+            text-decoration: none;
+            /* Remove default underline from links */
+        }
+
+        .details-section-buttons {
+            display: flex;
+            gap: 10px;
+            /* Space between buttons */
+            flex-wrap: wrap;
+            justify-content: flex-start;
+        }
+
+        .details-section .btn {
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #052e50;
+            border: none;
+            border-radius: 5px;
+            text-align: center;
+            transition: background-color 0.3s ease;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .details-section .btn i {
+            margin-right: 8px;
+            /* Space between icon and text */
+        }
+
+        .details-section .btn-primary {
+            background-color: #2a4c70;
+        }
+
+        .details-section .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        .details-section .btn-danger {
+            background-color: #dc3545;
+        }
+
+        .details-section .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+        a {
+            text-decoration: none;
+            /* Remove default underline from links */
+        }
+
+        a .btn1 {
+            display: inline-block;
+            margin-left: 800px;
+            padding: 8px 8px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #052e50;
+            border: none;
+            width: 100px;
+            margin-left: 670px;
+            border-radius: 5px;
+            text-decoration: none;
+            /* Remove default underline from links */
+            text-align: center;
+            transition: background-color 0.3s ease;
+        }
+
+        .topic-container {
+            background-color: #f9f9f9;
+            /* Light background for the container */
+            border-radius: 8px;
+            /* Rounded corners for container */
+            padding: 15px;
+            /* Padding inside the container */
+            margin-bottom: 20px;
+            /* Space between each topic block */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            /* Add a subtle shadow */
+        }
+
+        .topic-header {
+            font-size: 18px;
+            /* Slightly larger font for topic */
+            color: #007bff;
+            /* Blue color for the topic title */
+            font-weight: bold;
+            /* Bold for the topic title */
+            margin-bottom: 10px;
+            /* Space between topic title and description */
+        }
+
+        .topic-description {
+            font-size: 16px;
+            /* Normal size for description */
+            color: #555;
+            /* Subtle grey color for description */
+            margin-bottom: 10px;
+            /* Space between description and content */
+        }
+
+        .topic-content {
+            font-size: 16px;
+            /* Normal size for content */
+            color: #333;
+            /* Darker color for content */
+            background-color: #f2f2f2;
+            /* Light grey background for content */
+            padding: 10px;
+            /* Padding around content */
+            border-radius: 5px;
+            /* Rounded corners for content box */
+            border-left: 4px solid #007bff;
+            /* Highlighted left border */
+        }
+
+        .topic-container:hover {
+            background-color: #e6e6e6;
+            /* Darker background on hover */
+        }
+    </style>
+</head>
+
+<body>
+    {% load static %}
+    {% include 'instructor/instructorindex.html' %}
+    <div class="container">
+        <h1><b>Course Details</b>
+        </h1>
+        <h6 style="margin-left:700px;margin-top:-20px;color:#0056b3;font-weight:bold;">Current Course Status :
+            {% if course.approval == 0 %}
+            <span style="color: rgb(255, 230, 0); font-weight: bold;">Pending</span>
+            {% elif course.approval == 1 and course.active == 0 and course.status == 0 %}
+            <span style="color: rgb(0, 119, 255); font-weight: bold;">Requested</span>
+            {% elif course.active %}
+            <span style="color: green; font-weight: bold;">Approved</span>
+            {% elif course.status == 1 %}
+            <span style="color: red; font-weight: bold;">Rejected</span>
+            {% endif %}
+        </h6>
+        <br>
+
+        <div class="section">
+
+
+            {% if department %}
+            <div class="details-section"><br>
+                {% if course.lock == 0 %}
+                <div class="details-section-buttons">
+                    <a href="{% url 'add_module' course.id %}">
+                        <button class="btn btn-primary edit-btn">
+                            <i class="fas fa-eye"></i> Topic Details
+                        </button>
+                    </a>
+                    {% if quiz %}
+                    <a href="{% url 'add_quiz' course.id %}">
+                        <button class="btn btn-primary edit-btn">
+                            <i class="fas fa-eye"></i> Quiz Details
+                        </button>
+                    </a>
+                    {% else %}
+                    <a href="{% url 'add_quiz' course.id %}">
+                        <button class="btn btn-primary edit-btn">
+                            <i class="fas fa-eye"></i> Add Quiz
+                        </button>
+                    </a>
+                    {% endif %}
+                    <a href="{% url 'delete_course' course.id %}" class="deactivate-btn" data-course-id="{{ course.id }}" onclick="event.preventDefault(); confirmDeleteCourse('{{ course.id }}')">
+                        <button class="btn btn-danger">
+                            <i class="fas fa-user-times"></i> Delete Course
+                        </button>
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+            <script>
+                function confirmDeleteCourse(courseId) {
+                    // Trigger the SweetAlert confirmation
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: "You won't be able to revert this action!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#3085d6',
+                        confirmButtonText: 'Yes, delete it!'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Redirect to delete course URL after confirmation
+                            window.location.href = '/delete_course/' + courseId + '/'; // Replace with your delete course URL pattern
+                        }
+                    })
+                }
+            </script>
+            
+            {% else %}
+
+            <div class="section">
+                <b style="color:red;margin-left:-300px;">The Main Course is Unavilable and no action can be performed on
+                    this.</b><br><br>
+            </div>
+
+            {% endif %}
+
+
+
+
+            <div class="details-section"
+                style="margin-bottom: 20px; padding: 20px; background-color: #ecf0f1; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                <div style="font-size: 1.8em; color: #34495e; margin-bottom: 20px;">
+                    <h2>Course</h2>
+                </div>
+                <div style="display: flex; align-items: flex-start;">
+                    <img src="{{ course.content.url }}" alt="Course Image"
+                        style="border-radius: 8px; max-width: 300px; height: auto; margin-right: 20px;">
+                    <div style="flex: 1;">
+                        <p><strong>Name:</strong> {{ course.name }}</p>
+                        <p><strong>Description:</strong> {{ course.description }}</p>
+                        <p><strong>Mode:</strong> {{ course.mode }}</p>
+                        <p><strong>Payment:</strong> {{ course.payment }}</p>
+                        {% if course.payment == 'paid' %}
+                        <p><strong>Amount:</strong> ₹ {{ course.amount }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="details-section">
+                <h2>Modules</h2>
+                {% for module in modules %}
+                <div class="module">
+                    <div class="module-header" onclick="toggleModuleContent(this)">
+                        <i class="fas fa-plus"></i> Module {{ forloop.counter }} : {{ module.name }}
+                    </div>
+                    <div class="module-content">
+                        <ul>
+                            {% for topic in topics %}
+                            {% if topic.module == module %}
+                            <div class="topic-container">
+                                <div class="topic-header">
+                                    <b>Topic {{ forloop.counter }}:</b> {{ topic.name }}
+                                </div>
+                                <div class="topic-description">
+                                    {{ topic.description }}
+                                </div>
+                                <div class="topic-content">
+                                    <b>Content:</b>
+                                    <div class="video-container"
+                                        style="display: flex; align-items: center; margin-top: 10px;">
+                                        <video controls
+                                            style="max-width: 200px; max-height: 150px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);"
+                                            id="video-{{ topic.id }}">
+                                            <source src="{{ topic.content.url }}" type="video/mp4">
+                                            Your browser does not support the video tag.
+                                        </video>
+                                        <div class="video-info" style="margin-left: 15px;">
+                                            <p style="font-weight: bold; color: #333;">Video Duration: <span
+                                                    id="video-duration-{{ topic.id }}">--:--</span></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            </li>
+                            <hr style="height: 2px; background-color: #b9cacf; border: none; width: 100%;">
+
+                            <script>
+                                document.addEventListener('DOMContentLoaded', function () {
+                                    var videos = document.querySelectorAll('.video-container video'); // Select all video elements
+
+                                    videos.forEach(function (video) {
+                                        video.addEventListener('loadedmetadata', function () {
+                                            var duration = video.duration;
+                                            var minutes = Math.floor(duration / 60);
+                                            var seconds = Math.floor(duration % 60);
+                                            var durationText = minutes + ":" + (seconds < 10 ? '0' : '') + seconds;
+
+                                            // Find the corresponding duration element by ID and update its text
+                                            var videoId = video.getAttribute('id').replace('video-', 'video-duration-');
+                                            var durationElement = document.getElementById(videoId);
+                                            if (durationElement) {
+                                                durationElement.textContent = durationText;
+                                            }
+                                        });
+                                    });
+                                });
+                            </script>
+
+
+
+                            {% endif %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="details-section">
+                <h2>Quiz</h2>
+
+                <div class="module">
+                    <div class="module-header" onclick="toggleModuleContent(this)">
+                        <i class="fas fa-plus"></i>Course Completion Test
+                    </div>
+                    <div class="module-content">
+                        <ul>
+                            {% if quiz %}
+                            {% for question in quiz %}
+                            <li><b>Question {{ forloop.counter }}:</b> {{ question.question }}</li>
+                            <li><b>Options:</b><br> A. {{ question.option1 }}<br>B. {{ question.option2 }}<br>C. {{ question.option3 }}</li>
+                            <li><b>Correct Answer:</b> {{ question.correct_answer|upper }}</li><br>
+                            {% endfor %}
+                            {% else %}
+                            <li>No quiz questions available.</li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <a href="{% url 'my_courses' %}"><button class="btn1"><i class='bx bx-arrow-back'></i> Back</button></a>
+        </div>
+    </div>
+
+
+
+    <script>
+        function toggleModuleContent(element) {
+            const content = element.nextElementSibling;
+            const icon = element.querySelector('i');
+
+            if (content.style.display === 'none' || content.style.display === '') {
+                content.style.display = 'block';
+                icon.classList.remove('fa-plus');
+                icon.classList.add('fa-minus');
+            } else {
+                content.style.display = 'none';
+                icon.classList.remove('fa-minus');
+                icon.classList.add('fa-plus');
+            }
+        }
+    </script>
+</body>
+
+</html>

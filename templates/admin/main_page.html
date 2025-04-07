@@ -1,0 +1,1615 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="Content-Language" content="en">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Next-Edge</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="This is an example dashboard created using build-in elements and components.">
+    <meta name="msapplication-tap-highlight" content="no">
+    <link href="https://demo.dashboardpack.com/architectui-html-free/main.css" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <style>
+        .scrollbar-sidebar {
+            overflow-y: auto; /* Enables vertical scrolling */
+            max-height: 100vh; /* Limits the sidebar height to the viewport height */
+        }
+        
+        .app-sidebar__inner {
+            padding: 10px; /* Optional: Adds some padding inside the sidebar */
+        }
+        
+        .vertical-nav-menu {
+            margin: 0;
+            padding: 0;
+            list-style-type: none; /* Removes default list styling */
+        }
+        
+        .vertical-nav-menu li {
+            margin-bottom: 5px; /* Optional: Adds some space between menu items */
+        }
+        
+        /* Customize scrollbar appearance if desired */
+        .scrollbar-sidebar::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .scrollbar-sidebar::-webkit-scrollbar-thumb {
+            background-color: #888;
+            border-radius: 4px;
+        }
+        
+        .scrollbar-sidebar::-webkit-scrollbar-thumb:hover {
+            background-color: #555;
+        }
+        .app-header__logo {
+            height: auto;
+            width: auto;
+            background: none;
+            font-size: 24px;
+            font-weight: bold;
+            color: #790909;
+            /* Adjust the color as needed */
+            line-height: 24px;
+            /* Match the height of the previous image */
+        }
+        .vertical-nav-menu li a {
+            display: flex;
+            align-items: center;
+            padding: 0 1.5rem 0 15px;
+        }
+
+        .vertical-nav-menu li a .bx {
+            margin-right: 10px;
+        }
+        .profile-container {
+            display: flex;
+            align-items: center;
+        }
+        
+        .profile-picture {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .username {
+            color: rgb(107, 184, 214);
+            font-weight: bold;
+            margin-left: 10px; /* Adjust the spacing between the image and the username */
+        }
+      .app-main__inner{
+        margin-top :-80px;
+}
+.col-md-12 {
+    margin-left: 300px;
+    width:760px;
+    margin-top:20px;
+}
+.dashboard-section {
+    padding: 30px;
+}
+
+/* Style cards for the summary */
+.card {
+    background: #f7f7f7;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.card h3 {
+    font-size: 24px;
+    margin: 0;
+    color: #007bff;
+}
+
+.card p {
+    margin: 5px 0;
+    font-size: 18px;
+    font-weight:bold;
+    color:#007bff;
+}
+
+.card i {
+    font-size: 30px;
+    color: #007bff;
+}
+
+/* Flexbox layout for cards */
+.cards-row {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.card {
+    flex: 1 1 calc(33.333% - 20px);
+    margin: 10px;
+}
+
+/* Chart section */
+.chart-container {
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.chart-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #007bff;
+}
+
+.program-section {
+    margin-top: 30px;
+    padding: 20px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.programs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.program-card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 25px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    position: relative;
+    overflow: hidden;
+}
+
+.program-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(to right, #4361ee, #ef476f);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.program-card:hover::before {
+    opacity: 1;
+}
+
+.program-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+}
+
+.program-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.program-header h4 {
+    color: #2d3748;
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+}
+
+.badge-success {
+    background-color: #06d6a0;
+    color: white;
+}
+
+.badge-secondary {
+    background-color: #8d99ae;
+    color: white;
+}
+
+.mentor-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 15px;
+    background: rgba(67, 97, 238, 0.05);
+    border-radius: 12px;
+}
+
+.mentor-image {
+    width: 65px;
+    height: 65px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 15px;
+    border: 3px solid white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.mentor-details p {
+    margin: 6px 0;
+    color: #4a5568;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+}
+
+.mentor-details i {
+    margin-right: 8px;
+    font-size: 1.2rem;
+    color: #4361ee;
+    width: 24px;
+}
+
+.program-footer {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.btn-edit, .btn-delete {
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    border: none;
+    flex: 1;
+    justify-content: center;
+    text-decoration: none;
+}
+
+.btn-edit {
+    background-color: #4361ee;
+    color: white;
+    box-shadow: 0 2px 4px rgba(67, 97, 238, 0.3);
+}
+
+.btn-edit:hover {
+    background-color: #3a52d8;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(67, 97, 238, 0.4);
+    color: white;
+    text-decoration: none;
+}
+
+.btn-delete {
+    background-color: #ef476f;
+    color: white;
+    box-shadow: 0 2px 4px rgba(239, 71, 111, 0.3);
+}
+
+.btn-delete:hover {
+    background-color: #d63d63;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(239, 71, 111, 0.4);
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    margin: 35px 0 25px;
+    padding: 15px 20px;
+    border-radius: 8px;
+    background: #f8f9fa;
+    border-left: 5px solid #3498db;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.section-header i {
+    font-size: 26px;
+    color: #3498db;
+    margin-right: 15px;
+}
+.section-header h3 {
+    color: #2c3e50;
+    font-size: 22px;
+    font-weight: 600;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Page heading styling */
+.page-heading {
+    margin-bottom: 50px;
+    text-align: center;
+    padding: 20px;
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    border-radius: 12px;
+    color: white;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+.main-title {
+    color: white;
+    font-size: 34px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.subtitle {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 18px;
+    font-weight: 400;
+}
+
+/* Add this new style for form sections */
+.form-section {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.no-programs-message {
+    text-align: center;
+    padding: 40px;
+    background: linear-gradient(45deg, rgba(67, 97, 238, 0.05), rgba(239, 71, 111, 0.05));
+    border-radius: 16px;
+    grid-column: 1 / -1;
+}
+
+.no-programs-message i {
+    font-size: 48px;
+    color: #4361ee;
+    margin-bottom: 15px;
+    display: block;
+}
+
+.no-programs-message p {
+    color: #4a5568;
+    font-size: 1.1rem;
+    margin: 0;
+    font-weight: 500;
+}
+
+.debug-info {
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+}
+
+/* Program Section Styles */
+.program-section {
+    background: #fff;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-top: 30px;
+}
+
+.section-title {
+    color: #2c3e50;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 0;
+}
+
+.programs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 25px;
+    margin-top: 25px;
+}
+
+.program-card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: 1px solid #eef0f7;
+}
+
+.program-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.program-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eef0f7;
+}
+
+.program-header h4 {
+    color: #2c3e50;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.badge-success {
+    background-color: #e6f4ea;
+    color: #1e7e34;
+}
+
+.badge-secondary {
+    background-color: #e9ecef;
+    color: #6c757d;
+}
+
+.mentor-info {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 20px;
+}
+
+.mentor-image {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 15px;
+    border: 3px solid #eef0f7;
+}
+
+.mentor-details {
+    flex: 1;
+}
+
+.mentor-details p {
+    margin: 8px 0;
+    color: #6c757d;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+}
+
+.mentor-details i {
+    margin-right: 8px;
+    font-size: 1.1rem;
+    color: #007bff;
+    width: 20px;
+}
+
+.program-footer {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #eef0f7;
+}
+
+.btn {
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
+}
+
+.btn i {
+    font-size: 1.1rem;
+}
+
+.no-programs-message {
+    text-align: center;
+    padding: 40px 20px;
+    background: #f8f9fa;
+    border-radius: 12px;
+    grid-column: 1 / -1;
+}
+
+.no-programs-message i {
+    font-size: 48px;
+    color: #adb5bd;
+    margin-bottom: 15px;
+    display: block;
+}
+
+.no-programs-message p {
+    color: #6c757d;
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+/* Create Program Button */
+.btn-create {
+    background-color: #28a745;
+    border-color: #28a745;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-create:hover {
+    background-color: #218838;
+    border-color: #1e7e34;
+    color: white;
+    text-decoration: none;
+}
+
+.btn-create i {
+    font-size: 1.2rem;
+}
+
+/* Debug Info (can be removed in production) */
+.debug-info {
+    background: #f8f9fa;
+    padding: 10px 15px;
+    border-radius: 8px;
+    color: #6c757d;
+    font-size: 0.9rem;
+    margin: 10px 0;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .programs-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .program-card {
+        margin: 0 0 20px 0;
+    }
+
+    .mentor-image {
+        width: 50px;
+        height: 50px;
+    }
+
+    .program-header h4 {
+        font-size: 1.1rem;
+    }
+}
+
+.program-status {
+    width: 100%;
+    text-align: center;
+    padding: 8px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.program-status.started {
+    background-color: rgba(67, 97, 238, 0.1);
+    color: #4361ee;
+}
+
+.program-status i {
+    font-size: 1.1rem;
+}
+
+/* Update card status based on program state */
+.program-card[data-status="started"] {
+    border-left: 4px solid #4361ee;
+}
+
+.program-card[data-status="upcoming"] {
+    border-left: 4px solid #06d6a0;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.button-group {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.btn-view-all {
+    background: linear-gradient(45deg, #06d6a0, #1b9aaa);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.btn-view-all:hover {
+    background: linear-gradient(45deg, #05c091, #188a99);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(6, 214, 160, 0.2);
+    color: white;
+    text-decoration: none;
+}
+
+.btn-view-all i {
+    font-size: 1.2rem;
+}
+
+@media (max-width: 768px) {
+    .section-header {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .button-group {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .btn-create, .btn-view-all {
+        padding: 8px 16px;
+        font-size: 0.9rem;
+    }
+}
+
+.program-approval-card {
+    margin-bottom: 20px;
+}
+
+.program-approval-card .card {
+    border: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.speaker-image {
+    max-width: 100%;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.program-details p {
+    margin-bottom: 0.5rem;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.action-buttons .btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.badge {
+    padding: 8px 12px;
+    font-weight: 500;
+}
+
+.pending-programs-section {
+    background: #fff;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.section-header {
+    margin-bottom: 20px;
+}
+
+.section-header h3 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #2d3748;
+}
+
+.section-header .badge {
+    font-size: 0.9rem;
+    padding: 5px 10px;
+}
+
+.pending-programs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 20px;
+}
+
+.pending-program-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    border: 1px solid #e2e8f0;
+    transition: transform 0.2s;
+}
+
+.pending-program-card:hover {
+    transform: translateY(-2px);
+}
+
+.speaker-thumbnail {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 15px;
+}
+
+.program-title {
+    flex-grow: 1;
+}
+
+.program-title h4 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #2d3748;
+}
+
+.program-details-container {
+    padding: 20px;
+}
+
+.details-section {
+    margin-bottom: 25px;
+}
+
+.details-section h6 {
+    color: #4a5568;
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+
+.detail-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.detail-label {
+    font-size: 0.9rem;
+    color: #718096;
+}
+
+.detail-value {
+    font-weight: 500;
+    color: #2d3748;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.no-pending-programs {
+    text-align: center;
+    padding: 40px;
+    color: #718096;
+}
+
+.no-pending-programs i {
+    font-size: 48px;
+    margin-bottom: 10px;
+    color: #48bb78;
+}
+
+.pending-programs-section {
+    background: #fff;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.section-header {
+    margin-bottom: 20px;
+}
+
+.section-header h3 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #2d3748;
+}
+
+.section-header .badge {
+    font-size: 0.9rem;
+    padding: 5px 10px;
+}
+
+.pending-programs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 20px;
+}
+
+.pending-program-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    border: 1px solid #e2e8f0;
+    transition: transform 0.2s;
+}
+
+.pending-program-card:hover {
+    transform: translateY(-2px);
+}
+
+.speaker-thumbnail {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 15px;
+}
+
+.program-title h4 {
+    font-size: 1.1rem;
+    margin-bottom: 5px;
+    color: #2d3748;
+}
+
+.badge {
+    font-size: 0.8rem;
+    padding: 5px 10px;
+    border-radius: 20px;
+}
+
+.pending-program-card {
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.pending-program-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.program-preview {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.program-preview p {
+    margin: 5px 0;
+    color: #4a5568;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.program-preview i {
+    color: #3182ce;
+    font-size: 1.1rem;
+}
+    </style>
+    <script type="text/javascript" >
+   function preventBack(){window.history.forward();}
+    setTimeout("preventBack()", 0);
+    window.onunload=function(){null};
+</script>
+</head>
+
+<body>
+    <div class="app-container app-theme-white body-tabs-shadow fixed-sidebar fixed-header">
+        <div class="app-header header-shadow">
+            <div class="app-header__logo">
+                <div>Next-Edge &nbsp; &nbsp; &nbsp; </div>
+                <div class="header__pane ml-auto">
+                    <div>
+                        <button type="button" class="hamburger close-sidebar-btn hamburger--elastic"
+                            data-class="closed-sidebar">
+                            <span class="hamburger-box">
+                                <span class="hamburger-inner"></span>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- <div class="app-header__mobile-menu">
+                <div>
+                    <button type="button" class="hamburger hamburger--elastic mobile-toggle-nav">
+                        <span class="hamburger-box">
+                            <span class="hamburger-inner"></span>
+                        </span>
+                    </button>
+                </div>
+            </div> -->
+            <div class="app-header__content">
+                <div class="app-header-left">
+                    <div class="search-wrapper">
+
+                        <button class="close"></button>
+                    </div>
+                </div>
+                <div class="app-header-right">
+                    <div class="header-btn-lg pr-0">
+                        <div class="widget-content p-0">
+                            <div class="widget-content-wrapper">
+                                <h4 class="username" style="margin-right:350px;">Next-Edge Management System</h4>
+                                <div class="profile-container">
+                                     <h6 class="app-sidebar__heading">
+                                        
+                                            <a href="{% url 'logout' %}" style="text-decoration:none;">
+                                                <i class='bx bx-log-out'></i>
+                                                Logout
+                                            </a>
+                                        </h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="ui-theme-settings">
+
+        </div>
+        <div class="app-main">
+            <div class="app-sidebar sidebar-shadow">
+                <div class="app-header__logo">
+                    <div class="logo-src"></div>
+                    <div class="header__pane ml-auto">
+                        <div>
+                            <button type="button" class="hamburger close-sidebar-btn hamburger--elastic"
+                                data-class="closed-sidebar">
+                                <span class="hamburger-box">
+                                    <span class="hamburger-inner"></span>
+                                </span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="app-header__mobile-menu">
+                    <div>
+                        <button type="button" class="hamburger hamburger--elastic mobile-toggle-nav">
+                            <span class="hamburger-box">
+                                <span class="hamburger-inner"></span>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+                <div class="app-header__menu">
+                    <span>
+                        <button type="button"
+                            class="btn-icon btn-icon-only btn btn-primary btn-sm mobile-toggle-header-nav">
+                            <span class="btn-icon-wrapper">
+                                <i class="fa fa-ellipsis-v fa-w-6"></i>
+                            </span>
+                        </button>
+                    </span>
+                </div>
+                <div class="scrollbar-sidebar">
+                    <div class="app-sidebar__inner">
+                        <ul class="vertical-nav-menu">
+                            <li class="app-sidebar__heading">Home</li>
+                            <li>
+                                <a href="{% url 'main_page' %}">
+                                    <i class='bx bx-home'></i>Home Page
+
+                                </a>
+                            </li>
+
+                            <li class="app-sidebar__heading">Student Management</li>
+                            <li>
+                                <a href="{% url 'active_users' %}">
+                                    <i class='bx bx-user'></i>Registered Users
+                                </a>
+                            </li>   
+                            <li>
+                                <a href="{% url 'deactivated_user' %}">
+                                    <i class='bx bx-block'></i>Banned Users
+                                </a>
+                            </li> 
+                            <li>
+                                <a href="{% url 'enrollment_analysis' %}">
+                                    <i class='bx bx-pie-chart'></i>Enrollment Analysis
+                                </a>
+                            </li> 
+                           
+                            <li class="app-sidebar__heading">Course Details</li>
+                            <li>
+                                <a href="{% url 'course_category' %}">
+                                    <i class='bx bx-check-circle'></i>Course Category
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'request_approval_view' %}">
+                                    <i class='bx bx-check-circle'></i>Course Approval
+                                </a>
+                            </li>
+                                <li>
+                                    <a href="{% url 'course_list' %}">
+                                        <i class='bx bx-trending-up'></i>Available Courses
+                                    </a>
+                                </li>
+
+                                <li class="app-sidebar__heading">Staff Management</li>
+                            <li>
+                                <a href="{% url 'add_employee' %}">
+                                    <i class='bx bx-user-plus'></i>Add Staff
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'employee_details' %}">
+                                    <i class='bx bx-user-circle'></i>Staff Details
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'deactivated_employee' %}">
+                                    <i class='bx bx-user-x'></i> Deactivated Users
+                                </a>
+                            </li>
+                            <li class="app-sidebar__heading">Payment Management</li>
+                            <li>
+                                <a href="{% url 'admin_payment_list' %}">
+                                    <i class='bx bx-credit-card'></i>Payment Details
+
+                                </a>
+                            </li>
+
+                        </ul>
+                    </div>
+                </div>
+             
+            </div>
+                <div class="app-main" style="margin-left:250px;">
+                    <div class="app-main__inner">
+                        <div class="dashboard-section">
+        
+                            <!-- Dashboard Cards -->
+                            <div class="cards-row">
+                                <div class="card">
+                                    <i class='bx bx-user'></i>
+                                    <h3>Registered Users : <b>{{ active_profiles_count }}</b></h3>
+                                    
+                                </div>
+                                <div class="card">
+                                    <i class='bx bx-book'></i>
+                                    <h3>Total Courses : <b> {{ active_locked_courses_count }}</b></h3>
+                                
+                                </div>
+                                <div class="card">
+                                    <i class='bx bx-pie-chart'></i>
+                                    <h3>Active Enrollments : <b>{{ active_enrollments_count }} </b></h3>
+                                </div>
+                            </div>
+        
+                            <!-- Enrollment Analysis -->
+                            {% comment %} <div class="chart-container">
+                                <h4 class="chart-title">Enrollment Analysis</h4>
+                                <canvas id="enrollmentChart" style="width:100%; height:300px;"></canvas>
+                            </div> {% endcomment %}
+        
+                            <!-- Most Popular Courses Section -->
+                           
+                            <!-- Add this after the existing cards-row div -->
+                            <div class="program-section mt-4">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div class="section-header">
+                                        <h3 class="section-title">Student Development Programs</h3>
+                                        <div class="button-group">
+                                            <a href="{% url 'create_program' %}" class="btn btn-create">
+                                                <i class='bx bx-plus-circle'></i> Create New Program
+                                            </a>
+                                            <a href="{% url 'program_details_list' %}" class="btn btn-view-all">
+                                                <i class='bx bx-list-ul'></i> View All Programs
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Add debug info -->
+                                {% if development_programs %}
+                                    <p class="debug-info">Number of programs: {{ development_programs|length }}</p>
+                                {% endif %}
+                                
+                                <div class="programs-grid">
+                                    {% if development_programs %}
+                                        {% for program in development_programs %}
+                                            <div class="program-card" data-start-date="{{ program.start_date|date:'Y-m-d' }}">
+                                                <div class="program-header">
+                                                    <h4>{{ program.title }}</h4>
+                                                    <span class="badge {% if program.is_active %}badge-success{% else %}badge-secondary{% endif %}">
+                                                        {{ program.is_active|yesno:"Active,Inactive" }}
+                                                    </span>
+                                                </div>
+                                                <div class="program-body">
+                                                    <div class="mentor-info">
+                                                        {% if program.speaker_image %}
+                                                            <img src="{{ program.speaker_image.url }}" alt="{{ program.speaker_name }}" class="mentor-image">
+                                                        {% endif %}
+                                                        <div class="mentor-details">
+                                                            <p><i class='bx bx-calendar'></i> {{ program.start_date|date:"M d, Y" }} - {{ program.end_date|date:"M d, Y" }}</p>
+                                                            <p><i class='bx bx-user'></i> {{ program.speaker_name }}</p>
+                                                            <p><i class='bx bx-building'></i> {{ program.speaker_organization }}</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                              
+                                            </div>
+                                        {% endfor %}
+                                    {% else %}
+                                        <div class="no-programs-message">
+                                            <p><i class='bx bx-calendar-x'></i> No development programs scheduled yet.</p>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- Add this after the existing program-section div -->
+                            <div class="pending-programs-section mt-4">
+                                <div class="section-header">
+                                    <h3>
+                                        <i class='bx bx-time-five'></i> 
+                                        Pending Program Approvals
+                                        {% if pending_programs %}
+                                        <span class="badge bg-warning">{{ pending_programs|length }}</span>
+                                        {% endif %}
+                                    </h3>
+                                </div>
+
+                                <div class="pending-programs-grid">
+                                    {% for program in pending_programs %}
+                                    <div class="pending-program-card" onclick="window.location.href='{% url 'pending_program_details' program.id %}'">
+                                        <div class="program-header">
+                                            <div class="d-flex align-items-center">
+                                                {% if program.speaker_image %}
+                                                <img src="{{ program.speaker_image.url }}" alt="{{ program.speaker_name }}" class="speaker-thumbnail">
+                                                {% endif %}
+                                                <div class="program-title">
+                                                    <h4>{{ program.title }}</h4>
+                                                    <span class="badge bg-warning">Pending Approval</span>
+                                                </div>
+                                            </div>
+                                            <div class="program-preview">
+                                                <p><i class='bx bx-user'></i> {{ program.speaker_name }}</p>
+                                                <p><i class='bx bx-building'></i> {{ program.speaker_organization }}</p>
+                                                <p><i class='bx bx-calendar'></i> {{ program.start_date|date:"M d, Y" }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% empty %}
+                                    <div class="no-pending-programs">
+                                        <i class='bx bx-check-circle'></i>
+                                        <p>No pending programs to approve</p>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+            <!-- Include chart.js for charts -->
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <script>
+                // JavaScript to initialize charts with Chart.js
+                var ctx = document.getElementById('enrollmentChart').getContext('2d');
+                var enrollmentChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Completed', 'On-Progress'],
+                        datasets: [{
+                            label: 'Enrollments',
+                            data: [{{ attempts_count }}, {{ not_enrolled_count }}],  <!-- Django variables -->
+                backgroundColor: ['#007bff', '#28a745'],
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            </script>
+                    <script type="text/javascript"
+                        src="https://demo.dashboardpack.com/architectui-html-free/assets/scripts/main.js"></script>
+</body>
+
+</html>
+
+<script>
+function confirmDelete(programId) {
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "This program will be removed from the schedule.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ef476f',
+        cancelButtonColor: '#4361ee',
+        confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = `/delete-program/${programId}/`;
+        }
+    });
+}
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    document.querySelectorAll('.program-card').forEach(card => {
+        const startDate = new Date(card.dataset.startDate);
+        if (startDate <= today) {
+            card.setAttribute('data-status', 'started');
+        } else {
+            card.setAttribute('data-status', 'upcoming');
+        }
+    });
+});
+</script>
+
+<script>
+function approveProgram(programId) {
+    Swal.fire({
+        title: 'Approve Program?',
+        text: 'This will make the program visible to participants',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Approve',
+        confirmButtonColor: '#28a745'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch(`/admin/approve-program/${programId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    Swal.fire('Approved!', 'Program has been approved.', 'success')
+                    .then(() => location.reload());
+                }
+            });
+        }
+    });
+}
+
+function rejectProgram(programId) {
+    Swal.fire({
+        title: 'Reject Program',
+        html: `
+            <div class="form-group">
+                <label>Reason for rejection:</label>
+                <textarea id="rejectionReason" class="form-control" rows="4"></textarea>
+            </div>
+        `,
+        showCancelButton: true,
+        confirmButtonText: 'Reject',
+        confirmButtonColor: '#dc3545',
+        preConfirm: () => {
+            const reason = document.getElementById('rejectionReason').value;
+            if (!reason.trim()) {
+                Swal.showValidationMessage('Please provide a reason for rejection');
+            }
+            return reason;
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch(`/admin/reject-program/${programId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    reason: result.value
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    Swal.fire('Rejected!', 'Program has been rejected.', 'info')
+                    .then(() => location.reload());
+                }
+            });
+        }
+    });
+}
+
+function viewFiles(programId) {
+    fetch(`/admin/program-files/${programId}/`)
+        .then(response => response.json())
+        .then(data => {
+            const filesContent = document.getElementById('filesContent');
+            filesContent.innerHTML = `
+                <div class="speaker-file">
+                    <h6>Speaker Image:</h6>
+                    <img src="${data.speaker_image}" class="img-fluid rounded" style="max-height: 200px;">
+                </div>
+                <!-- Add other files here if needed -->
+            `;
+            $('#filesModal').modal('show');
+        });
+}
+</script>
+
+<script>
+function viewProgramDetails(programId) {
+    // Show loading state
+    const modal = new bootstrap.Modal(document.getElementById('programDetailsModal'));
+    modal.show();
+    
+    const container = document.querySelector('.program-details-container');
+    container.innerHTML = '<div class="text-center"><div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div></div>';
+
+    fetch(`/admin/program-files/${programId}/`)
+        .then(response => response.json())
+        .then(data => {
+            if (!data.program) {
+                container.innerHTML = '<div class="alert alert-danger">Error loading program details</div>';
+                return;
+            }
+
+            const program = data.program;
+            container.innerHTML = `
+                <div class="details-section">
+                    <div class="row">
+                        <div class="col-md-4">
+                            ${data.speaker_image ? 
+                                `<img src="${data.speaker_image}" class="img-fluid rounded" alt="Speaker Image">` :
+                                `<div class="no-image">No image available</div>`
+                            }
+                        </div>
+                        <div class="col-md-8">
+                            <h4 class="mb-4">${program.title}</h4>
+                            <div class="detail-grid">
+                                <div class="detail-item">
+                                    <span class="detail-label">Expert Name</span>
+                                    <span class="detail-value">${program.speaker_name}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Organization</span>
+                                    <span class="detail-value">${program.speaker_organization}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Designation</span>
+                                    <span class="detail-value">${program.speaker_designation}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="details-section mt-4">
+                    <h6 class="section-title">Program Schedule</h6>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <span class="detail-label">Start Date</span>
+                            <span class="detail-value">${program.start_date}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">End Date</span>
+                            <span class="detail-value">${program.end_date}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Session Time</span>
+                            <span class="detail-value">${program.session_time}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Duration</span>
+                            <span class="detail-value">${program.duration} hours</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="details-section mt-4">
+                    <h6 class="section-title">Meeting Details</h6>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <span class="detail-label">Platform</span>
+                            <span class="detail-value">${program.meeting_platform}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Max Participants</span>
+                            <span class="detail-value">${program.max_participants}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="details-section mt-4">
+                    <h6 class="section-title">Program Content</h6>
+                    <div class="content-section">
+                        <h6 class="content-title">Description</h6>
+                        <p class="content-text">${program.description}</p>
+                        
+                        <h6 class="content-title mt-3">Learning Outcomes</h6>
+                        <p class="content-text">${program.learning_outcomes}</p>
+                        
+                        ${program.prerequisites ? `
+                            <h6 class="content-title mt-3">Prerequisites</h6>
+                            <p class="content-text">${program.prerequisites}</p>
+                        ` : ''}
+                    </div>
+                </div>
+
+                <div class="action-buttons mt-4">
+                    <button class="btn btn-success" onclick="approveProgram(${program.id})">
+                        <i class='bx bx-check'></i> Approve Program
+                    </button>
+                    <button class="btn btn-danger" onclick="rejectProgram(${program.id})">
+                        <i class='bx bx-x'></i> Reject Program
+                    </button>
+                </div>
+            `;
+        })
+        .catch(error => {
+            container.innerHTML = `
+                <div class="alert alert-danger">
+                    Error loading program details: ${error.message}
+                </div>
+            `;
+        });
+}
+</script>
+
+<!-- Program Details Modal -->
+<div class="modal fade" id="programDetailsModal" tabindex="-1" aria-labelledby="programDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="programDetailsModalLabel">Program Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="program-details-container">
+                    <!-- Content will be loaded dynamically -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Bootstrap JS and dependencies -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"></script>
+
+<!-- Add these additional styles -->
+<style>
+.modal-lg {
+    max-width: 900px;
+}
+
+.section-title {
+    color: #2d3748;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.content-title {
+    color: #4a5568;
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.content-text {
+    color: #4a5568;
+    line-height: 1.6;
+}
+
+.no-image {
+    background: #f7fafc;
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    color: #a0aec0;
+}
+
+.spinner-border {
+    color: #4299e1;
+}
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+.detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.detail-label {
+    font-size: 0.875rem;
+    color: #718096;
+}
+
+.detail-value {
+    font-weight: 500;
+    color: #2d3748;
+}
+
+@media (max-width: 768px) {
+    .detail-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>

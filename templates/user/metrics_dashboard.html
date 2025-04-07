@@ -1,0 +1,191 @@
+{% include 'user/studentindex.html' %}
+{% load static %}
+
+<div class="metrics-dashboard">
+    <div class="dashboard-header">
+        <h1>AI Metrics Dashboard</h1>
+        <p>Visualizing transcription accuracy, translation quality, and processing efficiency</p>
+    </div>
+
+    <div class="metrics-grid">
+        <!-- Transcription Accuracy -->
+        <div class="metric-card">
+            <h2>Transcription Accuracy</h2>
+            <div class="chart-container">
+                <img src="{% static 'media/metrics/transcription_accuracy_chart.png' %}" 
+                     alt="Transcription Accuracy Chart" 
+                     class="metric-chart"
+                     id="transcription-chart">
+            </div>
+            <div class="metric-info">
+                <p>The chart above shows the estimated accuracy of transcriptions over time. Higher percentages indicate more accurate transcriptions.</p>
+                <p>Current model uses neural speech recognition with an average accuracy of ~92%.</p>
+            </div>
+        </div>
+
+        <!-- Translation Quality -->
+        <div class="metric-card">
+            <h2>Translation Quality</h2>
+            <div class="chart-container">
+                <img src="{% static 'media/metrics/translation_quality_chart.png' %}" 
+                     alt="Translation Quality Chart" 
+                     class="metric-chart"
+                     id="translation-chart">
+            </div>
+            <div class="metric-info">
+                <p>This chart displays BLEU scores for translations between different language pairs. BLEU scores range from 0 to 1, with higher scores indicating better translations.</p>
+                <p>Our neural machine translation system generally achieves BLEU scores between 0.7 and 0.9 depending on the language pair.</p>
+            </div>
+        </div>
+
+        <!-- Processing Efficiency -->
+        <div class="metric-card">
+            <h2>Processing Efficiency</h2>
+            <div class="chart-container">
+                <img src="{% static 'media/metrics/processing_efficiency_chart.png' %}" 
+                     alt="Processing Efficiency Chart" 
+                     class="metric-chart"
+                     id="efficiency-chart">
+            </div>
+            <div class="metric-info">
+                <p>This visualization shows the relationship between content size and processing time for both transcription and translation tasks.</p>
+                <p>The trendline indicates the average processing time expected for a given content size.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="metrics-controls">
+        <button id="refresh-charts">Refresh Charts</button>
+        <span class="last-updated">Last updated: <span id="update-time">{% now "F j, Y, g:i a" %}</span></span>
+    </div>
+</div>
+
+<style>
+.metrics-dashboard {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+}
+
+.dashboard-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.dashboard-header h1 {
+    font-size: 2.2rem;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.dashboard-header p {
+    color: #666;
+    font-size: 1.1rem;
+}
+
+.metrics-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 30px;
+    margin-bottom: 30px;
+}
+
+.metric-card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    padding: 20px;
+}
+
+.metric-card h2 {
+    color: #333;
+    margin-top: 0;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.chart-container {
+    width: 100%;
+    height: auto;
+    margin-bottom: 15px;
+}
+
+.metric-chart {
+    width: 100%;
+    height: auto;
+    max-height: 400px;
+    object-fit: contain;
+}
+
+.metric-info {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.metric-info p {
+    margin: 0 0 10px 0;
+    color: #555;
+}
+
+.metrics-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#refresh-charts {
+    background: #4361ee;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+#refresh-charts:hover {
+    background: #3a0ca3;
+    transform: translateY(-2px);
+}
+
+.last-updated {
+    color: #666;
+    font-style: italic;
+}
+
+@media (min-width: 768px) {
+    .metrics-grid {
+        grid-template-columns: repeat(1, 1fr);
+    }
+}
+
+@media (min-width: 992px) {
+    .metrics-grid {
+        grid-template-columns: repeat(1, 1fr);
+    }
+}
+</style>
+
+<script>
+document.getElementById('refresh-charts').addEventListener('click', function() {
+    // Add a timestamp parameter to force browser to reload images
+    const timestamp = new Date().getTime();
+    
+    document.getElementById('transcription-chart').src = 
+        `{% static 'media/metrics/transcription_accuracy_chart.png' %}?t=${timestamp}`;
+    
+    document.getElementById('translation-chart').src = 
+        `{% static 'media/metrics/translation_quality_chart.png' %}?t=${timestamp}`;
+    
+    document.getElementById('efficiency-chart').src = 
+        `{% static 'media/metrics/processing_efficiency_chart.png' %}?t=${timestamp}`;
+    
+    // Update the last updated time
+    const now = new Date();
+    document.getElementById('update-time').textContent = now.toLocaleString();
+});
+</script> 

@@ -1,0 +1,293 @@
+{% load static %}
+{% include 'instructor/instructorindex.html' %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Next-Edge</title>
+    <style>
+        /* Global Styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 80%;
+            max-width: 1200px;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: #2b08c7;
+            margin-bottom: 20px;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        /* Input Styles */
+        input[type="text"], textarea, input[type="file"] {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            font-size: 16px;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        input[type="text"]:focus, textarea:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+            outline: none;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* Button Styles */
+        button[type="submit"] {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        /* Table Styles */
+        .modules-table, .courses-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 30px;
+        }
+
+        .modules-table th, .courses-table th {
+            background-color: #007bff;
+            color: white;
+            padding: 12px;
+            font-weight: normal;
+            border-top: 1px solid #dee2e6;
+            border-bottom: 2px solid #dee2e6;
+            text-align: left;
+        }
+
+        .modules-table td, .courses-table td {
+            padding: 12px;
+            border-bottom: 1px solid #dee2e6;
+            vertical-align: top;
+        }
+
+        /* Button and Icon Styles */
+        .add-topic-btn, .expand-btn, .save-topic-btn, .save-btn, .delete-btn, .delete-topic-btn {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-left: 10px;
+        }
+
+        .add-topic-btn:hover, .expand-btn:hover, .save-topic-btn:hover, .save-btn:hover {
+            background-color: #218838;
+        }
+
+        .delete-btn, .delete-topic-btn {
+            background-color: #dc3545;
+        }
+
+        .delete-btn:hover, .delete-topic-btn:hover {
+            background-color: #c82333;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+            padding-top: 60px;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover, .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* No Modules Found message */
+        .no-modules {
+            text-align: center;
+            padding: 20px;
+            font-style: italic;
+            color: #999;
+        }
+
+        .course-item {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            font-family: 'Arial', sans-serif;
+            position: relative;
+        }
+
+        .course-header {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2b08c7;
+            margin-bottom: 10px;
+        }
+
+        .course-description {
+            font-size: 16px;
+            color: #3414c0;
+            margin: 0;
+        }
+
+        .course-details p {
+            margin: 5px 0;
+            font-size: 16px;
+            color: #0f1c92;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="courseSection">
+            <h2>Add a Topic to {{ module.name }}</h2>
+            <form method="POST" action="{% url 'add_topic' module.id course.id %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <!-- Add an id to the input field for topic name -->
+                <input type="text" id="topic-name" name="name" placeholder="Topic Name" required/>
+                <span id="topic-error" style="color: red; display: none;">Topic name already exists in this course.</span><br>
+            
+                <textarea name="description" placeholder="Description" required></textarea>
+                <input type="file" id="topic-content" name="content" accept="video/*" onchange="loadVideo()" required>
+            
+                <div id="video-info" style="display: inline-block; margin-left: 20px;">
+                    <span id="video-duration"></span> 
+                </div>
+                
+                <div id="video-preview" style="margin-top: 10px;">
+                    <video id="video-player" controls style="max-width: 100%; display: none;">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+                <br>
+            
+                <button type="submit" id="add-topic-btn">Add Topic</button>
+            </form>
+            
+            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+            <script>
+                $(document).ready(function() {
+                    // Check for duplicate topic name within the same course
+                    $('#topic-name').on('input', function() {
+                        var topicName = $(this).val();
+                        var courseId = "{{ course.id }}"; // Assuming course.id is available in the template
+                
+                        if (topicName) {
+                            $.ajax({
+                                url: '/check_topic_name/' + courseId + '/', // Adjust the URL as needed
+                                data: {
+                                    'name': topicName
+                                },
+                                dataType: 'json',
+                                success: function(data) {
+                                    if (data.exists) {
+                                        $('#add-topic-btn').prop('disabled', true);
+                                        $('#topic-error').show(); // Show the error message for topics
+                                    } else {
+                                        $('#add-topic-btn').prop('disabled', false);
+                                        $('#topic-error').hide(); // Hide the error message for topics
+                                    }
+                                }
+                            });
+                        } else {
+                            $('#add-topic-btn').prop('disabled', false); 
+                            $('#topic-error').hide(); 
+                        }
+                    });
+                });
+                </script>
+                
+            
+    </div>
+</body>
+<script>function loadVideo() {
+    const videoInput = document.getElementById('topic-content');
+    const videoPlayer = document.getElementById('video-player');
+    const videoDuration = document.getElementById('video-duration');
+    const videoInfo = document.getElementById('video-info');
+
+    const file = videoInput.files[0];
+    const url = URL.createObjectURL(file);
+
+    videoPlayer.src = url;
+    videoPlayer.style.display = 'block';
+
+    videoPlayer.onloadedmetadata = function() {
+        const duration = videoPlayer.duration;
+        const minutes = Math.floor(duration / 60);
+        const seconds = Math.floor(duration % 60);
+
+        videoDuration.textContent = `Duration: ${minutes}m ${seconds}s`;
+        videoInfo.style.display = 'inline-block';
+    };
+
+    videoPlayer.onclick = function() {
+        videoPlayer.play();
+    };
+}
+</script>
+</html>

@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>   <meta charset="UTF-8">
+    <title>Next-Edge</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.0/sweetalert2.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.dataTables.min.css">
+    <style>
+
+        .container {
+            width: 800px;
+            margin-left:300px;    
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        h1 {
+            color: #0a2e53;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+            text-align: center;
+            margin-left:200px;
+        }
+
+        h2 {
+            color: #34495e;
+            font-size: 1.8em;
+            margin: 20px 0 10px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 5px;
+            display: inline-block;
+        }
+
+        .section {
+            width: 300px;
+            margin-left: 700px;
+        }
+
+        .details-section {
+            margin-bottom: 20px;
+            border-radius: 8px;
+            padding-left:20px;
+            padding-bottom:10px;
+            margin-left:200px;
+            width:900px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            background-color: #ecf0f1;
+            
+        }
+
+        .details-section p {
+            margin: 10px 0;
+        }
+
+        .details-section strong {
+            color: #2c3e50;
+        }
+
+        .module{
+            margin-bottom: 15px;
+            background-color: #f9f9f9; /* Update to your desired color */
+            border-radius: 5px;
+            width: 820px;
+            padding: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            color: #333; /* Text color for better readability */
+        }
+        
+        .module-header {
+            font-weight: bold;
+            cursor: pointer;
+            background-color: #3498db; /* Background color for the header */
+            color: white; /* Text color for the header */
+            padding: 10px;
+            width: 800px;
+            border-radius: 5px;
+            margin-bottom: 5px;
+            transition: background-color 0.3s;
+        }
+        .course-header{
+            font-weight: bold;
+            cursor: pointer;
+            background-color: #2e5e7c; /* Background color for the header */
+            color: white; /* Text color for the header */
+            padding: 10px;
+            width: 800px;
+            border-radius: 5px;
+            margin-bottom: 5px;
+            transition: background-color 0.3s;
+        }
+        .course{
+            margin-bottom: 15px;
+            background-color: #f9f9f9; /* Update to your desired color */
+            border-radius: 5px;
+            width: 820px;
+            padding: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            color: #333; /* Text color for better readability */
+        }
+        .module-header:hover {
+            background-color: #2980b9; /* Hover color for the header */
+        }
+        
+        .module-content {
+            display: none;
+            padding-left: 20px;
+            border-left: 2px solid #3498db; /* Border color */
+            background-color: #f9f9f9; /* Background color for the content */
+            color: #333; /* Text color for the content */
+        }
+        
+
+        .module-content ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .module-content ul li {
+            padding: 5px 0;
+        }/* Style for the button within a link */
+a {
+    text-decoration: none; /* Remove default underline from links */
+}
+
+a .btn {
+    display: inline-block;
+    margin-left:800px;
+    padding: 8px 8px;
+    font-size: 16px;
+    color: #fff;
+    background-color: #052e50;
+    border: none;
+    width:100px;
+    border-radius: 5px;
+    text-decoration: none; /* Remove default underline from links */
+    text-align: center;
+    transition: background-color 0.3s ease;
+}
+
+
+    </style>
+    <body>
+        {% load static %}
+        {% include 'admin/adminindex.html' %}
+        <div class="container">
+            <h1><b>Course Details</b></h1>
+            
+            <div class="details-section">
+                <h2>Instructor</h2>
+                <p><strong>Email:</strong> {{ instructor.user.email }}</p>
+            </div>
+    
+            {% for course_data in course_modules %}
+                <div class="details-section">
+                    <div class="course-header" onclick="toggleCourseContent(this)">
+                        <i class="fas fa-plus"></i> {{ course_data.course.name }}
+                    </div>
+                    <div class="course-content"  style="display: none;">
+                        <div style="display: flex; align-items: flex-start;">
+                            <img src="{{ course_data.course.content.url }}" alt="Course Image" style="border-radius: 8px; max-width: 300px; height: auto; margin-right: 20px;">
+                           
+                            <div>
+                                <button 
+        onclick="toggleCourseStatus('{{ course_data.course.id }}', this)" 
+        style="background-color: {{ course_data.course.active|yesno:'#ff4d4d,#4CAF50' }}; 
+               color: white; 
+               width: 80px; 
+               height: 40px; 
+               border: none; 
+               border-radius: 15%; 
+               cursor: pointer; 
+               font-size: 12px; 
+               right: 10px; 
+               top: 10px; 
+               margin-left:400px;
+               transition: background-color 0.3s ease; 
+               display: flex; 
+               align-items: center; 
+               justify-content: center;">
+        {{ course_data.course.active|yesno:"Deactivate,Activate" }}
+    </button>
+                                <p><strong>Name:</strong> {{ course_data.course.name }}</p>
+                                <p><strong>Description:</strong> {{ course_data.course.description }}</p>
+                                <p><strong>Mode:</strong> {{ course_data.course.mode }}</p>
+                                <p><strong>Payment:</strong> {{ course_data.course.payment }}</p>
+                                {% if course_data.course.payment == 'paid' %}
+                            <p><strong>Amount:</strong> {{ course_data.course.amount }}</p>
+                            {% endif %}
+                            </div>
+                        </div>
+                        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+function toggleCourseStatus(courseId, button) {
+    fetch(`/toggle-course-status/${courseId}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',  // Include CSRF token for security
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({})
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Toggle the button text and background color based on the new status
+            if (data.is_active) {
+                button.textContent = "Deactivate";
+                button.style.backgroundColor = "#ff4d4d";  // Red for Deactivate
+            } else {
+                button.textContent = "Activate";
+                button.style.backgroundColor = "#4CAF50";  // Green for Activate
+            }
+            
+            // Show success alert using SweetAlert
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: data.message,
+                confirmButtonText: 'OK'
+            });
+        } else {
+            // Show error alert if deactivation fails due to enrollment
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: data.error || 'Failed to toggle course status.',
+                confirmButtonText: 'OK'
+            });
+        }
+    })
+    .catch(error => {
+        // Show generic error message for unexpected issues
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'An error occurred while toggling the course status.',
+            confirmButtonText: 'OK'
+        });
+    });
+}
+</script>
+
+                        
+                        <div class="details-section" style="margin-left:-20px;">
+                            <h2>Modules</h2>
+                            {% for module_data in course_data.modules %}
+                                <div class="module">
+                                    <div class="module-header" onclick="toggleCourseContent(this)">
+                                        <i class="fas fa-plus"></i> {{ module_data.module.name }}
+                                    </div>
+                                    <div class="module-content">
+                                        <ul>
+                                            {% for topic in module_data.topics %}
+                                                <li><b>Topic:</b> {{ topic.name }}</li>
+                                                <li><b>Description:</b> {{ topic.description }}</li>
+                                                <li><b>Content:</b> <video controls style="max-width: 500px; max-height: 500px;">
+                                                    <source src="{{ topic.content.url }}" type="video/mp4">
+                                                    Your browser does not support the video tag.
+                                                </video></li>
+                                                <hr style="border: 0; height: 2px; background-color: #3498db; margin: 10px 0;">
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+    
+            <a href="{% url 'request_approval_view' %}" class="btn"><i class='bx bx-arrow-back'></i> Back</a>
+        </div>
+        <script>
+            function toggleCourseContent(header) {
+                var content = header.nextElementSibling;
+                var icon = header.querySelector('i');
+        
+                if (content.style.display === "block") {
+                    content.style.display = "none";
+                    icon.className = "fas fa-plus";
+                } else {
+                    content.style.display = "block";
+                    icon.className = "fas fa-minus";
+                }
+            }
+        
+            function toggleModuleContent(header) {
+                var content = header.nextElementSibling;
+                var icon = header.querySelector('i');
+        
+                if (content.style.display === "block") {
+                    content.style.display = "none";
+                    icon.className = "fas fa-plus";
+                } else {
+                    content.style.display = "block";
+                    icon.className = "fas fa-minus";
+                }
+            }
+        </script>
+        
+    </body>
+</html>

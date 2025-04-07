@@ -1,0 +1,849 @@
+{% extends 'expert/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="attendance-management">
+    <div class="header-section">
+        <div class="title-area">
+            <h2>{{ program.title }}</h2>
+            <p class="subtitle">Attendance Management</p>
+        </div>
+        <div class="action-buttons">
+            <a href="{% url 'download_daily_attendance_report' program.id %}?date={{ selected_date|date:'Y-m-d' }}&search={{ request.GET.search|default:'' }}" class="report-btn">
+                <i class="fas fa-file-download"></i> Download Report
+            </a>
+            
+            <form method="get" id="date-form">
+                <div class="date-select-container">
+                    <label for="date-select">
+                        <i class="fas fa-calendar-alt"></i>
+                        Select Date
+                    </label>
+                    <select id="date-select" name="date" class="form-control" onchange="this.form.submit()">
+                        {% for date in date_range %}
+                        <option value="{{ date|date:'Y-m-d' }}" {% if date == selected_date %}selected{% endif %}>
+                            {{ date|date:"F d, Y" }} {% if date == today %}(Today){% endif %}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Quick Report Generation Section -->
+    <div class="quick-report-container">
+        <div class="quick-report-header">
+            <h3><i class="fas fa-file-export"></i> Quick Report Generation</h3>
+        </div>
+        <form method="get" action="{% url 'download_daily_attendance_report' program.id %}" class="quick-report-form">
+            <!-- Pass current filters to the report -->
+            <input type="hidden" name="date" value="{{ selected_date|date:'Y-m-d' }}">
+            {% if request.GET.search %}<input type="hidden" name="search" value="{{ request.GET.search }}">{% endif %}
+            
+            <div class="quick-report-controls">
+                <div class="report-select-group">
+                    <select id="quick_report_type" name="report_type" class="form-control">
+                        <option value="all">All Students</option>
+                        <option value="present">Present Students Only</option>
+                        <option value="absent">Absent Students Only</option>
+                    </select>
+                </div>
+                
+                <div class="report-select-group">
+                    <select id="quick_format" name="format" class="form-control">
+                        <option value="excel">Excel (.xlsx)</option>
+                        <option value="csv">CSV</option>
+                    </select>
+                </div>
+                
+                <button type="submit" class="generate-btn">
+                    <i class="fas fa-download"></i> Generate Report
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div class="attendance-stats">
+        <div class="stat-card total">
+            <div class="stat-icon">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="stat-info">
+                <div class="stat-value">{{ total_students }}</div>
+                <div class="stat-label">Total Students</div>
+            </div>
+        </div>
+        <div class="stat-card present">
+            <div class="stat-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="stat-info">
+                <div class="stat-value">{{ present_count }}</div>
+                <div class="stat-label">Present</div>
+            </div>
+        </div>
+        <div class="stat-card absent">
+            <div class="stat-icon">
+                <i class="fas fa-times-circle"></i>
+            </div>
+            <div class="stat-info">
+                <div class="stat-value">{{ absent_count }}</div>
+                <div class="stat-label">Absent</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="date-info-banner">
+        <div class="date-display">
+            <i class="fas fa-calendar-day"></i>
+            <span>{{ selected_date|date:"l, F d, Y" }}</span>
+        </div>
+        {% if selected_date == today %}
+        <div class="today-badge">
+            <i class="fas fa-star"></i> Today
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="attendance-table-container">
+        <div class="table-header">
+            <h3>Student Attendance</h3>
+            <div class="search-container">
+                <form id="search-form" method="get" action="">
+                    <input type="hidden" name="date" value="{{ selected_date|date:'Y-m-d' }}">
+                    <input type="text" id="studentSearch" name="search" placeholder="Search students..." 
+                           value="{{ request.GET.search|default:'' }}" onkeyup="delaySearch()">
+                    <i class="fas fa-search"></i>
+                </form>
+            </div>
+        </div>
+        
+        <table class="attendance-table" id="attendanceTable">
+            <thead>
+                <tr>
+                    <th>Student Name</th>
+                    <th>Email</th>
+                    <th>Status</th>
+                    <th>Time Marked</th>
+                    
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in students %}
+                <tr>
+                    <td>{{ student.name }}</td>
+                    <td>{{ student.email }}</td>
+                    <td>
+                        <span class="status-badge {% if student.has_attended %}present{% else %}absent{% endif %}">
+                            {% if student.has_attended %}
+                                <i class="fas fa-check"></i> Present
+                            {% else %}
+                                <i class="fas fa-times"></i> Absent
+                            {% endif %}
+                        </span>
+                    </td>
+                    <td>
+                        {% if student.attendance_time %}
+
+
+                            <span class="time-marked">
+                                <i class="fas fa-clock"></i>
+                                {{ student.attendance_time|time:"g:i A" }}
+                            </span>
+                        {% else %}
+                            <span class="no-time">-</span>
+                        {% endif %}
+                    </td>
+                    {% comment %} <td>
+                        {% if can_mark_attendance %}
+                        <button class="btn btn-sm {% if student.has_attended %}btn-danger{% else %}btn-success{% endif %}"
+                                onclick="toggleAttendance('{{ student.id }}', '{{ program.id }}')">
+                            {% if student.has_attended %}
+                                <i class="fas fa-times"></i> Mark Absent
+                            {% else %}
+                                <i class="fas fa-check"></i> Mark Present
+                            {% endif %}
+                        </button>
+                        {% else %}
+                        <span class="future-date-notice">
+                            <i class="fas fa-lock"></i> Future date
+                        </span>
+                        {% endif %}
+                    </td> {% endcomment %}
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="no-students">
+                        <div class="empty-state">
+                            <i class="fas fa-user-graduate"></i>
+                            <p>No students registered for this program</p>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<style>
+:root {
+    --primary-color: #4361ee;
+    --primary-light: #eef2ff;
+    --success-color: #2ecc71;
+    --success-light: #d4edda;
+    --danger-color: #e74c3c;
+    --danger-light: #f8d7da;
+    --warning-color: #f39c12;
+    --text-dark: #2c3e50;
+    --text-muted: #7f8c8d;
+    --border-color: #e9ecef;
+    --card-shadow: 0 4px 6px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.1);
+    --transition: all 0.3s ease;
+}
+
+.attendance-management {
+    padding: 25px;
+    max-width: 1200px;
+    margin: 0 auto;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.header-section {
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.title-area h2 {
+    color: var(--text-dark);
+    margin: 0;
+    font-size: 1.8rem;
+    font-weight: 600;
+}
+
+.subtitle {
+    color: var(--text-muted);
+    margin: 5px 0 0;
+    font-size: 1rem;
+}
+
+.date-controls {
+    min-width: 250px;
+}
+
+.date-select-container {
+    position: relative;
+    background: white;
+    border-radius: 10px;
+    padding: 10px 15px;
+    box-shadow: var(--card-shadow);
+}
+
+.date-select-container label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.date-select-container label i {
+    margin-right: 5px;
+    color: var(--primary-color);
+}
+
+.date-select-container select {
+    width: 100%;
+    padding: 8px 5px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    font-size: 0.95rem;
+    color: var(--text-dark);
+    background-color: #f8f9fa;
+    transition: var(--transition);
+}
+
+.date-select-container select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+}
+
+.attendance-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    box-shadow: var(--card-shadow);
+    transition: var(--transition);
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+}
+
+.stat-card.total {
+    border-left: 4px solid var(--primary-color);
+}
+
+.stat-card.present {
+    border-left: 4px solid var(--success-color);
+}
+
+.stat-card.absent {
+    border-left: 4px solid var(--danger-color);
+}
+
+.stat-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+    font-size: 1.5rem;
+}
+
+.stat-card.total .stat-icon {
+    background-color: var(--primary-light);
+    color: var(--primary-color);
+}
+
+.stat-card.present .stat-icon {
+    background-color: var(--success-light);
+    color: var(--success-color);
+}
+
+.stat-card.absent .stat-icon {
+    background-color: var(--danger-light);
+    color: var(--danger-color);
+}
+
+.stat-info {
+    flex: 1;
+}
+
+.stat-value {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: var(--text-dark);
+    line-height: 1;
+}
+
+.stat-label {
+    color: var(--text-muted);
+    margin-top: 5px;
+    font-size: 0.9rem;
+}
+
+.date-info-banner {
+    background: white;
+    border-radius: 10px;
+    padding: 15px 20px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--card-shadow);
+}
+
+.date-display {
+    display: flex;
+    align-items: center;
+    color: var(--text-dark);
+    font-weight: 500;
+}
+
+.date-display i {
+    margin-right: 10px;
+    color: var(--primary-color);
+}
+
+.today-badge {
+    background-color: var(--warning-color);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+}
+
+.today-badge i {
+    margin-right: 5px;
+}
+
+.attendance-table-container {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: var(--card-shadow);
+}
+
+.table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.table-header h3 {
+    margin: 0;
+    color: var(--text-dark);
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.search-container {
+    position: relative;
+    width: 250px;
+}
+
+.search-container input {
+    width: 100%;
+    padding: 8px 15px 8px 35px;
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    font-size: 0.9rem;
+    transition: var(--transition);
+}
+
+.search-container input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+}
+
+.search-container i {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+}
+
+.attendance-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.attendance-table th,
+.attendance-table td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.attendance-table th {
+    background: #f8f9fa;
+    font-weight: 600;
+    color: var(--text-dark);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.attendance-table tr:hover {
+    background-color: #f8f9fa;
+}
+
+.status-badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    display: inline-flex;
+    align-items: center;
+    font-weight: 500;
+}
+
+.status-badge i {
+    margin-right: 5px;
+}
+
+.status-badge.present {
+    background: var(--success-light);
+    color: var(--success-color);
+}
+
+.status-badge.absent {
+    background: var(--danger-light);
+    color: var(--danger-color);
+}
+
+.time-marked {
+    display: flex;
+    align-items: center;
+    color: var(--text-dark);
+}
+
+.time-marked i {
+    margin-right: 5px;
+    color: var(--primary-color);
+    font-size: 0.9rem;
+}
+
+.no-time {
+    color: var(--text-muted);
+}
+
+.btn {
+    padding: 8px 15px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    transition: var(--transition);
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn i {
+    margin-right: 5px;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.btn-success {
+    background-color: var(--success-color);
+    color: white;
+}
+
+.btn-success:hover {
+    background-color: #27ae60;
+}
+
+.btn-danger {
+    background-color: var(--danger-color);
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: #c0392b;
+}
+
+.future-date-notice {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+}
+
+.future-date-notice i {
+    margin-right: 5px;
+}
+
+.empty-state {
+    padding: 40px 0;
+    text-align: center;
+    color: var(--text-muted);
+}
+
+.empty-state i {
+    font-size: 3rem;
+    margin-bottom: 15px;
+    opacity: 0.5;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.report-btn {
+    background-color: #4361ee;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 0.9rem;
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.report-btn i {
+    margin-right: 8px;
+}
+
+.report-btn:hover {
+    background-color: #3a0ca3;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    color: white;
+    text-decoration: none;
+}
+
+/* Add these styles for the quick report section */
+.quick-report-container {
+    background: linear-gradient(135deg, #4361ee, #3a0ca3);
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    margin-bottom: 30px;
+    color: white;
+}
+
+.quick-report-header h3 {
+    margin: 0 0 15px;
+    font-size: 1.3rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    color: white;
+}
+
+.quick-report-header h3 i {
+    margin-right: 10px;
+    color: #f8f9fa;
+}
+
+.quick-report-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.quick-report-controls {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.report-select-group {
+    flex: 1;
+    min-width: 200px;
+}
+
+.report-select-group .form-control {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid rgba(255,255,255,0.2);
+    background-color: rgba(255,255,255,0.1);
+    color: white;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='white' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px;
+}
+
+.report-select-group .form-control:focus {
+    outline: none;
+    border-color: rgba(255,255,255,0.5);
+    box-shadow: 0 0 0 3px rgba(255,255,255,0.1);
+}
+
+.report-select-group .form-control option {
+    background-color: #4361ee;
+    color: white;
+}
+
+.generate-btn {
+    background-color: #f8f9fa;
+    color: #4361ee;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    min-width: 180px;
+}
+
+.generate-btn i {
+    margin-right: 8px;
+}
+
+.generate-btn:hover {
+    background-color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+@media (max-width: 768px) {
+    .header-section {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .date-controls {
+        width: 100%;
+    }
+    
+    .attendance-stats {
+        grid-template-columns: 1fr;
+    }
+    
+    .table-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    
+    .search-container {
+        width: 100%;
+    }
+    
+    .quick-report-controls {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .report-select-group {
+        width: 100%;
+    }
+    
+    .generate-btn {
+        width: 100%;
+    }
+}
+</style>
+
+<script>
+// Add this at the top of your script section
+let searchTimeout;
+
+function delaySearch() {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+        document.getElementById('search-form').submit();
+    }, 500);
+}
+
+// Update the download report URL when search changes
+document.getElementById('studentSearch').addEventListener('input', function() {
+    const downloadBtn = document.querySelector('.report-btn');
+    const searchValue = this.value;
+    const currentUrl = new URL(downloadBtn.href);
+    currentUrl.searchParams.set('search', searchValue);
+    downloadBtn.href = currentUrl.toString();
+});
+
+// Keep the existing searchStudents function for client-side filtering
+function searchStudents() {
+    const input = document.getElementById('studentSearch');
+    const filter = input.value.toUpperCase();
+    const table = document.getElementById('attendanceTable');
+    const tr = table.getElementsByTagName('tr');
+    
+    for (let i = 1; i < tr.length; i++) {
+        const nameCol = tr[i].getElementsByTagName('td')[0];
+        const emailCol = tr[i].getElementsByTagName('td')[1];
+        
+        if (nameCol && emailCol) {
+            const nameText = nameCol.textContent || nameCol.innerText;
+            const emailText = emailCol.textContent || emailCol.innerText;
+            
+            if (nameText.toUpperCase().indexOf(filter) > -1 || emailText.toUpperCase().indexOf(filter) > -1) {
+                tr[i].style.display = '';
+            } else {
+                tr[i].style.display = 'none';
+            }
+        }
+    }
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// Add toast notification styles
+document.head.insertAdjacentHTML('beforeend', `
+<style>
+.toast-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 12px 20px;
+    border-radius: 8px;
+    color: white;
+    font-weight: 500;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    animation: slideIn 0.3s ease forwards;
+}
+
+.toast-notification.success {
+    background-color: var(--success-color);
+}
+
+.toast-notification.error {
+    background-color: var(--danger-color);
+}
+
+.toast-notification i {
+    margin-right: 10px;
+}
+
+.toast-notification.hide {
+    animation: slideOut 0.3s ease forwards;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOut {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+</style>
+`);
+</script>
+{% endblock %} 

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Verify Certificate</title>
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <style>
+        .verification-container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .verification-details {
+            margin-top: 20px;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .verified-badge {
+            background: #4CAF50;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="verification-container">
+        <div id="reader"></div>
+        <div id="result" class="verification-details"></div>
+    </div>
+
+    <script>
+        function onScanSuccess(decodedText) {
+            try {
+                const certData = JSON.parse(decodedText);
+                displayCertificateDetails(certData);
+            } catch (error) {
+                console.error("Error parsing certificate data:", error);
+            }
+        }
+
+        function displayCertificateDetails(data) {
+            const resultHtml = `
+                <div class="verified-badge">✓ Certificate Verified</div>
+                <h2>Certificate Details</h2>
+                <div class="detail-row">
+                    <span>Certificate ID:</span>
+                    <span>${data.certificate_id}</span>
+                </div>
+                <h2>Student Information</h2>
+                <div class="detail-row">
+                    <span>Name:</span>
+                    <span>${data.student.name}</span>
+                </div>
+                <div class="detail-row">
+                    <span>Email:</span>
+                    <span>${data.student.email}</span>
+                </div>
+                <h2>Course Information</h2>
+                <div class="detail-row">
+                    <span>Course Name:</span>
+                    <span>${data.course.name}</span>
+                </div>
+                <div class="detail-row">
+                    <span>Completion Date:</span>
+                    <span>${data.course.completion_date}</span>
+                </div>
+            `;
+
+            document.getElementById('result').innerHTML = resultHtml;
+        }
+
+        let html5QrcodeScanner = new Html5QrcodeScanner(
+            "reader", { fps: 10, qrbox: 250 });
+        html5QrcodeScanner.render(onScanSuccess);
+    </script>
+</body>
+</html>

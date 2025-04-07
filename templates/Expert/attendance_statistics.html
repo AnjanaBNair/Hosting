@@ -1,0 +1,973 @@
+{% extends 'expert/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="attendance-statistics-container">
+    <!-- Header Section -->
+    <div class="section-header">
+        <div class="header-content">
+            <h1><i class="fas fa-chart-bar"></i> Attendance Statistics</h1>
+            <h2>{{ program.title }}</h2>
+            <p>{{ program.start_date|date:"M d, Y" }} - {{ program.end_date|date:"M d, Y" }}</p>
+        </div>
+        <div class="header-actions">
+            <a href="/expert/programs/" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Programs
+            </a>
+        </div>
+    </div>
+    
+    <!-- Quick Report Generation Section -->
+    <div class="quick-report-container">
+        <div class="quick-report-header">
+            <h3><i class="fas fa-file-export"></i> Quick Report Generation</h3>
+        </div>
+        <form method="get" action="{% url 'generate_attendance_report' program.id %}" class="quick-report-form">
+            <!-- Pass current filters to the report -->
+            {% if date_filter %}<input type="hidden" name="date" value="{{ date_filter }}">{% endif %}
+            {% if min_attendance %}<input type="hidden" name="min_attendance" value="{{ min_attendance }}">{% endif %}
+            {% if max_attendance %}<input type="hidden" name="max_attendance" value="{{ max_attendance }}">{% endif %}
+            {% if attendance_status %}<input type="hidden" name="status" value="{{ attendance_status }}">{% endif %}
+            
+            <div class="quick-report-controls">
+                <div class="report-select-group">
+                    <select id="quick_report_type" name="report_type" class="form-control">
+                        <option value="all">All Students</option>
+                        <option value="eligible">Certificate Eligible Only</option>
+                        <option value="not_eligible">Not Eligible for Certificate</option>
+                        <option value="perfect">Perfect Attendance</option>
+                        <option value="critical">Critical Attendance (<60%)</option>
+                        <option value="detailed">Detailed Day-by-Day Report</option>
+                    </select>
+                </div>
+                
+                <div class="report-select-group">
+                    <select id="quick_format" name="format" class="form-control">
+                        <option value="excel">Excel (.xlsx)</option>
+                        <option value="csv">CSV</option>
+                    </select>
+                </div>
+                
+                <button type="submit" class="generate-btn">
+                    <i class="fas fa-download"></i> Generate Report
+                </button>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Statistics Summary -->
+    <div class="statistics-summary">
+        <div class="summary-card">
+            <div class="summary-icon">
+                <i class="fas fa-calendar-day"></i>
+            </div>
+            <div class="summary-info">
+                <div class="summary-value">{{ total_days }}</div>
+                <div class="summary-label">Total Days</div>
+            </div>
+        </div>
+        
+        <div class="summary-card">
+            <div class="summary-icon">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="summary-info">
+                <div class="summary-value">{{ students|length }}</div>
+                <div class="summary-label">Total Students</div>
+            </div>
+        </div>
+        
+        <div class="summary-card">
+            <div class="summary-icon">
+                <i class="fas fa-certificate"></i>
+            </div>
+            <div class="summary-info">
+                <div class="summary-value">{{ students|selectattr:"eligible_for_certificate"|list|length }}</div>
+                <div class="summary-label">Eligible for Certificate</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Certificate Eligibility Info -->
+    <div class="eligibility-info">
+        <div class="info-icon">
+            <i class="fas fa-info-circle"></i>
+        </div>
+        <div class="info-text">
+            Students need at least <strong>{{ threshold_percentage }}%</strong> attendance to be eligible for a certificate.
+        </div>
+    </div>
+    
+    <!-- Filter Container -->
+    <div class="filter-container">
+        <h3><i class="fas fa-filter"></i> Filter Attendance</h3>
+        
+        <form method="get" class="filter-form">
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label for="date">Specific Date:</label>
+                    <input type="date" id="date" name="date" class="form-control" 
+                           value="{{ date_filter|default:'' }}">
+                </div>
+                
+                <div class="filter-group">
+                    <label for="status">Attendance Status:</label>
+                    <select id="status" name="status" class="form-control">
+                        <option value="all" {% if attendance_status == 'all' or not attendance_status %}selected{% endif %}>All Students</option>
+                        <option value="present" {% if attendance_status == 'present' %}selected{% endif %}>Present Only</option>
+                        <option value="absent" {% if attendance_status == 'absent' %}selected{% endif %}>Absent Only</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label for="min_attendance">Min Attendance %:</label>
+                    <input type="number" id="min_attendance" name="min_attendance" 
+                           class="form-control" min="0" max="100" step="1"
+                           value="{{ min_attendance|default:'' }}" placeholder="0">
+                </div>
+                
+                <div class="filter-group">
+                    <label for="max_attendance">Max Attendance %:</label>
+                    <input type="number" id="max_attendance" name="max_attendance" 
+                           class="form-control" min="0" max="100" step="1"
+                           value="{{ max_attendance|default:'' }}" placeholder="100">
+                </div>
+            </div>
+            
+            <div class="filter-actions">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-search"></i> Apply Filters
+                </button>
+                <a href="{% url 'attendance_statistics' program.id %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-undo"></i> Reset Filters
+                </a>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Add this after the filter-container div -->
+    <div class="report-generation-container">
+        <h3><i class="fas fa-file-export"></i> Generate Reports</h3>
+        
+        <form method="get" action="{% url 'generate_attendance_report' program.id %}" class="report-form">
+            <!-- Pass current filters to the report -->
+            {% if date_filter %}<input type="hidden" name="date" value="{{ date_filter }}">{% endif %}
+            {% if min_attendance %}<input type="hidden" name="min_attendance" value="{{ min_attendance }}">{% endif %}
+            {% if max_attendance %}<input type="hidden" name="max_attendance" value="{{ max_attendance }}">{% endif %}
+            {% if attendance_status %}<input type="hidden" name="status" value="{{ attendance_status }}">{% endif %}
+            
+            <div class="report-options">
+                <div class="report-group">
+                    <label for="report_type">Report Type:</label>
+                    <select id="report_type" name="report_type" class="form-control">
+                        <option value="all">All Students</option>
+                        <option value="eligible">Certificate Eligible Only</option>
+                        <option value="not_eligible">Not Eligible for Certificate</option>
+                        <option value="perfect">Perfect Attendance</option>
+                        <option value="critical">Critical Attendance (<60%)</option>
+                        <option value="detailed">Detailed Day-by-Day Report</option>
+                    </select>
+                </div>
+                
+                <div class="report-group">
+                    <label for="format">File Format:</label>
+                    <select id="format" name="format" class="form-control">
+                        <option value="excel">Excel (.xlsx)</option>
+                        <option value="csv">CSV</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="report-actions">
+                <button type="submit" class="btn btn-success">
+                    <i class="fas fa-download"></i> Generate & Download Report
+                </button>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Students Table -->
+    <div class="students-table-container">
+        <div class="table-header">
+            <h3>Student Attendance</h3>
+            <div class="search-container">
+                <input type="text" id="studentSearch" placeholder="Search students..." onkeyup="searchStudents()">
+                <i class="fas fa-search"></i>
+            </div>
+        </div>
+        
+        {% if students %}
+        <table class="students-table" id="studentsTable">
+            <thead>
+                <tr>
+                    <th>Student Name</th>
+                    <th>Email</th>
+                    <th>Days Present</th>
+                    <th>Attendance %</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in students %}
+                <tr class="{% if student.eligible_for_certificate %}eligible{% else %}not-eligible{% endif %}">
+                    <td>{{ student.registration.student.name }}</td>
+                    <td>{{ student.registration.student.email }}</td>
+                    <td>{{ student.days_present }} / {{ student.total_days }}</td>
+                    <td>
+                        <div class="progress-container">
+                            <div class="progress">
+                                <div class="progress-bar {% if student.eligible_for_certificate %}bg-success{% else %}bg-danger{% endif %}" 
+                                     role="progressbar" 
+                                     style="width: {{ student.attendance_percentage }}%;" 
+                                     aria-valuenow="{{ student.attendance_percentage }}" 
+                                     aria-valuemin="0" 
+                                     aria-valuemax="100">
+                                    {{ student.attendance_percentage|floatformat:1 }}%
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        {% if student.eligible_for_certificate %}
+                        <span class="badge bg-success">
+                            <i class="fas fa-check-circle"></i> Eligible
+                        </span>
+                        {% else %}
+                        <span class="badge bg-danger">
+                            <i class="fas fa-times-circle"></i> Not Eligible
+                        </span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-icon">
+                <i class="fas fa-users-slash"></i>
+            </div>
+            <div class="empty-text">
+                <h4>No Students Found</h4>
+                <p>There are no students registered for this program.</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- Certificate Actions -->
+    <div class="certificate-actions">
+        <button class="btn btn-primary" onclick="generateCertificates()">
+            <i class="fas fa-certificate"></i> Generate Certificates
+        </button>
+        
+        <a href="{% url 'download_attendance_report' program.id %}?{% if date_filter %}date={{ date_filter }}{% endif %}{% if min_attendance %}&min_attendance={{ min_attendance }}{% endif %}{% if max_attendance %}&max_attendance={{ max_attendance }}{% endif %}{% if attendance_status %}&status={{ attendance_status }}{% endif %}" 
+           class="btn btn-success">
+            <i class="fas fa-file-csv"></i> Download Report
+        </a>
+        
+        <button class="btn btn-outline-primary" onclick="downloadEligibleList()">
+            <i class="fas fa-download"></i> Download Eligible List
+        </button>
+        
+        <a href="/expert/program/{{ program.id }}/certificate-preview/" class="btn btn-outline-info">
+            <i class="fas fa-eye"></i> Preview Certificate
+        </a>
+    </div>
+</div>
+
+<style>
+:root {
+    --primary-color: #4361ee;
+    --primary-light: #eef2ff;
+    --success-color: #2ecc71;
+    --success-light: #d4edda;
+    --danger-color: #e74c3c;
+    --danger-light: #f8d7da;
+    --warning-color: #f39c12;
+    --text-dark: #2c3e50;
+    --text-muted: #7f8c8d;
+    --border-color: #e9ecef;
+    --card-shadow: 0 4px 6px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.1);
+    --transition: all 0.3s ease;
+}
+
+.attendance-statistics-container {
+    padding: 25px;
+    max-width: 1200px;
+    margin: 0 auto;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.section-header {
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.header-content h1 {
+    color: var(--text-dark);
+    margin: 0;
+    font-size: 1.8rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+}
+
+.header-content h1 i {
+    margin-right: 10px;
+    color: var(--primary-color);
+}
+
+.header-content h2 {
+    color: var(--text-dark);
+    margin: 5px 0 0;
+    font-size: 1.2rem;
+    font-weight: 500;
+}
+
+.header-content p {
+    color: var(--text-muted);
+    margin: 5px 0 0;
+    font-size: 0.9rem;
+}
+
+.header-actions .btn {
+    padding: 8px 15px;
+    border-radius: 5px;
+    display: inline-flex;
+    align-items: center;
+    font-weight: 500;
+    transition: var(--transition);
+}
+
+.header-actions .btn i {
+    margin-right: 5px;
+}
+
+.statistics-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.summary-card {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    box-shadow: var(--card-shadow);
+    transition: var(--transition);
+}
+
+.summary-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+}
+
+.summary-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+    font-size: 1.5rem;
+    background-color: var(--primary-light);
+    color: var(--primary-color);
+}
+
+.summary-info {
+    flex: 1;
+}
+
+.summary-value {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: var(--text-dark);
+    line-height: 1;
+}
+
+.summary-label {
+    color: var(--text-muted);
+    margin-top: 5px;
+    font-size: 0.9rem;
+}
+
+.eligibility-info {
+    background: var(--primary-light);
+    border-radius: 10px;
+    padding: 15px 20px;
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+}
+
+.info-icon {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    margin-right: 15px;
+}
+
+.info-text {
+    color: var(--text-dark);
+    font-size: 0.95rem;
+}
+
+.filter-container {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: var(--card-shadow);
+    margin-bottom: 30px;
+}
+
+.filter-container h3 {
+    margin: 0 0 15px;
+    color: var(--text-dark);
+    font-size: 1.2rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+}
+
+.filter-container h3 i {
+    margin-right: 8px;
+    color: var(--primary-color);
+}
+
+.filter-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.filter-row {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.filter-group {
+    flex: 1;
+    min-width: 200px;
+}
+
+.filter-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: var(--text-dark);
+    font-size: 0.9rem;
+}
+
+.filter-group .form-control {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    font-size: 0.95rem;
+    transition: var(--transition);
+}
+
+.filter-group .form-control:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+}
+
+.filter-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.students-table-container {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: var(--card-shadow);
+    margin-bottom: 30px;
+}
+
+.table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.table-header h3 {
+    margin: 0;
+    color: var(--text-dark);
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.search-container {
+    position: relative;
+    width: 250px;
+}
+
+.search-container input {
+    width: 100%;
+    padding: 8px 15px 8px 35px;
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    font-size: 0.9rem;
+    transition: var(--transition);
+}
+
+.search-container input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+}
+
+.search-container i {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+}
+
+.students-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.students-table th,
+.students-table td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.students-table th {
+    background: #f8f9fa;
+    font-weight: 600;
+    color: var(--text-dark);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.students-table tr:hover {
+    background-color: #f8f9fa;
+}
+
+.students-table tr.eligible {
+    background-color: rgba(46, 204, 113, 0.05);
+}
+
+.students-table tr.not-eligible {
+    background-color: rgba(231, 76, 60, 0.05);
+}
+
+.progress-container {
+    width: 100%;
+    max-width: 200px;
+}
+
+.progress {
+    height: 10px;
+    border-radius: 5px;
+    background-color: #f1f1f1;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    text-align: center;
+    color: white;
+    font-size: 0.7rem;
+    line-height: 10px;
+    transition: width 0.6s ease;
+}
+
+.badge {
+    padding: 6px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+}
+
+.badge i {
+    margin-right: 5px;
+}
+
+.empty-state {
+    padding: 50px 0;
+    text-align: center;
+}
+
+.empty-icon {
+    font-size: 3rem;
+    color: var(--text-muted);
+    opacity: 0.5;
+    margin-bottom: 15px;
+}
+
+.empty-text h4 {
+    color: var(--text-dark);
+    margin: 0 0 10px;
+    font-size: 1.2rem;
+}
+
+.empty-text p {
+    color: var(--text-muted);
+    margin: 0;
+}
+
+.certificate-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.certificate-actions .btn {
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    transition: var(--transition);
+}
+
+.certificate-actions .btn i {
+    margin-right: 8px;
+}
+
+.certificate-actions .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.report-generation-container {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: var(--card-shadow);
+    margin-bottom: 30px;
+}
+
+.report-generation-container h3 {
+    margin: 0 0 15px;
+    color: var(--text-dark);
+    font-size: 1.2rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+}
+
+.report-generation-container h3 i {
+    margin-right: 8px;
+    color: var(--success-color);
+}
+
+.report-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.report-options {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.report-group {
+    flex: 1;
+    min-width: 200px;
+}
+
+.report-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: var(--text-dark);
+    font-size: 0.9rem;
+}
+
+.report-group .form-control {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    font-size: 0.95rem;
+    transition: var(--transition);
+}
+
+.report-group .form-control:focus {
+    outline: none;
+    border-color: var(--success-color);
+    box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.1);
+}
+
+.report-actions {
+    display: flex;
+    justify-content: flex-start;
+    margin-top: 10px;
+}
+
+.report-actions .btn-success {
+    background-color: var(--success-color);
+    border-color: var(--success-color);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 5px;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    transition: var(--transition);
+}
+
+.report-actions .btn-success i {
+    margin-right: 8px;
+}
+
+.report-actions .btn-success:hover {
+    background-color: #27ae60;
+    border-color: #27ae60;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+@media (max-width: 768px) {
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .statistics-summary {
+        grid-template-columns: 1fr;
+    }
+    
+    .table-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    
+    .search-container {
+        width: 100%;
+    }
+    
+    .certificate-actions {
+        flex-direction: column;
+    }
+    
+    .filter-row {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .filter-group {
+        width: 100%;
+    }
+    
+    .filter-actions {
+        flex-direction: column;
+    }
+    
+    .report-options {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .report-group {
+        width: 100%;
+    }
+}
+
+/* Quick Report Generation styles */
+.quick-report-container {
+    background: linear-gradient(135deg, #4361ee, #3a0ca3);
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    margin-bottom: 30px;
+    color: white;
+}
+
+.quick-report-header h3 {
+    margin: 0 0 15px;
+    font-size: 1.3rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    color: white;
+}
+
+.quick-report-header h3 i {
+    margin-right: 10px;
+    color: #f8f9fa;
+}
+
+.quick-report-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.quick-report-controls {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.report-select-group {
+    flex: 1;
+    min-width: 200px;
+}
+
+.report-select-group .form-control {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid rgba(255,255,255,0.2);
+    background-color: rgba(255,255,255,0.1);
+    color: white;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='white' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px;
+}
+
+.report-select-group .form-control:focus {
+    outline: none;
+    border-color: rgba(255,255,255,0.5);
+    box-shadow: 0 0 0 3px rgba(255,255,255,0.1);
+}
+
+.report-select-group .form-control option {
+    background-color: #4361ee;
+    color: white;
+}
+
+.generate-btn {
+    background-color: #f8f9fa;
+    color: #4361ee;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    min-width: 180px;
+}
+
+.generate-btn i {
+    margin-right: 8px;
+}
+
+.generate-btn:hover {
+    background-color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+@media (max-width: 768px) {
+    .quick-report-controls {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .report-select-group {
+        width: 100%;
+    }
+    
+    .generate-btn {
+        width: 100%;
+    }
+}
+</style>
+
+<script>
+function searchStudents() {
+    const input = document.getElementById('studentSearch');
+    const filter = input.value.toUpperCase();
+    const table = document.getElementById('studentsTable');
+    const rows = table.getElementsByTagName('tr');
+    
+    for (let i = 1; i < rows.length; i++) {
+        const nameCell = rows[i].getElementsByTagName('td')[0];
+        const emailCell = rows[i].getElementsByTagName('td')[1];
+        
+        if (nameCell && emailCell) {
+            const nameText = nameCell.textContent || nameCell.innerText;
+            const emailText = emailCell.textContent || emailCell.innerText;
+            
+            if (nameText.toUpperCase().indexOf(filter) > -1 || emailText.toUpperCase().indexOf(filter) > -1) {
+                rows[i].style.display = '';
+            } else {
+                rows[i].style.display = 'none';
+            }
+        }
+    }
+}
+
+function generateCertificates() {
+    // Placeholder for certificate generation functionality
+    Swal.fire({
+        title: 'Generate Certificates',
+        text: 'This will generate certificates for all eligible students. Continue?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, generate certificates',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            Swal.fire({
+                title: 'Processing',
+                text: 'Generating certificates...',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+            
+            // Simulate API call
+            setTimeout(() => {
+                Swal.fire({
+                    title: 'Success!',
+                    text: 'Certificates have been generated successfully.',
+                    icon: 'success'
+                });
+            }, 2000);
+        }
+    });
+}
+
+function downloadEligibleList() {
+    // Placeholder for download functionality
+    Swal.fire({
+        title: 'Download Started',
+        text: 'The list of eligible students is being downloaded.',
+        icon: 'success',
+        timer: 2000,
+        showConfirmButton: false
+    });
+}
+</script>
+{% endblock %} 

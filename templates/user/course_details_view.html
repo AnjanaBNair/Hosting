@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Next-Edge</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.0/sweetalert2.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.dataTables.min.css">
+    <style>
+        .container {
+            width: 800px;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        h1 {
+            color: #0a2e53;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+            text-align: center;
+            margin-left: 10px;
+        }
+
+        h2 {
+            color: #34495e;
+            font-size: 1.8em;
+            margin: 20px 0 10px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 5px;
+            display: inline-block;
+        }
+
+        .section {
+            width: 300px;
+            margin-left: 200px;
+        }
+
+        .details-section {
+            margin-bottom: 20px;
+            margin-left: -210px;
+            border-radius: 8px;
+            padding-bottom: 10px;
+            width: 1000px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            background-color: #ecf0f1;
+
+        }
+
+        .details-section p {
+            margin: 10px 0;
+        }
+
+        .details-section strong {
+            color: #2c3e50;
+        }
+
+        .module {
+            margin-bottom: 15px;
+            background-color: #f9f9f9;
+            /* Update to your desired color */
+            border-radius: 5px;
+            width: 950px;
+            padding: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            color: #333;
+            /* Text color for better readability */
+        }
+
+        .module-header {
+            font-weight: bold;
+            cursor: pointer;
+            background-color: #3498db;
+            /* Background color for the header */
+            color: white;
+            /* Text color for the header */
+            padding: 10px;
+            width: 900px;
+            border-radius: 5px;
+            margin-bottom: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .module-header:hover {
+            background-color: #2980b9;
+            /* Hover color for the header */
+        }
+
+        .module-content {
+            display: none;
+            padding-left: 20px;
+            border-left: 2px solid #3498db;
+            /* Border color */
+            background-color: #f9f9f9;
+            /* Background color for the content */
+            color: #333;
+            /* Text color for the content */
+        }
+
+
+        .module-content ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .module-content ul li {
+            padding: 5px 0;
+        }
+
+        /* Style for the button within a link */
+        a {
+            text-decoration: none;
+            /* Remove default underline from links */
+        }
+
+        a .btn {
+            display: inline-block;
+            margin-left: 850px;
+            padding: 8px 8px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #052e50;
+            border: none;
+            width: 100px;
+            border-radius: 5px;
+            text-decoration: none;
+            /* Remove default underline from links */
+            text-align: center;
+            transition: background-color 0.3s ease;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            margin-top:50px;
+            margin-left:100px;
+            background-color: rgba(0, 0, 0, 0.7);
+            overflow-y: auto; /* Enable vertical scrolling */
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 1000px;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Video container styling */
+        .video-container {
+            position: relative;
+            width: 100%;
+            padding-top: 56.25%; /* 16:9 Aspect Ratio */
+            margin-bottom: 20px;
+        }
+
+        .video-container video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 8px;
+        }
+
+        /* Close button styling */
+        .close {
+            position: absolute;
+            right: 15px;
+            top: 15px;
+            color: #666;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 1;
+            width: 30px;
+            height: 30px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .close:hover {
+            color: #000;
+            background: #f0f0f0;
+        }
+
+        /* Transcription section styling */
+        .transcription-container {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        /* Make sure modal is centered on larger screens */
+        @media (min-width: 768px) {
+            .modal {
+                display: none;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .modal-content {
+                margin: auto;
+                max-height: 90vh;
+                overflow-y: auto;
+            }
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 767px) {
+            .modal-content {
+                width: 95%;
+                margin: 10px auto;
+                padding: 15px;
+            }
+
+            .video-container {
+                padding-top: 75%; /* 4:3 Aspect Ratio for mobile */
+            }
+        }
+
+        /* Custom scrollbar for modal content */
+        .modal-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .modal-content::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        .modal-content::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+
+        .modal-content::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        .progress {
+            width: 100%;
+            height: 5px;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: #007bff;
+            width: 0%;
+            border-radius: 5px;
+        }
+
+        .transcription-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .transcription-header h3 {
+            color: #2d3748;
+            margin: 0;
+            font-size: 1.25rem;
+        }
+
+        .language-selector select {
+            padding: 8px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            background: white;
+            color: #4a5568;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .language-selector select:hover {
+            border-color: #4361ee;
+        }
+
+        .transcription-content {
+            position: relative;
+        }
+
+        .transcription-text {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #4a5568;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            min-height: 100px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .transcription-loader {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #4361ee;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Scrollbar Styling */
+        .transcription-text::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .transcription-text::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        .transcription-text::-webkit-scrollbar-thumb {
+            background: #cbd5e0;
+            border-radius: 4px;
+        }
+
+        .transcription-text::-webkit-scrollbar-thumb:hover {
+            background: #a0aec0;
+        }
+
+        /* Add these styles */
+        .transcription-section {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .transcription-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .transcription-container {
+            position: relative;
+            min-height: 100px;
+        }
+
+        .loader {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .transcription-text {
+            padding: 15px;
+            background: white;
+            border-radius: 4px;
+            min-height: 100px;
+            max-height: 300px;
+            overflow-y: auto;
+            line-height: 1.6;
+        }
+
+        .transcription-content {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+
+        .transcription-content small {
+            color: #6c757d;
+            display: block;
+            margin-top: 10px;
+        }
+
+        .audio-player {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .audio-player h4 {
+            margin: 0 0 10px 0;
+            color: #495057;
+        }
+
+        .audio-player audio {
+            width: 100%;
+            height: 40px;
+        }
+
+        .error-message {
+            background: #fff3cd;
+            color: #856404;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+
+        .error-message button {
+            background: #856404;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+
+        .error-message button:hover {
+            background: #6d5204;
+        }
+    </style>
+</head>
+
+<body>
+
+    {% load static %}
+    {% include 'user/studentindex.html' %}
+    {% if not enrollment and not enrollment.status %}
+    {% if course.payment == 'paid' %}
+    <!-- Paid course logic -->
+    <a href="{% url 'payment' course.id %}">
+        <div class="container">
+            <button style="
+            background-color: #f57905; 
+            color: #ffffff; 
+            border: none; 
+            border-radius: 5px; 
+            padding: 10px 20px; 
+            font-size: 16px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            display: inline-flex; 
+            align-items: center; 
+            margin-left:800px;
+            transition: background-color 0.3s, transform 0.3s;
+        ">
+                <i class="fas fa-graduation-cap" style="margin-right: 10px;"></i> Enroll Now
+            </button>
+    </a>
+    {% elif course.payment == 'free' %}
+    <!-- Free course logic -->
+    <a href="{% url 'enroll_course' course.id %}">
+
+        <div class="container">
+
+            <button style="
+            background-color: #f57905; 
+            color: #ffffff; 
+            border: none; 
+            border-radius: 5px; 
+            padding: 10px 20px; 
+            font-size: 16px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            display: inline-flex; 
+            align-items: center; 
+            margin-left:800px;
+            transition: background-color 0.3s, transform 0.3s;
+        ">
+                <i class="fas fa-graduation-cap" style="margin-right: 10px;"></i> Enroll Now
+            </button>
+    </a>
+
+    {% else %}
+    <p>Payment type not specified or unknown</p>
+    {% endif %}
+
+    {% endif %}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            {% if messages %}
+            {% for message in messages %}
+            // Check if the message type is success
+            if ('{{ message.tags }}' === 'success') {
+                Swal.fire({
+                    title: 'Success!',
+                    text: '{{ message }}',
+                    icon: 'success',
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'OK'
+                });
+            }
+            {% endfor %}
+            {% endif %}
+        });
+    </script>
+    <h1 style="color:rgb(5, 21, 66);"><b>Course Details</b>
+    </h1>
+    <br>
+    <div class="section">
+
+        {% if certificate_instance %}
+        <div class="details-section"
+        style="margin-bottom: 20px; padding: 20px; background-color: #ecf0f1; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+
+    <!-- Success message -->
+    <h2 style="color: #27ae60; font-size: 24px; font-weight: bold; margin-bottom: 12px;">Congratulations!</h2>
+    <p style="font-size: 18px; color: #104c88; margin-bottom: 20px;">
+        You have successfully completed the course. Claim your certificate now! <a href="{% url 'certificate' course.id %}" class="certificate-btn"
+        style="display: inline-block; padding: 8px 8px; background-color: #3498db; color: #fff; text-decoration: none; font-size: 16px; border-radius: 6px; transition: background-color 0.3s ease; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+        
+        <!-- Preview Icon (Using FontAwesome or similar) -->
+        <span style="margin-right: 8px; font-size: 16px;">
+            <i class="fas fa-eye"></i> <!-- FontAwesome Eye Icon -->
+        </span>
+        
+        Preview Certificate
+     </a>
+     
+     <!-- Add this in the <head> or before </body> for the FontAwesome icons to work -->
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+     
+    </p>
+
+    <!-- Button for previewing certificate -->
+   
+</div>
+        {% endif %}
+       
+
+        <div class="details-section"
+            style="margin-bottom: 20px; padding: 20px; background-color: #ecf0f1; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+            <div style="font-size: 1.8em; color: #34495e; margin-bottom: 20px;">
+                <h2>Course</h2>
+            </div>
+            <div style="display: flex; align-items: flex-start;">
+                <img src="{{ course.content.url }}" alt="Course Image"
+                    style="border-radius: 8px; max-width: 300px; height: auto; margin-right: 20px;">
+                <div style="flex: 1;">
+                    <p><strong>Name:</strong> {{ course.name }}</p>
+                    <p><strong>Description:</strong> {{ course.description }}</p>
+                    <p><strong>Mode:</strong> {{ course.mode }}</p>
+                    <p><strong>Payment:</strong> {{ course.payment }}</p>
+                    {% if course.payment == 'paid' %}
+                            <p><strong>Amount:</strong> ₹ {{ course.amount }}</p>
+                            {% endif %}
+                    <div class="progress"
+                        style="width: 100%; height: 30px; background-color: #aeb4c494; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); position: relative;">
+                        <div id="progress-bar" class="progress-bar" role="progressbar"
+                            style="width: {{ progress }}%; height: 100%; background: linear-gradient(90deg, #4caf50, #81c784); transition: width 0.4s ease; display: flex; align-items: center; justify-content: center; border-radius: 10px; position: relative;">
+                            <span id="progress-text"
+                                style="color: white; font-weight: bold; font-size: 14px; position: absolute; right: 10px; top: 50%; transform: translateY(-50%);"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="details-section">
+            <h2>Syllabus</h2>
+            {% for module in modules %}
+            <div class="module">
+                <div class="module-header" onclick="toggleModuleContent(this)">
+                    <i class="fas fa-plus"></i> Module {{ forloop.counter }} : {{ module.name }}
+                </div>
+                <div class="module-content">
+                    <ul>
+                        {% for topic in topics %}
+                        {% if topic.module == module %}
+                        {% if enrollment and enrollment.status %}
+                        <li
+                            style="margin-bottom: 15px; padding: 10px; border: 1px solid #ddd; border-radius: 5px; background-color: #f9f9f9;">
+                            <div style="display: flex; align-items: center; font-size: 16px; font-weight: 600;">
+                                <span style="color: #007bff; margin-right: 5px;">Topic {{ forloop.counter }}:</span>
+                                <span style="color: #002a9c; margin-right: auto;">{{ topic.name }}</span>
+                                
+                                <!-- Add video status indicator -->
+                                <span id="status_{{ topic.id }}" class="video-status" style="margin-right: 10px;">
+                                    {% if topic.id in watched_videos_ids %}
+                                    <i class="fas fa-check-circle" style="color: #28a745;"></i>
+                                    {% endif %}
+                                </span>
+
+                                <form action="{% url 'update_video_progress' %}" method="POST" id="progressForm_{{ topic.id }}" style="display: inline;">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="video_id" value="{{ topic.id }}">
+                                    <button type="button" onclick="submitProgressForm('{{ topic.id }}')"
+                                        style="background-color: #007bff; color: white; border: none; border-radius: 50%; width: 25px; height: 25px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 10px; transition: background-color 0.3s, transform 0.3s; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
+                                        <i class="fa fa-play" aria-hidden="true"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </li>
+                        <li>{{ topic.description }}</li>
+
+                        {% else %}
+                        <li><b>Topic : </b>{{ topic.name }}</li>
+                        {% endif %}
+                        {% endif %}
+                      
+
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div id="videoModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal()">&times;</span>
+                
+                <div class="video-container">
+                    <video id="modalVideo" controls>
+                        <source id="videoSource" src="" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+
+                <!-- Transcription Section -->
+                <div class="transcription-section">
+                    <div class="transcription-header">
+                        <h3>Video Transcription</h3>
+                        <select id="languageSelect" onchange="translateTranscription()">
+                            <option value="en">English</option>
+                            <option value="hi">Hindi</option>
+                            <option value="ml">Malayalam</option>
+                        </select>
+                    </div>
+                    
+                    <div id="transcriptionContainer" class="transcription-container">
+                        <div id="transcriptionLoader" style="display:none;">Loading...</div>
+                        <div id="transcriptionText" class="transcription-text"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if progress == 100.0 %}
+        <div class="details-section">
+            <h2>Quiz</h2>
+
+            <div class="module">
+                <div class="module-header" onclick="toggleModuleContent(this)">
+                    <i class="fas fa-plus"></i> Quiz
+                </div>
+                {% if quiz %}
+                <div class="module-content">
+                    <a href="{% url 'quiz' course.id %}" class="quiz-button" style="display: inline-block; 
+          padding: 10px 20px; 
+          font-size: 16px; 
+          color: white; 
+          background-color: #0d5457; 
+          border: none; 
+          border-radius: 5px; 
+          text-align: center; 
+          text-decoration: none; 
+          width:180px;
+          transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease; 
+          box-shadow: 0 4px 8px rgba(102, 98, 98, 0.2); 
+          cursor: pointer;">
+                        <i class="fa fa-pencil" aria-hidden="true" style="margin-right: 5px;"></i>
+                        Attempt Quiz
+                    </a>
+                    {% else %}
+                    <li>No quiz questions available.</li>
+                    {% endif %}
+
+                    <script>
+                        const buttons = document.querySelectorAll('.quiz-button');
+
+                        buttons.forEach(button => {
+                            button.addEventListener('mouseover', function () {
+                                this.style.backgroundColor = '#0056b3'; // Darker blue on hover
+                                this.style.transform = 'scale(1.05)'; // Slightly enlarge
+                                this.style.boxShadow = '0 8px 16px rgba(0, 0, 0, 0.3)'; // Enhanced shadow on hover
+                            });
+
+                            button.addEventListener('mouseout', function () {
+                                this.style.backgroundColor = '#007bff'; // Reset color
+                                this.style.transform = 'scale(1)'; // Reset size
+                                this.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)'; // Reset shadow
+                            });
+                        });
+                    </script>
+
+
+
+                </div>
+                {% endif %}
+
+            </div>
+            <a href="{% url 'courses' %}"><button class="btn"><i class='bx bx-arrow-back'></i> Back</button></a>
+
+        </div>
+
+        <script>
+            function submitProgressForm(topicId) {
+                const formId = `progressForm_${topicId}`;
+                const form = document.getElementById(formId);
+
+                if (form) {
+                    const formData = new FormData(form);
+
+                    fetch(form.action, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            playContent(data.video_name, data.video_url);
+                        } else {
+                            alert('Failed to update progress');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+                } else {
+                    console.error("Form not found for topic ID:", topicId);
+                }
+            }
+
+            async function loadTranscription(videoUrl, topicId) {
+                const loader = document.getElementById('transcriptionLoader');
+                const transcriptionText = document.getElementById('transcriptionText');
+                
+                if (!loader || !transcriptionText) {
+                    console.error('Required elements not found in DOM');
+                    return;
+                }
+            
+                try {
+                    console.log("Fetching transcription for video:", videoUrl, "Topic ID:", topicId);
+            
+                    // Show loader while waiting for the response
+                    loader.style.display = 'flex';
+                    transcriptionText.innerHTML = '';
+            
+                    let cleanVideoUrl = videoUrl;
+                    if (cleanVideoUrl.startsWith('/media/')) {
+                        cleanVideoUrl = cleanVideoUrl.substring(7); // Remove /media/ prefix
+                    }
+            
+                    console.log("Cleaned video URL for API:", cleanVideoUrl);
+            
+                    const response = await fetch('/api/transcribe/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                        },
+                        body: JSON.stringify({
+                            video_url: cleanVideoUrl,
+                            topic_id: topicId
+                        })
+                    });
+            
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch transcription');
+                    }
+            
+                    const data = await response.json();
+                    console.log("Data from backend:", data);
+            
+                    if (data.success) {
+                        // Display the transcription
+                        transcriptionText.innerHTML = `
+                            <div class="transcription-content">
+                                <p>${data.transcription}</p>
+                            </div>
+                        `;
+                    } else {
+                        throw new Error(data.error || 'Transcription failed');
+                    }
+                } catch (error) {
+                    console.error("Transcription error:", error);
+                    transcriptionText.innerHTML = `
+                        <div class="error-message">
+                            <p>Error: ${error.message}</p>
+                            <button onclick="loadTranscription('${videoUrl.replace(/'/g, "\\'")}', ${topicId})">
+                                Retry Transcription
+                            </button>
+                        </div>
+                    `;
+                } finally {
+                    loader.style.display = 'none';
+                }
+            }
+            
+            
+            async function translateTranscription() {
+                const transcriptionText = document.getElementById('transcriptionText');
+                const originalText = transcriptionText.textContent;
+                const targetLanguage = document.getElementById('languageSelect').value;
+                
+                if (!originalText.trim()) return;
+                
+                try {
+                    const response = await fetch('/api/translate/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                        },
+                        body: JSON.stringify({
+                            text: originalText,
+                            target_language: targetLanguage
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        transcriptionText.innerHTML = `<p>${data.translated_text}</p>`;
+                    } else {
+                        throw new Error(data.error);
+                    }
+                } catch (error) {
+                    console.error("Translation error:", error);
+                    alert("Translation failed: " + error.message);
+                }
+            }
+
+            function playContent(videoName, videoUrl) {
+                console.log("Original video URL:", videoUrl);
+                
+                // Clean the video URL
+                videoUrl = videoUrl.replace(/\\/g, '/');
+                console.log("Cleaned video URL:", videoUrl);
+                
+                const videoSource = document.getElementById('videoSource');
+                videoSource.src = videoUrl;
+                
+                const modalVideo = document.getElementById('modalVideo');
+                modalVideo.load();
+                
+                const modal = document.getElementById('videoModal');
+                modal.style.display = 'flex';
+                
+                modalVideo.play();
+                
+                // Pass the full URL to loadTranscription
+                loadTranscription(videoUrl);
+            }
+
+            function closeModal() {
+                const modal = document.getElementById('videoModal');
+                const modalVideo = document.getElementById('modalVideo');
+                modalVideo.pause();
+                modalVideo.currentTime = 0;
+                modal.style.display = 'none';
+                
+                // Reset transcription
+                document.getElementById('transcriptionText').innerHTML = '';
+                document.getElementById('languageSelect').value = 'en';
+            }
+
+            window.onclick = function(event) {
+                const modal = document.getElementById('videoModal');
+                if (event.target === modal) {
+                    closeModal();
+                }
+            }
+
+            function toggleModuleContent(header) {
+                var content = header.nextElementSibling;
+                var icon = header.querySelector('i');
+
+                if (content.style.display === "block") {
+                    content.style.display = "none";
+                    icon.className = "fas fa-plus";
+                } else {
+                    content.style.display = "block";
+                    icon.className = "fas fa-minus";
+                }
+            }
+
+            // Add this to prevent body scrolling when modal is open
+            function toggleBodyScroll(disable) {
+                document.body.style.overflow = disable ? 'hidden' : '';
+            }
+        </script>
+</body>
+
+</html>

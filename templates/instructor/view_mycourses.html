@@ -1,0 +1,457 @@
+{% load static %}
+{% include 'instructor/instructorindex.html' %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Next-Edge</title>
+    <style>
+        /* Existing Styles */
+        /* Global Styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 1000px;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 16px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9f9f9;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .input-field:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+            outline: none;
+        }
+
+        .add-new-course-btn, .add-new-module-btn {
+            display: block;
+            margin: 20px 0;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .add-new-course-btn:hover, .add-new-module-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .modules-table, .courses-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 30px;
+        }
+
+        .modules-table th, .courses-table th {
+            background-color: #007bff;
+            color: white;
+            padding: 12px;
+            font-weight: normal;
+            border-top: 1px solid #dee2e6;
+            border-bottom: 2px solid #dee2e6;
+            text-align: left;
+        }
+
+        .modules-table td, .courses-table td {
+            padding: 12px;
+            border-bottom: 1px solid #dee2e6;
+            vertical-align: top;
+        }
+
+        .add-topic-btn, .expand-btn, .save-topic-btn {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .add-topic-btn:hover, .expand-btn:hover, .save-topic-btn:hover {
+            background-color: #218838;
+        }
+
+        .topics-list {
+            padding-left: 15px;
+            display: none; /* Initially hidden */
+            margin-top: 10px;
+        }
+
+        .topics-list div {
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+            padding-top: 60px;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .modal .save-module-btn, .modal .save-topic-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .modal .save-module-btn:hover, .modal .save-topic-btn:hover {
+            background-color: #0056b3;
+        }
+
+        /* No Modules Found message */
+        .no-modules {
+            text-align: center;
+            padding: 20px;
+            font-style: italic;
+            color: #999;
+        }
+
+        .delete-btn, .delete-topic-btn {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-left: 10px;
+        }
+        .save-btn{
+            background-color: #0d4688;
+            color: white;
+            border: none;
+            padding: 10px 10px;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-left: 10px;
+        }
+        .save-btn:hover, .save-btn:hover {
+            background-color: #1497d3;
+        }
+
+        .delete-btn:hover, .delete-topic-btn:hover {
+            background-color: #c82333;
+        }
+        .course-item {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 20px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgb(0, 0, 0);
+            font-family: 'Arial', sans-serif;
+            position: relative;
+        }
+        
+        /* Header styling for course name */
+        .course-header {
+            font-size: 25px;
+            font-weight: bold;
+            color: #2b08c7;
+            margin-bottom: 10px;
+        }
+        
+        /* Styling for course description */
+        .course-description  {
+            font-size: 15px;
+            color: #3414c0;
+            margin: 0;
+        }
+        
+        /* Styling for course details (payment and mode) */
+        .course-details p {
+            margin: 5px 0;
+            font-size: 15px;
+            color: #0f1c92;
+        }
+        
+        #courseStatus {
+            font-weight: bold;  /* Make the text bold */
+            font-size: 14px;
+            margin-top: -15px; 
+            margin-bottom:5px;  /* Reduce the margin between input and message */
+        display: block; 
+        }
+    
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Add New Course Section -->
+        <div id="courseSection">
+            {% if department and department.active %}
+            <h2>Add New Course</h2>
+            <form action="{% url 'add_course' %}" method="POST" id="yourFormId" enctype="multipart/form-data">
+                {% csrf_token %}
+    
+                <!-- Course Name Input -->
+                <input type="text" name="name" id="courseName" placeholder="Course Name" class="input-field" required>
+                <span id="courseStatus"></span> <!-- To display availability status -->
+        
+    <script>
+        document.getElementById("courseName").addEventListener("input", function() {
+            var courseNameInput = document.getElementById("courseName").value;
+            var courseStatus = document.getElementById("courseStatus");
+            var submitButton = document.getElementById('addNewCourseBtn');
+        
+            // Check if the first character is a space
+            if (courseNameInput.startsWith(" ")) {
+                courseStatus.textContent = "Course name cannot start with a space.";  // Display error message
+                courseStatus.style.color = 'red';
+                submitButton.disabled = true;  // Disable submit button
+            } else if (courseNameInput.trim().length === 0) {
+                // If input is empty or only contains spaces
+                courseStatus.textContent = "Course name cannot be empty.";  // Display error message
+                courseStatus.style.color = 'red';
+                submitButton.disabled = true;  // Disable submit button
+            } else {
+                courseStatus.textContent = "";  // Clear error message if condition is met
+                submitButton.disabled = false;  // Enable submit button when valid input is entered
+            }
+        });
+        
+        
+    </script>
+                <!-- JavaScript for AJAX request -->
+                <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                <script>
+                    $(document).ready(function() {
+                        $('#courseName').on('input', function() {
+                            var courseName = $(this).val().trim();  // Trim spaces from the input
+    
+                            // If input is cleared, remove the error message and disable the submit button
+                            if (courseName.length === 0) {
+                                $('#courseStatus').html('').css('color', '');
+                                $('#addNewCourseBtn').prop('disabled', true);  // Disable submit button if input is empty
+                                return;
+                            }
+    
+                            // Make an AJAX call to check if the course name exists
+                            $.ajax({
+                                url: "{% url 'check_course_name' %}",  // URL to your Django view
+                                data: {
+                                    'name': courseName
+                                },
+                                dataType: 'json',
+                                success: function(data) {
+                                    if (data.exists_exact) {
+                                        $('#courseStatus').html('✗ Course name already exists!').css({'color': 'red', 'font-weight': 'bold'});
+                                        $('#addNewCourseBtn').prop('disabled', true);  // Disable submit button
+                                    } else if (data.exists_similar) {
+                                        $('#courseStatus').html('⚠ Similar course name exists!').css({'color': 'orange', 'font-weight': 'bold'});
+                                        $('#addNewCourseBtn').prop('disabled', false); // Enable submit button (if only similar)
+                                    } 
+                                }
+                            });
+                        });
+                    });
+                </script>
+    
+                <!-- Course Description Input -->
+                <input type="text" name="description" id="courseDescription" placeholder="Course Description" class="input-field" required>
+                <span id="descriptionStatus"></span> <!-- To display availability status -->
+                <script>
+                    document.getElementById("courseDescription").addEventListener("input", function() {
+                        var courseDescriptionInput = document.getElementById("courseDescription").value;
+                        var descriptionStatus = document.getElementById("descriptionStatus");
+                        var submitButton = document.getElementById('addNewCourseBtn');  // Assuming you have a submit button with this ID
+                    
+                        // Check if the first character is a space
+                        if (courseDescriptionInput.startsWith(" ")) {
+                            descriptionStatus.textContent = "Course description cannot start with a space.";  // Display error message
+                            descriptionStatus.style.color = 'red';
+                            descriptionStatus.style.fontWeight = 'bold';  // Make the text bold
+                            submitButton.disabled = true;  // Disable submit button
+                        } else if (courseDescriptionInput.trim().length === 0) {
+                            // If input is empty or only contains spaces
+                            descriptionStatus.textContent = "Course description cannot be empty.";  // Display error message
+                            descriptionStatus.style.color = 'red';
+                            descriptionStatus.style.fontWeight = 'bold';  // Make the text bold
+                            submitButton.disabled = true;  // Disable submit button
+                        } else {
+                            descriptionStatus.textContent = "";  // Clear error message if condition is met
+                            submitButton.disabled = false;  // Enable submit button when valid input is entered
+                        }
+                    });
+                </script>
+                                
+    
+                <!-- Course Type Dropdown -->
+                <select name="course_type" id="courseType" class="input-field" required>
+                    <option value="" disabled selected>Select Course Type</option>
+                    {% for type in course_types %}
+                        <option value="{{ type.subdept }}">{{ type.subdept }}</option>
+                    {% endfor %}
+                    <option value="Other">Other</option>
+                </select>
+    
+                <!-- New Course Type Input (if Other is selected) -->
+                <div id="otherTypeContainer" style="display: none;">
+                    <input type="text" name="new_course_type" id="newCourseType" placeholder="Enter new course type" class="input-field">
+                </div>
+    
+                <!-- Show/Hide Course Type Input -->
+                <script>
+                    document.getElementById('courseType').addEventListener('change', function() {
+                        var selectedValue = this.value;
+                        var otherTypeContainer = document.getElementById('otherTypeContainer');
+    
+                        if (selectedValue === 'Other') {
+                            otherTypeContainer.style.display = 'block';
+                        } else {
+                            otherTypeContainer.style.display = 'none';
+                        }
+                    });
+                </script>
+    
+                <!-- Payment Option -->
+                <div>
+                    <p>Payment:</p>
+                    <label><input type="radio" name="payment" value="free" checked> Free</label>
+                    <label><input type="radio" name="payment" value="paid"> Paid</label>
+                </div>
+    
+                <!-- Price Input for Paid Courses -->
+                <div id="price-container" style="display: none;">
+                    <label for="price">Enter Price:</label>
+                    <input type="number" id="price" class="input-field" name="price" min="499" placeholder="Enter price">
+                    <p id="price-error" style="color: red; display: none;">Price must be at least 499.</p>
+                </div>
+    
+                <!-- Show/Hide Price Input Based on Payment Option -->
+                <script>
+                    const paymentOptions = document.getElementsByName('payment');
+                    const priceContainer = document.getElementById('price-container');
+                    const priceInput = document.getElementById('price');
+                    const priceError = document.getElementById('price-error');
+    
+                    paymentOptions.forEach(option => {
+                        option.addEventListener('change', function() {
+                            if (this.value === 'paid') {
+                                priceContainer.style.display = 'block';
+                            } else {
+                                priceContainer.style.display = 'none';
+                                priceInput.value = '';  // Clear price input when 'Free' is selected
+                                priceError.style.display = 'none';  // Hide error
+                            }
+                        });
+                    });
+    
+                    function validateForm() {
+                        if (document.querySelector('input[name="payment"]:checked').value === 'paid') {
+                            const price = priceInput.value;
+                            if (price < 499 || price === '') {
+                                priceError.style.display = 'block';
+                                return false;  // Prevent form submission
+                            } else {
+                                priceError.style.display = 'none';
+                            }
+                        }
+                        return true;  // Allow form submission
+                    }
+    
+                    document.getElementById('yourFormId').onsubmit = validateForm;
+                </script>
+    
+                <!-- Mode Selection -->
+                <div>
+                    <p>Mode:</p>
+                    <label><input type="radio" name="mode" value="Basic" checked> Basic</label>
+                    <label><input type="radio" name="mode" value="Intermediate"> Intermediate</label>
+                    <label><input type="radio" name="mode" value="Advanced"> Advanced</label>
+                </div>
+    
+                <!-- Title Image Upload -->
+                <p>Title Image:</p>
+                <input type="file" name="content" class="input-field" accept="image/png, image/jpeg, image/jpg" required>
+    
+                <!-- Submit Button -->
+                <button type="submit" id="addNewCourseBtn" class="add-new-course-btn">
+                    <i class="fas fa-plus"></i> Add Course
+                </button>
+            </form>
+            {% else %}
+            <b style="color:red;font-size:18px;">The Main Course is Unavailable and no action can be performed on this.</b><br><br>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- jQuery Loaded Here -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+
+</body></html>

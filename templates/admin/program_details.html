@@ -1,0 +1,365 @@
+{% include 'admin/adminindex.html' %}
+
+<div class="program-details-container">
+    <!-- Back Navigation -->
+    <div class="page-header">
+        <div class="header-left">
+          
+            <h2 class="main-title">Program Details</h2>
+            <div class="action-buttons">
+                <button onclick="downloadBrochure()" class="btn-download">
+                    <i class='bx bx-download'></i> Download Brochure
+                </button>
+                <a href="{% url 'admin_program_analytics' program.id %}" class="btn-analytics">
+                    <i class='bx bx-stats'></i> View Analytics
+                </a>
+            </div>
+        </div>
+    </div>
+    <script>
+        function downloadBrochure() {
+            const programId = '{{ program.id }}';
+            window.location.href = `/program/${programId}/brochure/`;
+        }
+    </script>
+    <!-- Program Details Card -->
+    <div class="program-card">
+        <!-- Program Header -->
+        <div class="program-header">
+            <div class="program-status {{ program.status_program }}">
+                <span class="status-badge">{{ program.status_program|title }}</span>
+            </div>
+            <h1 class="program-title">{{ program.title }}</h1>
+        </div>
+
+        <!-- Program Content Grid -->
+        <div class="program-content">
+            <!-- Speaker Information -->
+            <div class="info-section">
+                <div class="section-header">
+                    <i class='bx bx-user-voice'></i>
+                    <h3>Speaker Details</h3>
+                </div>
+                <div class="section-content">
+                    <div class="speaker-profile">
+                        {% if program.speaker_image %}
+                            <img src="{{ program.speaker_image.url }}" alt="{{ program.speaker_name }}" class="speaker-image">
+                        {% endif %}
+                        <div class="speaker-info">
+                            <h4>{{ program.speaker_name }}</h4>
+                            <p class="designation">{{ program.speaker_designation }}</p>
+                            <p class="organization">{{ program.speaker_organization }}</p>
+                        </div>
+                    </div>
+                    <div class="speaker-bio">
+                        <p>{{ program.speaker_profile }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Program Schedule -->
+            <div class="info-section">
+                <div class="section-header">
+                    <i class='bx bx-calendar'></i>
+                    <h3>Schedule Information</h3>
+                </div>
+                <div class="section-content">
+                    <div class="schedule-grid">
+                        <div class="schedule-item">
+                            <span class="label">Start Date</span>
+                            <span class="value">{{ program.start_date|date:"F d, Y" }}</span>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="label">End Date</span>
+                            <span class="value">{{ program.end_date|date:"F d, Y" }}</span>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="label">Session Time</span>
+                            <span class="value">{{ program.session_time|time:"g:i A" }}</span>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="label">Duration</span>
+                            <span class="value">{{ program.duration }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Meeting Details -->
+            <div class="info-section">
+                <div class="section-header">
+                    <i class='bx bx-video'></i>
+                    <h3>Meeting Details</h3>
+                </div>
+                <div class="section-content">
+                    <div class="meeting-info">
+                        <p><strong>Platform:</strong> {{ program.meeting_platform }}</p>
+                        {% if program.meeting_link %}
+                        <p><strong>Meeting Link:</strong> 
+                            <a href="{{ program.meeting_link }}" target="_blank" class="meeting-link">
+                                <i class='bx bx-link-external'></i> Join Meeting
+                            </a>
+                        </p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Program Description -->
+            <div class="info-section full-width">
+                <div class="section-header">
+                    <i class='bx bx-info-circle'></i>
+                    <h3>Program Description</h3>
+                </div>
+                <div class="section-content">
+                    <p class="description">{{ program.description }}</p>
+                </div>
+            </div>
+
+            <!-- Learning Outcomes -->
+            <div class="info-section full-width">
+                <div class="section-header">
+                    <i class='bx bx-target-lock'></i>
+                    <h3>Learning Outcomes</h3>
+                </div>
+                <div class="section-content">
+                    <p>{{ program.learning_outcomes }}</p>
+                </div>
+            </div>
+
+            <!-- Prerequisites -->
+            <div class="info-section full-width">
+                <div class="section-header">
+                    <i class='bx bx-list-check'></i>
+                    <h3>Prerequisites</h3>
+                </div>
+                <div class="section-content">
+                    <p>{{ program.prerequisites }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.program-details-container {
+    margin-left: 270px;
+    padding: 30px;
+    background: #f8f9ff;
+    min-height: 100vh;
+    width: calc(100% - 270px);
+}
+
+.page-header {
+    margin-bottom: 30px;
+}
+
+.btn-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: #4361ee;
+    color: white;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-back:hover {
+    transform: translateX(-5px);
+    background: #3a52d8;
+}
+
+.program-card {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+
+.program-header {
+    padding: 30px;
+    background: linear-gradient(135deg, #4361ee, #3a52d8);
+    color: white;
+}
+
+.program-title {
+    margin: 10px 0 0 0;
+    font-size: 2rem;
+    font-weight: 600;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.program-content {
+    padding: 30px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+}
+
+.info-section {
+    background: #f8f9ff;
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.info-section.full-width {
+    grid-column: 1 / -1;
+}
+
+.section-header {
+    padding: 20px;
+    background: #4361ee;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.section-header i {
+    font-size: 1.5rem;
+}
+
+.section-header h3 {
+    margin: 0;
+    font-size: 1.2rem;
+}
+
+.section-content {
+    padding: 20px;
+}
+
+.speaker-profile {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.speaker-image {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.speaker-info h4 {
+    margin: 0 0 5px 0;
+    color: #2d3748;
+    font-size: 1.2rem;
+}
+
+.designation, .organization {
+    margin: 0;
+    color: #718096;
+}
+
+.schedule-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.schedule-item {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.label {
+    color: #718096;
+    font-size: 0.9rem;
+}
+
+.value {
+    color: #2d3748;
+    font-weight: 500;
+}
+
+.meeting-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: #4361ee;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.meeting-link:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+    .program-details-container {
+        margin-left: 0;
+        width: 100%;
+        padding: 15px;
+    }
+
+    .program-content {
+        grid-template-columns: 1fr;
+    }
+
+    .program-title {
+        font-size: 1.5rem;
+    }
+
+    .speaker-profile {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 15px;
+}
+
+.btn-download, .btn-analytics {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.btn-download {
+    background: #22c55e;
+}
+
+.btn-analytics {
+    background: #4361ee;
+}
+
+.btn-download:hover {
+    background: #16a34a;
+    transform: translateY(-2px);
+}
+
+.btn-analytics:hover {
+    background: #3a52d8;
+    transform: translateY(-2px);
+}
+</style> 

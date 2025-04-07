@@ -1,0 +1,63 @@
+<!-- payment.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment</title>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+</head>
+<body>
+
+<h1>Payment for {{ course.name }}</h1>
+<p>Amount: ₹{{ amount }}</p>
+
+<script>
+    var options = {
+        "key": "rzp_test_ZWaKvP5WyT4Nmp", // Replace with your Razorpay Key ID
+        "amount": "{{ amount }}"*100,  // Razorpay expects the amount in paise
+        "currency": "INR",
+        "description": "Next-Edge",
+        "handler": function (response) {
+            console.log(response);
+            alert("Payment successful");
+
+            // Send transaction details to Django backend
+            $.ajax({
+                type: "POST",
+                url: "{% url 'save_payment' %}",  // Your Django endpoint to save payment data
+                data: {
+                    'payment_id': response.razorpay_payment_id,
+                    'amount': "{{ amount }}",
+                    'course_id': "{{ course_id }}",  // Pass the course ID here
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'  // CSRF token for security
+                },
+                success: function (data) {
+                    console.log("Transaction details saved:", data);
+                    if (data.status === "success") {
+                        alert("Payment recorded successfully.");
+                        // Redirect or perform actions after successful payment
+                        window.location.href = "{% url 'enroll_course' course_id %}";
+                    } else {
+                        alert("Error: " + data.message);
+                    }
+                },
+                error: function (error) {
+                    console.error("Error saving transaction details:", error);
+                    alert("There was an error saving the transaction details. Please try again.");
+                }
+            });
+        }
+    };
+
+    var rzp1 = new Razorpay(options);
+    $(document).ready(function (e) {
+        rzp1.open();
+        e.preventDefault();
+    });
+</script>
+
+</body>
+</html>

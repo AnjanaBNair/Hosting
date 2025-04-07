@@ -1,0 +1,153 @@
+{% load static %}
+{% include 'user/studentindex.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Next-Edge</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/profile_view.css' %}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
+    <style>
+        .user-card-info {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .user-card-info h2 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 36px;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .user-card-info p {
+            font-size: 16px;
+            margin: 10px 0;
+            color: #555;
+            font-weight: bolder;
+            line-height: 1;
+        }
+        
+        .user-card-info span {
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .user-card-info p span {
+            display: inline-block;
+            min-width: 150px; /* Adjust this width according to your layout */
+            font-size: 16px;
+            color: #0d0f7c;
+        }
+        
+        .user-card {
+            background-color: #ffffff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: flex-start;
+            padding: 20px;
+            max-width: 900px;
+            width: 100%;
+        }
+        
+    </style>
+    <script type="text/javascript" >
+        function preventBack(){window.history.forward();}
+         setTimeout("preventBack()", 0);
+         window.onunload=function(){null};
+     </script>
+     
+    </head>
+  
+</head>
+<body>
+    <div class="wrapper">
+        <div class="user-card">
+          <div class="left"> <div class="user-card-img">
+            {% if user_profile.profile_picture %}
+            <img src="{{ user_profile.profile_picture.url }}" alt="Profile Picture">
+        {% else %}
+            <img src="{% static 'img/no_profile.png' %}" alt="No Profile Picture">
+        {% endif %}
+            <div class="user-card-buttons">
+              <form id="delete-profile-form" action="{% url 'delete_profile_picture' %}" method="post" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" class="delete-btn"><i class='bx bx-trash'></i> Delete Image</button>
+            </form>
+            <form id="replace-profile-form" action="{% url 'replace_profile_picture' %}" method="post" enctype="multipart/form-data" style="display: inline;">
+              {% csrf_token %}
+              <input type="file" name="profile_picture" id="profile-picture-input" accept=".jpg, .jpeg, .png" style="display: none;">
+              <button type="button" id="replace-btn"><i class='bx bx-refresh'></i> Replace Image</button>
+          </form>
+          </div>
+          </div></div>
+            <div class="user-card-info">
+            <h2>{{ user_profile.first_name }} {{ user_profile.last_name }}</h2>
+              <p><span>Email:</span> {{ user_profile.user.email }}</p><br>
+                <p><span>Phone Number:</span> {{ user_profile.phone_number }}</p><br>
+                <p><span>Country:</span> {{ user_profile.country }}</p><br>
+                <p><span>Bio:</span> {{ user_profile.bio }}</p><br>
+            </div>  
+        </div>
+    </div>
+    <script>
+      $(document).ready(function() {
+        // Handle profile picture deletion
+        $('#delete-profile-form').on('submit', function(event) {
+            event.preventDefault(); // Prevent the default form submission
+    
+            $.ajax({
+                url: $(this).attr('action'),
+                type: 'POST',
+                data: new FormData(this), // Include CSRF token and form data
+                contentType: false,
+                processData: false,
+                success: function(response) {
+                    location.reload(); // Reload the page to reflect changes
+                },
+                error: function(xhr, textStatus, errorThrown) {
+                    alert('An error occurred while deleting the profile picture.');
+                }
+            });
+        });
+    
+        // Handle profile picture replacement
+        $('#replace-btn').on('click', function() {
+            $('#profile-picture-input').click(); // Trigger the file input click
+        });
+    
+        $('#profile-picture-input').on('change', function() {
+            if (this.files.length > 0) {
+                $('#replace-profile-form').submit(); // Submit the form with the new file
+            }
+        });
+    
+        $('#replace-profile-form').on('submit', function(event) {
+            event.preventDefault(); // Prevent the default form submission
+    
+            $.ajax({
+                url: $(this).attr('action'),
+                type: 'POST',
+                data: new FormData(this), // Include CSRF token and form data
+                contentType: false,
+                processData: false,
+                success: function(response) {
+                    location.reload(); // Reload the page to reflect changes
+                },
+                error: function(xhr, textStatus, errorThrown) {
+                    alert('An error occurred while replacing the profile picture.');
+                }
+            });
+        });
+    });
+      </script>
+</body>
+</html>

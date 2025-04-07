@@ -1,0 +1,71 @@
+{% load static %}
+{% include 'admin/adminindex.html' %}
+<title>Next-Edge</title><!-- Profile 1 - Bootstrap Brain Component -->
+<section class="py-3 py-md-5 py-xl-8">
+
+    <div class="container" style="width: 20000px;padding: 8px; margin-top:-20px; margin-bottom:-60px;">
+    <div class="row gy-4 gy-lg-0">
+      <div class="col-12 col-lg-4 col-xl-3">
+        <div class="row gy-4">
+          <div class="col-12">
+            <div class="card widget-card border-light shadow-sm" style="border-radius: 15px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); overflow: hidden;">
+              <!-- Additional content if needed -->
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-lg-8 col-xl-9">
+        <div class="card widget-card border-light shadow-sm" style="border-radius: 15px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); margin-top: -30px;">
+          <div class="card-body p-4" style="padding: 2rem; background-color: #f8f9fa;">
+            <div class="tab-content pt-4" id="profileTabContent">
+              <div class="tab-pane fade show active" id="overview-tab-pane" role="tabpanel" aria-labelledby="overview-tab" tabindex="0">
+                <div class="profile-container" style="display: flex; align-items: center; gap: 20px; margin-bottom: 20px;">
+                    <img src="{% if profile.profile_picture %}{{ profile.profile_picture.url }}{% else %}{% static 'img/no_profile.png' %}{% endif %}" style="width: 110px; height: 110px; object-fit: cover; border-radius: 50%; border: 3px solid #ddd;" class="card-img-top" alt="Profile Picture">
+                   <h5 class="profile-name" style="margin: 0; font-size: 2em; font-weight: bold; color: #333;">{{ profile.first_name }} {{ profile.last_name }}</h5>
+                </div>
+                <h5 class="mb-3" style="font-size: 1.5em; color: #007bff; border-bottom: 2px solid #007bff; padding-bottom: 10px; margin-bottom: 20px;">About</h5>
+                <p class="lead mb-3">{{ profile.bio }}</p>
+                <h5 class="mb-3" style="font-size: 1.5em; color: #007bff; border-bottom: 2px solid #007bff; padding-bottom: 10px; margin-bottom: 20px;">Profile</h5>
+                <div class="row g-0" style="margin: 0;">
+                    <div class="col-5 col-md-3 bg-light border-bottom border-white border-3" style="background-color: #f1f1f1; font-weight: bold; color: #333;">
+                        <div class="p-2">Username</div>
+                    </div>
+                    <div class="col-7 col-md-9 bg-light border-start border-bottom border-white border-3" style="background-color: #ffffff;">
+                        <div class="p-2">{{ profile.user.username }}</div>
+                    </div>
+                    <div class="col-5 col-md-3 bg-light border-bottom border-white border-3" style="background-color: #f1f1f1; font-weight: bold; color: #333;">
+                        <div class="p-2">First Name</div>
+                    </div>
+                    <div class="col-7 col-md-9 bg-light border-start border-bottom border-white border-3" style="background-color: #ffffff;">
+                        <div class="p-2">{{ profile.first_name }}</div>
+                    </div>
+                    <div class="col-5 col-md-3 bg-light border-bottom border-white border-3" style="background-color: #f1f1f1; font-weight: bold; color: #333;">
+                        <div class="p-2">Last Name</div>
+                    </div>
+                    <div class="col-7 col-md-9 bg-light border-start border-bottom border-white border-3" style="background-color: #ffffff;">
+                        <div class="p-2">{{ profile.last_name }}</div>
+                    </div>
+                    <div class="col-5 col-md-3 bg-light border-bottom border-white border-3" style="background-color: #f1f1f1; font-weight: bold; color: #333;">
+                        <div class="p-2">Country</div>
+                    </div>
+                    <div class="col-7 col-md-9 bg-light border-start border-bottom border-white border-3" style="background-color: #ffffff;">
+                        <div class="p-2">{{ profile.country }}</div>
+                    </div>
+                    <div class="col-5 col-md-3 bg-light border-bottom border-white border-3" style="background-color: #f1f1f1; font-weight: bold; color: #333;">
+                        <div class="p-2">Phone</div>
+                    </div>
+                    <div class="col-7 col-md-9 bg-light border-start border-bottom border-white border-3" style="background-color: #ffffff;">
+                        <div class="p-2">{{ profile.phone_number }}</div>
+                    </div>
+                    <div class="col-5 col-md-3 bg-light border-bottom border-white border-3" style="background-color: #f1f1f1; font-weight: bold; color: #333;">
+                        <div class="p-2">Email</div>
+                    </div>
+                    <div class="col-7 col-md-9 bg-light border-start border-bottom border-white border-3" style="background-color: #ffffff;">
+                        <div class="p-2">{{ profile.user.email }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
+</section>

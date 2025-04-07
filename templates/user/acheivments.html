@@ -1,0 +1,180 @@
+{% load static %}
+{% include 'user/studentindex.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Achievements</title>
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 40px;
+            color: #2980b9;
+            font-size: 2.5em;
+        }
+
+        h2 {
+            color: #3498db;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #2980b9;
+            background: linear-gradient(90deg, #3498db, #2980b9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .certificates {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .certificate-card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+            margin: 20px;
+            padding: 20px;
+            flex: 1 1 calc(33.333% - 10px);
+            max-width: calc(33.333% - 10px);
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-align: center;
+            min-height: 250px;
+            box-sizing: border-box;
+        }
+
+        .certificate-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-header {
+            font-size: 1.5em;
+            color: #3498db;
+            margin-bottom: 10px;
+            word-wrap: break-word;
+        }
+
+        .card-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+        }
+
+        .date {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .certificate-image {
+            max-width: 100%;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        .button-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .download-btn {
+            background-color: #2980b9;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none !important;
+            display: inline-block;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        
+        .download-btn:hover {
+            background-color: #8cc1d4;
+            transform: translateY(-2px);
+            text-decoration: none;
+        }
+        
+        h3 {
+            color: white;
+        }
+
+        /* Encouragement message style */
+        .encouragement-message {
+            background-color: #f39c12;
+            color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            text-align: center;
+            margin: 20px 0;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .certificate-card {
+                flex: 1 1 calc(45% - 40px);
+                max-width: calc(45% - 40px);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .certificate-card {
+                flex: 1 1 calc(100% - 40px);
+                max-width: calc(100% - 40px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        {% if certificates %}
+            <h2>Your Certificates</h2>
+            <div class="certificates">
+                {% for certificate in certificates %}
+                    <div class="certificate-card">
+                        <h3 class="card-header">{{ certificate.enrolled.course.name }}</h3>
+                        <p class="date">Issued on: {{ certificate.issued_at|date:"Y-m-d" }}</p>
+                        <p>Status: {% if certificate.status %} <span style="color: green;"><b>Awarded</b></span> {% else %} <span style="color: red;">Not Awarded</span> {% endif %}</p>
+                        {% if certificate.enrolled.course.content %}
+                            <img src="{{ certificate.enrolled.course.content.url }}" alt="Certificate" class="certificate-image">
+                        {% endif %}
+                        <div class="button-container">
+                            <a href="{% url 'certificate' certificate.enrolled.course.id %}" class="download-btn">View Certificate</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="encouragement-message">
+                <h3>It seems you have no certificates yet.</h3>
+                <p>Enroll in our courses today to start your learning journey and earn valuable certificates!</p>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>

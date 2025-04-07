@@ -1,0 +1,303 @@
+{% include 'admin/adminindex.html' %}
+{% load static %}
+
+<div class="app-main__inner">
+    <div class="container mt-4" style="margin-left: 300px; width: calc(100% - 310px);">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4>{{ program.title }}</h4>
+                <span class="badge bg-warning">Pending Approval</span>
+            </div>
+            
+            <div class="card-body">
+                <!-- Expert Details Section -->
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        {% if program.speaker_image %}
+                        <img src="{{ program.speaker_image.url }}" alt="Speaker" class="img-fluid rounded">
+                        {% endif %}
+                    </div>
+                    <div class="col-md-8">
+                        <h5>Expert Details</h5>
+                        <div class="detail-grid">
+                            <div class="detail-item">
+                                <span class="label">Name:</span>
+                                <span class="value">{{ program.speaker_name }}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">Designation:</span>
+                                <span class="value">{{ program.speaker_designation }}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">Organization:</span>
+                                <span class="value">{{ program.speaker_organization }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Program Details Section -->
+                <div class="section mb-4">
+                    <h5>Program Schedule</h5>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <span class="label">Start Date:</span>
+                            <span class="value">{{ program.start_date|date:"F d, Y" }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="label">End Date:</span>
+                            <span class="value">{{ program.end_date|date:"F d, Y" }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="label">Session Time:</span>
+                            <span class="value">{{ program.session_time|time:"g:i A" }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="label">Duration:</span>
+                            <span class="value">{{ program.duration }} hours</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Program Content Section -->
+                <div class="section mb-4">
+                    <h5>Program Content</h5>
+                    <div class="content-section">
+                        <h6>Description</h6>
+                        <p>{{ program.description }}</p>
+                        
+                        <h6>Learning Outcomes</h6>
+                        <p>{{ program.learning_outcomes }}</p>
+                        
+                        {% if program.prerequisites %}
+                        <h6>Prerequisites</h6>
+                        <p>{{ program.prerequisites }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <button class="btn btn-success" onclick="approveProgram({{ program.id }})">
+                        <i class='bx bx-check'></i> Approve Program
+                    </button>
+                    <button class="btn btn-danger" onclick="rejectProgram({{ program.id }})">
+                        <i class='bx bx-x'></i> Reject Program
+                    </button>
+                   
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Files Modal -->
+<div class="modal fade" id="filesModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Program Files</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="filesContent">
+                <!-- Files will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add necessary scripts -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+function approveProgram(programId) {
+    Swal.fire({
+        title: 'Approve Program?',
+        text: 'Are you sure you want to approve this program?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, approve it',
+        cancelButtonText: 'No, cancel',
+        confirmButtonColor: '#28a745'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch(`/programs/approve/${programId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    Swal.fire('Approved!', 'Program has been approved.', 'success')
+                    .then(() => {
+                        window.location.href = data.redirect_url;
+                    });
+                }
+            });
+        }
+    });
+}
+
+function rejectProgram(programId) {
+    Swal.fire({
+        title: 'Reject Program',
+        text: 'Please provide a reason for rejection:',
+        input: 'textarea',
+        inputPlaceholder: 'Enter rejection reason...',
+        showCancelButton: true,
+        confirmButtonText: 'Reject',
+        cancelButtonText: 'Cancel',
+        confirmButtonColor: '#dc3545',
+        inputValidator: (value) => {
+            if (!value) {
+                return 'You need to provide a reason for rejection!';
+            }
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch(`/programs/reject/${programId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    reason: result.value
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    Swal.fire('Rejected!', 'Program has been rejected.', 'info')
+                    .then(() => {
+                        window.location.href = data.redirect_url;
+                    });
+                }
+            });
+        }
+    });
+}
+
+function viewFiles(programId) {
+    const modal = new bootstrap.Modal(document.getElementById('filesModal'));
+    modal.show();
+    
+    fetch(`/program-files/${programId}/`)
+        .then(response => response.json())
+        .then(data => {
+            const filesContent = document.getElementById('filesContent');
+            if (data.speaker_image) {
+                filesContent.innerHTML = `
+                    <div class="text-center">
+                        <h6>Speaker Image</h6>
+                        <img src="${data.speaker_image}" class="img-fluid rounded" style="max-height: 300px;">
+                    </div>
+                `;
+            } else {
+                filesContent.innerHTML = '<p class="text-center">No files available</p>';
+            }
+        });
+}
+</script>
+
+<style>
+.app-main__inner {
+    margin-top: -50px;
+    margin-left: -65px;
+    width: calc(100% + 65px);
+    padding-right: 10px;
+}
+
+.container {
+    margin-left: 100px;
+    width: calc(100% - 110px);
+    margin-top: 20px;
+    padding-right: 10px;
+}
+
+.card {
+    margin-right: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+.detail-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.label {
+    color: #718096;
+    font-size: 0.875rem;
+}
+
+.value {
+    color: #2d3748;
+    font-weight: 500;
+    margin-top: 0.25rem;
+}
+
+.section {
+    border-top: 1px solid #e2e8f0;
+    padding-top: 1.5rem;
+}
+
+.content-section h6 {
+    color: #4a5568;
+    margin-top: 1rem;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e2e8f0;
+}
+
+.badge {
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+}
+
+@media (max-width: 1200px) {
+    .container {
+        margin-left: 100px;
+        width: calc(100% - 120px);
+        padding-right: 10px;
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        margin-left: 20px;
+        width: calc(100% - 30px);
+        padding-right: 10px;
+    }
+    
+    .app-main__inner {
+        margin-left: -20px;
+        width: calc(100% + 30px);
+    }
+    
+    .detail-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+    }
+    
+    .action-buttons button {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+}
+</style>

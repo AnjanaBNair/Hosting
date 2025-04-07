@@ -1,0 +1,1045 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="Content-Language" content="en">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Next-Edge</title>
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no" />
+    <meta name="description" content="This is an example dashboard created using build-in elements and components.">
+    <meta name="msapplication-tap-highlight" content="no">
+    <link href="https://demo.dashboardpack.com/architectui-html-free/main.css" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="{% static 'css/cards.css' %}">
+    <script src="{% static 'js/cards.js' %}"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .app-header__logo {
+            height: auto;
+            width: auto;
+            background: none;
+            font-size: 24px;
+            font-weight: bold;
+            color: #790909;
+            /* Adjust the color as needed */
+            line-height: 24px;
+            /* Match the height of the previous image */
+        }
+        .vertical-nav-menu li a {
+            display: flex;
+            align-items: center;
+            padding: 0 1.5rem 0 15px;
+        }
+
+        .vertical-nav-menu li a .bx {
+            margin-right: 10px;
+        }
+        .profile-container {
+            display: flex;
+            align-items: center;
+        }
+        
+        .profile-picture {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .username {
+            color: rgba(34, 34, 119, 0.815);
+            font-weight: bold;
+            margin-left: 10px; /* Adjust the spacing between the image and the username */
+        }
+        .app-main__inner {
+            margin-top: -80px;
+            background: linear-gradient(135deg, #0f4c75 0%, #3282b8 50%, #bbe1fa 100%);
+        
+        }
+        
+
+
+a {
+  text-decoration: none;
+  color: orange;
+}
+
+h2 {
+  color: #000;
+  margin: 2rem 0 .5rem;
+  font-size: 1.25rem;
+  font-weight: 400;
+  text-transform: uppercase;
+}
+
+img {
+  display: block;
+    border: 0;
+    width: 100%;
+    height: auto;
+}
+
+/***************************           Cards            *******************************/
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* see notes below */
+  grid-auto-rows: minmax(200px, auto);
+  grid-gap: 1rem;
+  margin-top:-40px;
+}
+
+.card {
+  border: 2px solid #e7e7e7;
+  border-radius: 4px;
+  padding: .5rem;
+  -webkit-box-shadow: 0 2px 2px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.15);
+  display: flex;
+  /* -webkit-box-orient: vertical; */
+  /* -webkit-box-direction: normal; */
+  -ms-flex-direction: column;
+  flex-direction: column;
+  position: relative;
+  color: #5d5e5e;
+} /* li item */
+
+.thumbnail img {
+  height: 135px;
+}
+.card:hover {
+    transform: scale(1.05); /* Slightly enlarge the card */
+    box-shadow: 0 8px 16px rgba(35, 53, 85, 0.664); /* Increase shadow effect */
+    background: #f8f8f8; /* Optional: change background color */
+}
+
+.card-content {
+    font-size: .75rem;
+    display: flex;  
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    -webkit-box-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+}
+
+.panel.card-panel .panel-header {
+    background-color: #ffffff;
+    font-size: .75rem;
+    font-weight: 400;
+    height: 25px !important;
+}
+
+.panel.card-panel .panel-content {
+  -webkit-box-flex: 1;
+  -ms-flex: 1;
+  flex: 1;
+}
+
+.category {
+  font-size: .75rem;
+  text-transform: uppercase;
+}
+
+footer {
+  border-top: 2px solid #e7e7e7;
+  margin: .5rem 0 0;
+  min-height: 30px;
+  font-size: .5rem;
+}
+
+.category {
+    position: absolute;
+    top: 110px;
+    left: 0;
+    color: #fff;
+    background: #e74c3c;
+    padding: 10px 15px;
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.description {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-height: 4.5em; /* Adjust based on the number of lines */
+    line-height: 1.5em; /* Line height to match the text */
+}
+
+/* Development Programs Section */
+.development-programs-section {
+    margin-bottom: 40px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.stat-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 15px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    color: white;
+    font-size: 0.9rem;
+}
+
+.programs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 25px;
+}
+
+.program-card {
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.program-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.program-header {
+    position: relative;
+    padding: 15px;
+    background: linear-gradient(45deg, #4361ee, #3a52d8);
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.date-badge {
+    text-align: center;
+}
+
+.date-badge .month {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    display: block;
+}
+
+.date-badge .day {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.seats-info {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.9rem;
+}
+
+.program-content {
+    padding: 20px;
+}
+
+.program-content h3 {
+    color: #2d3748;
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+}
+
+.program-meta {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+    color: #718096;
+    font-size: 0.9rem;
+}
+
+.speaker-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-top: 15px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.speaker-info img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.speaker-details h4 {
+    color: #2d3748;
+    font-size: 0.95rem;
+    margin: 0;
+}
+
+.speaker-details p {
+    color: #718096;
+    font-size: 0.85rem;
+    margin: 3px 0 0;
+}
+
+.program-footer {
+    padding: 15px 20px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.register-btn {
+    width: 100%;
+    padding: 10px;
+    background: linear-gradient(45deg, #4361ee, #3a52d8);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.register-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+}
+
+@media (max-width: 768px) {
+    .programs-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+    </style>
+    <script type="text/javascript" >
+        function preventBack(){window.history.forward();}
+         setTimeout("preventBack()", 0);
+         window.onunload=function(){null};
+     </script>
+</head>
+
+<body>
+    <div class="app-container app-theme-white body-tabs-shadow fixed-sidebar fixed-header">
+        <div class="app-header header-shadow">
+            <div class="app-header__logo">
+                <div>Next-Edge &nbsp; &nbsp; &nbsp; </div>
+                <div class="header__pane ml-auto">
+                    <div>
+                        <button type="button" class="hamburger close-sidebar-btn hamburger--elastic"
+                            data-class="closed-sidebar">
+                            <span class="hamburger-box">
+                                <span class="hamburger-inner"></span>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- <div class="app-header__mobile-menu">
+                <div>
+                    <button type="button" class="hamburger hamburger--elastic mobile-toggle-nav">
+                        <span class="hamburger-box">
+                            <span class="hamburger-inner"></span>
+                        </span>
+                    </button>
+                </div>
+            </div> -->
+            <div class="app-header__content">
+                <div class="app-header-left">
+                    <div class="search-wrapper">
+
+                        <button class="close"></button>
+                    </div>
+                </div>
+                <div class="app-header-right">
+                    <div class="header-btn-lg pr-0">
+                        <div class="widget-content p-0">
+                            <div class="widget-content-wrapper">
+                                
+                                <div class="profile-container">
+                                     <img class="profile-picture" src="{% if user_profile.profile_picture %}{{ user_profile.profile_picture.url }}{% else %}{% static 'img/no_profile.png' %}{% endif %}" alt="Profile Picture">
+        <h6 class="username">{{ user.username }}</h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="ui-theme-settings">
+
+        </div>
+        <div class="app-main">
+            <div class="app-sidebar sidebar-shadow">
+                <div class="app-header__logo">
+                    <div class="logo-src"></div>
+                    <div class="header__pane ml-auto">
+                        <div>
+                            <button type="button" class="hamburger close-sidebar-btn hamburger--elastic"
+                                data-class="closed-sidebar">
+                                <span class="hamburger-box">
+                                    <span class="hamburger-inner"></span>
+                                </span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="app-header__mobile-menu">
+                    <div>
+                        <button type="button" class="hamburger hamburger--elastic mobile-toggle-nav">
+                            <span class="hamburger-box">
+                                <span class="hamburger-inner"></span>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+                <div class="app-header__menu">
+                    <span>
+                        <button type="button"
+                            class="btn-icon btn-icon-only btn btn-primary btn-sm mobile-toggle-header-nav">
+                            <span class="btn-icon-wrapper">
+                                <i class="fa fa-ellipsis-v fa-w-6"></i>
+                            </span>
+                        </button>
+                    </span>
+                </div>
+                <div class="scrollbar-sidebar">
+                    <div class="app-sidebar__inner">
+                        <ul class="vertical-nav-menu">
+                            <li class="app-sidebar__heading">Dashboard</li>
+                            <li>
+                                <a href="{% url 'baseindex' %}">
+                                    <i class='bx bx-home'></i> Home
+                                </a>
+                            <li class="app-sidebar__heading">Manage Account</li>
+                            <li>
+                                <a href="#">
+                                    <i class='bx bx-user'></i>
+                                    Account
+                                </a>
+                                <ul>
+                                    <li>
+                                        <a href="{% url 'profile_view' %}">
+                                            <i class="metismenu-icon"></i>
+                                            View Profile
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="{% url 'edit_profile' %}">
+                                            <i class="metismenu-icon"></i>
+                                            Edit Profile
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            {% if user.is_superuser or user.is_staff %}
+                            <li>
+                                <a href="#">
+                                    <i class='bx bx-cog'></i>
+                                    Settings
+                                </a>
+                                <ul>
+                                    <li>
+                                        <a href="{% url 'change_password' %}">
+                                            <i class="metismenu-icon">
+                                            </i>Change Password
+                                        </a>
+                                    </li>
+
+                                </ul>
+                            </li>
+                            {% endif %}
+
+                           
+                            <li class="app-sidebar__heading">Course Details</li>
+                                <li>
+                                    <a href="{% url 'courses' %}">
+                                        <i class='bx bx-book'></i>View Courses
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{% url 'enrolled_courses_view' %}">
+                                        <i class='bx bx-book-content'></i>My Courses
+                                    </a>
+                                <!-- </li>
+                                <li>
+                                    <a href="#">
+                                        <i class='bx bx-line-chart'></i>Course Progress
+                                    </a>
+                                </li> -->
+                                <li>
+                                    <a href="#">
+                                        <i class='bx bx-trophy'></i>Achievements
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{% url 'chatbot' %}">
+                                        <i class='bx bx-message-dots'></i>
+                                        AI Assistant
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{% url 'student_programs' %}">
+                                        <i class='bx bx-calendar-check'></i>
+                                        My Programs
+                                    </a>
+                                </li>
+                                <li class="app-sidebar__heading">Log Out</li>
+                            <li>
+                                <a href="{% url 'logout' %}">
+                                    <i class='bx bx-log-out'></i>
+                                    Logout
+                                </a>
+                            </li>
+
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="app-main__outer">
+                <div class="app-main__inner">
+                    <div class="app-page-title">
+                        <div class="page-title-wrapper">
+                            <div class="page-title-heading">
+
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="container-fluid pt-1 mt-2 pb-5">
+                        <!-- <h2>Recommended Courses for You</h2>
+<ul>
+    {% for course in recommended_courses %}
+        <li>
+            <strong>{{ course.course_name }}</strong> - {{ course.description }} (Department: {{ course.department }})
+        </li>
+    {% endfor %}
+</ul> -->
+                        {% comment %} <h2 style="color:rgb(255, 255, 255);">Recommended Courses (Top 5 Most Enrolled)</h2>
+
+{% if top_5_courses %}
+    {% for course in top_5_courses %}
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title" style="color:rgb(89, 89, 156);">{{ course.name }}</h5>
+                <p class="card-text">{{ course.description }}</p>
+            </div>
+        </div>
+    {% endfor %}
+{% else %}
+    <p>No courses found.</p>
+{% endif %} {% endcomment %}
+                        
+                     <!-- <div class="row">
+                            {% for course_type in course_types %}
+                                <div class="col-xl-3 mb-50">
+                                    <div class="course-box" style="background-color: rgb(170, 186, 187); border-radius: 10px; height: auto; padding: 10px; box-shadow: 0 0 15px rgba(0, 0, 0, 0.1); transition: transform 0.3s, box-shadow 0.3s, border 0.3s;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <div class="widget-data" style="margin-left: 15px; color: rgb(28, 64, 110);">
+                                                <div style="font-weight: 600; font-size: 14px;">
+                                                    {{ course_type.type }}
+                                                </div>
+                                            </div>
+                                            <div style="margin-right: 10px; color: black;">
+                                                <div style="font-weight: 600; font-size: 14px;">
+                                                    {{ course_type.count }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div> -->
+                    </div>
+                    
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function () {
+                            const boxes = document.querySelectorAll('.course-box');
+                            
+                            boxes.forEach(box => {
+                                box.addEventListener('click', function () {
+                                    // Check if the clicked box is already selected
+                                    const isSelected = this.classList.contains('selected');
+                                    
+                                    // Remove 'selected' class from all boxes
+                                    boxes.forEach(b => b.classList.remove('selected'));
+                                    
+                                    // If it was not already selected, add the 'selected' class to this box
+                                    if (!isSelected) {
+                                        this.classList.add('selected');
+                                    }
+                                });
+                            });
+                        });
+                    </script>
+                    
+                    <style>
+                        /* Hover effect to enlarge the box and add border */
+                        .course-box:hover,
+                        .course-box.highlighted {
+                            transform: scale(1.05);
+                            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+                            border: 2px solid rgb(16, 44, 95);
+                        }
+                    
+                        /* Selected box highlighting with border and shadow */
+                        .course-box.selected {
+                            box-shadow: 0 0 25px rgba(0, 0, 0, 0.3);
+                            background-color: rgb(16, 44, 95);
+                            color: white;
+                        }
+                    
+                        /* Remove border when not hovered or selected */
+                        .course-box {
+                            border: none;
+                        }
+                    
+                        /* Ensuring text color stays correct when selected */
+                        .course-box.selected .widget-data {
+                            color: white;
+                        }
+                    </style>
+                    <!-- <section class="cards">
+                        {% for type in courses %}
+                        <a href="{% url 'course_details_view' type.id %}">
+                          <article class="card">
+                            <picture class="thumbnail">
+                                <img class="category__01" src="{{ type.content.url }}" alt="{{ type.content }}" />
+                            </picture>
+                            <div class="card-content">
+                              <p class="category category__01">{{ type.name }}</p>
+                             <br>
+                              <p>{{ type.description }}</p>
+                           </div>
+                          </article>
+                        </a>
+                          {% endfor %}
+                        </section> -->
+                        
+
+		
+	
+                    <script type="text/javascript"
+                        src="https://demo.dashboardpack.com/architectui-html-free/assets/scripts/main.js"></script>
+
+                    <!-- Development Programs Section -->
+                    <div class="development-programs-section">
+                        <div class="section-header">
+                            <h2 style="color:rgb(255, 255, 255);">Development Programs</h2>
+                            <div class="program-stats">
+                                {% if total_upcoming > 0 %}
+                                <span class="stat-badge">
+                                    <i class='bx bx-calendar-event'></i> {{ total_upcoming }} Upcoming Programs
+                                </span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                       
+                    </div>
+
+                    <style>
+                    /* Add this to your existing styles */
+                    .development-programs-section {
+                        margin-bottom: 40px;
+                        padding: 20px;
+                        margin-top: -20px;
+                        background: rgba(255, 255, 255, 0.1);
+                        border-radius: 15px;
+                        backdrop-filter: blur(10px);
+                    }
+
+                    .section-header {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        margin-bottom: 25px;
+                    }
+
+                    .stat-badge {
+                        display: inline-flex;
+                        align-items: center;
+                        gap: 8px;
+                        padding: 8px 15px;
+                        background: rgba(255, 255, 255, 0.2);
+                        border-radius: 20px;
+                        color: white;
+                        font-size: 0.9rem;
+                    }
+
+                    .programs-grid {
+                        display: grid;
+                        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+                        gap: 25px;
+                    }
+
+                    .program-card {
+                        background: white;
+                        border-radius: 15px;
+                        overflow: hidden;
+                        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+                        transition: all 0.3s ease;
+                        cursor: pointer;
+                    }
+
+                    .program-card:hover {
+                        transform: translateY(-5px);
+                        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+                    }
+
+                    .program-header {
+                        position: relative;
+                        padding: 15px;
+                        background: linear-gradient(45deg, #4361ee, #3a52d8);
+                        color: white;
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                    }
+
+                    .date-badge {
+                        text-align: center;
+                    }
+
+                    .date-badge .month {
+                        font-size: 0.8rem;
+                        text-transform: uppercase;
+                        display: block;
+                    }
+
+                    .date-badge .day {
+                        font-size: 1.5rem;
+                        font-weight: bold;
+                    }
+
+                    .seats-info {
+                        display: flex;
+                        align-items: center;
+                        gap: 5px;
+                        font-size: 0.9rem;
+                    }
+
+                    .program-content {
+                        padding: 20px;
+                    }
+
+                    .program-content h3 {
+                        color: #2d3748;
+                        font-size: 1.1rem;
+                        margin-bottom: 15px;
+                    }
+
+                    .program-meta {
+                        display: flex;
+                        gap: 15px;
+                        margin-bottom: 20px;
+                        color: #718096;
+                        font-size: 0.9rem;
+                    }
+
+                    .speaker-info {
+                        display: flex;
+                        align-items: center;
+                        gap: 12px;
+                        padding-top: 15px;
+                        border-top: 1px solid #e2e8f0;
+                    }
+
+                    .speaker-info img {
+                        width: 40px;
+                        height: 40px;
+                        border-radius: 50%;
+                        object-fit: cover;
+                    }
+
+                    .speaker-details h4 {
+                        color: #2d3748;
+                        font-size: 0.95rem;
+                        margin: 0;
+                    }
+
+                    .speaker-details p {
+                        color: #718096;
+                        font-size: 0.85rem;
+                        margin: 3px 0 0;
+                    }
+
+                    .program-footer {
+                        padding: 15px 20px;
+                        border-top: 1px solid #e2e8f0;
+                    }
+
+                    .register-btn {
+                        width: 100%;
+                        padding: 10px;
+                        background: linear-gradient(45deg, #4361ee, #3a52d8);
+                        color: white;
+                        border: none;
+                        border-radius: 8px;
+                        font-weight: 500;
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+                    }
+
+                    .register-btn:hover {
+                        transform: translateY(-2px);
+                        box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+                    }
+
+                    @media (max-width: 768px) {
+                        .programs-grid {
+                            grid-template-columns: 1fr;
+                        }
+                    }
+                    </style>
+
+                    <!-- Featured Program Section -->
+                    {% if next_program %}
+                    <div class="featured-program">
+                        <div class="featured-content">
+                            <div class="program-timing">
+                                <div class="timing-badge">
+                                    <i class='bx bx-time-five'></i>
+                                    <span>Next Program in {{ next_program.start_date|timeuntil }}</span>
+                                </div>
+                                {% if new_programs %}
+                                <div class="new-badge">
+                                    <i class='bx bx-star'></i>
+                                    <span>New</span>
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <h2>{{ next_program.title }}</h2>
+                            <p class="program-brief">{{ next_program.description|truncatewords:30 }}</p>
+                            
+                            <div class="program-highlights">
+                                <div class="highlight-item">
+                                    <i class='bx bx-calendar'></i>
+                                    <span>{{ next_program.start_date|date:"M d, Y" }}</span>
+                                </div>
+                                <div class="highlight-item">
+                                    <i class='bx bx-time'></i>
+                                    <span>{{ next_program.session_time|time:"g:i A" }}</span>
+                                </div>
+                                <div class="highlight-item">
+                                    <i class='bx bx-group'></i>
+                                    <span>{{ available_seats }} Seats Available</span>
+                                </div>
+                            </div>
+
+                            <div class="action-buttons">
+                                {% if next_program %}
+                                    <a href="{% url 'program_detail' next_program.id %}" class="explore-btn">
+                                        <i class='bx bx-right-arrow-alt'></i>
+                                        Explore Now
+                                    </a>
+                                {% endif %}
+                               
+                            </div>
+                        </div>
+                        
+                        <div class="featured-image">
+                            {% if next_program.speaker_image %}
+                                <img src="{{ next_program.speaker_image.url }}" alt="Speaker">
+                            {% endif %}
+                            <div class="image-overlay"></div>
+                        </div>
+                    </div>
+
+                    <style>
+                    .featured-program {
+                        background: linear-gradient(135deg, #4361ee, #3a52d8);
+                        border-radius: 20px;
+                        padding: 40px;
+                        margin: 30px 0;
+                        display: grid;
+                        grid-template-columns: 1.5fr 1fr;
+                        gap: 40px;
+                        position: relative;
+                        overflow: hidden;
+                        box-shadow: 0 10px 30px rgba(67, 97, 238, 0.2);
+                    }
+
+                    .featured-content {
+                        color: white;
+                        position: relative;
+                        z-index: 2;
+                    }
+
+                    .program-timing {
+                        display: flex;
+                        gap: 15px;
+                        margin-bottom: 20px;
+                    }
+
+                    .timing-badge, .new-badge {
+                        display: inline-flex;
+                        align-items: center;
+                        gap: 8px;
+                        padding: 8px 16px;
+                        background: rgba(255, 255, 255, 0.15);
+                        border-radius: 30px;
+                        font-size: 0.9rem;
+                    }
+
+                    .new-badge {
+                        background: #ff9f43;
+                        color: white;
+                    }
+
+                    .featured-content h2 {
+                        font-size: 2.5rem;
+                        margin-bottom: 20px;
+                        line-height: 1.2;
+                    }
+
+                    .program-brief {
+                        font-size: 1.1rem;
+                        opacity: 0.9;
+                        margin-bottom: 30px;
+                        line-height: 1.6;
+                    }
+
+                    .program-highlights {
+                        display: flex;
+                        gap: 30px;
+                        margin-bottom: 40px;
+                    }
+
+                    .highlight-item {
+                        display: flex;
+                        align-items: center;
+                        gap: 10px;
+                        font-size: 0.95rem;
+                    }
+
+                    .highlight-item i {
+                        font-size: 1.2rem;
+                        opacity: 0.9;
+                    }
+
+                    .action-buttons {
+                        display: flex;
+                        gap: 20px;
+                    }
+
+                    .explore-btn, .remind-btn {
+                        padding: 12px 25px;
+                        border-radius: 12px;
+                        font-size: 1rem;
+                        font-weight: 500;
+                        display: flex;
+                        align-items: center;
+                        gap: 10px;
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+                    }
+
+                    .explore-btn {
+                        background: white;
+                        color: #4361ee;
+                        border: none;
+                    }
+
+                    .remind-btn {
+                        background: rgba(255, 255, 255, 0.15);
+                        color: white;
+                        border: 1px solid rgba(255, 255, 255, 0.3);
+                    }
+
+                    .explore-btn:hover {
+                        transform: translateY(-3px);
+                        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+                    }
+
+                    .remind-btn:hover {
+                        background: rgba(255, 255, 255, 0.2);
+                    }
+
+                    .featured-image {
+                        position: relative;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                    }
+
+                    .featured-image img {
+                        width: 100%;
+                        height: 100%;
+                        object-fit: cover;
+                        border-radius: 15px;
+                    }
+
+                    .image-overlay {
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        right: 0;
+                        bottom: 0;
+                        background: linear-gradient(45deg, rgba(67, 97, 238, 0.3), transparent);
+                        border-radius: 15px;
+                    }
+
+                    @media (max-width: 1024px) {
+                        .featured-program {
+                            grid-template-columns: 1fr;
+                        }
+                        
+                        .featured-image {
+                            display: none;
+                        }
+                    }
+
+                    @media (max-width: 768px) {
+                        .featured-program {
+                            padding: 30px;
+                        }
+                        
+                        .featured-content h2 {
+                            font-size: 2rem;
+                        }
+                        
+                        .program-highlights {
+                            flex-direction: column;
+                            gap: 15px;
+                        }
+                        
+                        .action-buttons {
+                            flex-direction: column;
+                        }
+                    }
+                    </style>
+
+                    <script>
+                    function setReminder(programId) {
+                        // Add reminder functionality here
+                        const btn = document.querySelector('.remind-btn');
+                        btn.innerHTML = '<i class="bx bx-check"></i> Reminder Set';
+                        btn.style.background = '#2ecc71';
+                        btn.style.borderColor = '#2ecc71';
+                    }
+                    </script>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

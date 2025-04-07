@@ -1,0 +1,125 @@
+body, html {
+  height: 100%;
+}
+.wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: -10%;
+  margin-top: 80px;
+}
+.user-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 100px;
+  width: 1000px;
+  height: 400px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 20px -5px rgba(0,0,0,0.5);
+}
+.user-card-img {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 3;
+}
+.user-card-img img {
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 1px solid rgb(144, 215, 236);
+}
+.user-card-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+.user-card-buttons button {
+  padding: 5px 10px;
+  font-size: 13px;
+  cursor: pointer;
+  border: none;
+  border-radius: 5px;
+  background-color: #2a9b3d;
+  color: white;
+  transition: background-color 0.3s ease;
+}
+.user-card-buttons button:hover {
+  background-color: #cc1717;
+}
+.user-card-info {
+  text-align: center;
+  margin-top: 20px;
+}
+.user-card-info h2 {
+  font-size: 24px;
+  margin: 0;
+  margin-bottom: 10px;
+  font-family: 'Bebas Neue', sans-serif;
+  letter-spacing: 3px;
+}
+.user-card-info p {
+  font-size: 14px;
+  margin-bottom: 2px;
+}
+.user-card-info p span {
+  font-weight: 700;
+  margin-right: 10px;
+}
+@media only screen and (min-width: 768px) {
+  .user-card {
+      flex-direction: row;
+      align-items: flex-start;
+  }
+  .user-card-img {
+      margin-right: 20px;
+      margin-bottom: 0;
+  }
+  .user-card-info {
+      text-align: left;
+  }
+}
+@media (max-width: 767px) {
+  .wrapper {
+      padding-top: 3%;
+  }
+  .user-card:before {
+      width: 300%;
+      height: 200px;
+      transform: rotate(0);
+  }
+  .user-card-info h2 {
+      margin-top: 25px;
+      font-size: 35px;
+  }
+  .user-card-info p span {
+      display: block;
+      margin-bottom: 15px;
+      font-size: 18px;
+  }
+}
+.edit-profile-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 10px 20px;
+  font-size: 14px;
+  cursor: pointer;
+  border: none;
+  border-radius: 5px;
+  background-color: #1586c7;
+  color: white;
+  transition: background-color 0.3s ease;
+}
+.edit-profile-btn:hover {
+  background-color: #00c4f5;
+}
+.left{
+  margin-right: 20px;
+}

@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Next-Edge</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.0/sweetalert2.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.dataTables.min.css">
+    <style>
+
+        .container {
+            width: 800px;
+            margin-right:-300px;    
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        h1 {
+            color: #0a2e53;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+            text-align: center;
+            margin-left:200px;
+        }
+
+        h2 {
+            color: #34495e;
+            font-size: 1.8em;
+            margin: 20px 0 10px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 5px;
+            display: inline-block;
+        }
+
+        .section {
+            width: 300px;
+            margin-left: 200px;
+        }
+
+        .details-section {
+            margin-bottom: 20px;
+            border-radius: 8px;
+            padding-left:20px;
+            padding-bottom:10px;
+            width:900px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            background-color: #ecf0f1;
+            
+        }
+
+        .details-section p {
+            margin: 10px 0;
+        }
+
+        .details-section strong {
+            color: #2c3e50;
+        }
+
+        .module {
+            margin-bottom: 15px;
+            background-color: #f9f9f9; /* Update to your desired color */
+            border-radius: 5px;
+            width: 820px;
+            padding: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            color: #333; /* Text color for better readability */
+        }
+        
+        .module-header {
+            font-weight: bold;
+            cursor: pointer;
+            background-color: #3498db; /* Background color for the header */
+            color: white; /* Text color for the header */
+            padding: 10px;
+            width: 800px;
+            border-radius: 5px;
+            margin-bottom: 5px;
+            transition: background-color 0.3s;
+        }
+        
+        .module-header:hover {
+            background-color: #2980b9; /* Hover color for the header */
+        }
+        
+        .module-content {
+            display: none;
+            padding-left: 20px;
+            border-left: 2px solid #3498db; /* Border color */
+            background-color: #f9f9f9; /* Background color for the content */
+            color: #333; /* Text color for the content */
+        }
+        
+
+        .module-content ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .module-content ul li {
+            padding: 5px 0;
+            border-bottom: 1px solid #ddd;
+        }/* Style for the button within a link */
+a {
+    text-decoration: none; /* Remove default underline from links */
+}
+
+a .btn {
+    display: inline-block;
+    margin-left:800px;
+    padding: 8px 8px;
+    font-size: 16px;
+    color: #fff;
+    background-color: #052e50;
+    border: none;
+    width:100px;
+    border-radius: 5px;
+    text-decoration: none; /* Remove default underline from links */
+    text-align: center;
+    transition: background-color 0.3s ease;
+}
+
+
+    </style>
+</head>
+<body>
+    {% load static %}
+    {% include 'admin/adminindex.html' %}
+    <div class="container">
+        <h1><b>Course Details</b>
+        </h1>
+        <br>
+        
+        <div class="section">
+            
+            <div class="details-section">
+                <h2>Instructor</h2>
+                <p><strong>Email:</strong> {{ instructor.user.email }}</p>
+            </div>
+            <div class="details-section" style="margin-bottom: 20px; padding: 20px; background-color: #ecf0f1; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                <div style="font-size: 1.8em; color: #34495e; margin-bottom: 20px;">
+                    <h2>Course</h2>
+                </div>
+                <div style="display: flex; align-items: flex-start;">
+                    <img src="{{ course.content.url }}" alt="Course Image" style="border-radius: 8px; max-width: 300px; height: auto; margin-right: 20px;">
+                    <div style="flex: 1;">
+                        <p><strong>Name:</strong> {{ course.name }}</p>
+                        <p><strong>Description:</strong> {{ course.description }}</p>
+                        <p><strong>Mode:</strong> {{ course.mode }}</p>
+                        <p><strong>Payment:</strong> {{ course.payment }}</p>
+                        {% if course.payment == 'paid' %}
+                            <p><strong>Amount:</strong> {{ course.amount }}</p>
+                            {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            
+            <div class="details-section">
+                <h2>Modules</h2>
+                {% for module in modules %}
+                    <div class="module">
+                        <div class="module-header" onclick="toggleModuleContent(this)">
+                            <i class="fas fa-plus"></i> {{ module.name }}
+                        </div>
+                        <div class="module-content">
+                            <ul>
+                                {% for topic in topics %}
+                                    {% if topic.module == module %}
+                                    <li><b>Topic {{ forloop.counter }} : </b>{{ topic.name }}</li>
+                                        <li><b>Description : </b>{{topic.description}}</li>
+                                        <li><b>Content</b>: <img src="{{ topic.content.url}}" style="height:100px;width:100px;"/></li>
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="details-section">
+                <h2>Quiz</h2>
+                
+                <div class="module">
+                    <div class="module-header" onclick="toggleModuleContent(this)">
+                        <i class="fas fa-plus"></i> Quiz
+                    </div>
+                    <div class="module-content">
+                        <ul>
+                            {% if quiz %}
+                                {% for question in quiz %}
+                                    <li><b>Question:</b> {{ question.question }}</li>
+                                    <li><b>Options:</b> A. {{ question.option1 }}<br>B. {{ question.option2 }}<br>C. {{ question.option3 }}</li>
+                                    <li><b>Correct Answer:</b> {{ question.correct_answer|upper }}</li>
+                                {% endfor %}
+                            {% else %}
+                                <li>No quiz questions available.</li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <a href="{% url 'my_courses' %}"><button class="btn"><i class='bx bx-arrow-back'></i> Back</button></a>
+        </div>
+
+        
+    </div>
+
+    <script>
+        function toggleModuleContent(header) {
+            var content = header.nextElementSibling;
+            var icon = header.querySelector('i');
+
+            if (content.style.display === "block") {
+                content.style.display = "none";
+                icon.className = "fas fa-plus";
+            } else {
+                content.style.display = "block";
+                icon.className = "fas fa-minus";
+            }
+        }
+    </script>
+</body>
+</html>

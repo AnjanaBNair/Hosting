@@ -1,0 +1,220 @@
+{% load static %}
+{% include 'instructor/instructorindex.html' %}
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+<title>Next-Edge</title>
+<script src="{% static 'js/add_staff.js' %}"></script>
+
+<style>
+    label {
+        font-weight: 600;
+        color: #4853f3;
+    }
+
+    body {
+        background: #f1f1f1;
+    }
+
+    label {
+        margin-right: 15px;
+    }
+
+    .box8 {
+        box-shadow: 0px 0px 0px 1px #999;
+        margin-top: 5px;
+        margin-bottom: -20px;
+    }
+
+    .mx-t3 {
+        margin-top: -3rem;
+    }
+</style>
+
+<div class="container mt-3" style="margin-left:-25px;width:1060px;">
+    <form action="{% url 'update_staff_profile' %}" method="POST">
+        {% csrf_token %}
+        <div class="row jumbotron box8">
+            <div class="col-sm-12 mx-t3 mb-4">
+                <h4 class="text-center text-info" style="margin-left:-900px; font-weight:bold; color: rgb(1, 75, 109) !important;">
+                    <i class="bx bxs-user"></i> My Profile
+                </h4>
+                <hr>
+            </div>
+
+            <div class="col-sm-12 mx-t5 mb-4">
+                <h5 class="text-center text-info" style="margin-left:-900px;">
+                    <i class="bx bxs-user"></i> Basic Details
+                </h5>
+            </div>
+
+            <div class="col-sm-6 form-group">
+                <label for="first_name">First Name:</label>
+                <input type="text" class="form-control" id="first_name" name="first_name" value="{{ profile.first_name }}" oninput="validateFirstName()" required />
+                <small id="firstNameError" class="form-text text-danger"></small> <!-- Error message display -->
+            </div>
+            
+            <div class="col-sm-6 form-group">
+                <label for="last_name">Last Name:</label>
+                <input type="text" class="form-control" id="last_name" name="last_name" value="{{ profile.last_name }}" oninput="validateLastName()" required />
+                <small id="lastNameError" class="form-text text-danger"></small> <!-- Error message display -->
+            </div>
+
+            <script>
+                // Function to validate first name
+                function validateFirstName() {
+                    const firstNameInput = document.getElementById('first_name').value;
+                    const firstNameError = document.getElementById('firstNameError');
+                    const submitBtn = document.getElementById('submitBtn');
+                    const namePattern = /^[A-Za-z]+$/;  // Only letters allowed, no digits or special characters
+                    const trimmedInput = firstNameInput.trim();
+                    
+                    firstNameError.innerHTML = '';  // Reset error message
+                    submitBtn.disabled = false;  // Enable the button by default
+            
+                    // Check if input is empty, starts with a space, or has invalid characters
+                    if (trimmedInput === '') {
+                        firstNameError.innerHTML = 'First name cannot be empty or start with a space.';
+                        submitBtn.disabled = true;  // Disable the submit button if invalid
+                    } else if (!namePattern.test(trimmedInput)) {
+                        firstNameError.innerHTML = 'First name can only contain letters.';
+                        submitBtn.disabled = true;  // Disable submit button
+                    }
+                }
+            
+                // Function to validate last name
+                function validateLastName() {
+                    const lastNameInput = document.getElementById('last_name').value;
+                    const lastNameError = document.getElementById('lastNameError');
+                    const submitBtn = document.getElementById('submitBtn');
+                    const namePattern = /^[A-Za-z]+$/;  // Only letters allowed, no digits or special characters
+                    const trimmedInput = lastNameInput.trim();
+                    
+                    lastNameError.innerHTML = '';  // Reset error message
+                    submitBtn.disabled = false;  // Enable the button by default
+            
+                    // Check if input is empty, starts with a space, or has invalid characters
+                    if (trimmedInput === '') {
+                        lastNameError.innerHTML = 'Last name cannot be empty or start with a space.';
+                        submitBtn.disabled = true;  // Disable submit button
+                    } else if (!namePattern.test(trimmedInput)) {
+                        lastNameError.innerHTML = 'Last name can only contain letters.';
+                        submitBtn.disabled = true;  // Disable submit button
+                    }
+                }
+            </script>            
+
+
+
+            <div class="col-sm-6 form-group">
+                <label for="tel">Phone Number:</label>
+                <input type="text" class="form-control" id="tel" name="phone" value="{{ profile.phone }}" oninput="validatePhoneNumber()" required />
+                <small id="phoneError" class="form-text text-danger"></small> <!-- Error message display -->
+            </div>
+            <script>
+                function validatePhoneNumber() {
+                    const phoneInput = document.getElementById('tel').value;
+                    const phoneError = document.getElementById('phoneError');
+                    const submitBtn = document.getElementById('submitBtn');
+                    const phonePattern = /^[6-9]\d{9}$/;  // Must start with 6, 7, 8, or 9 and be exactly 10 digits
+                    
+                    phoneError.innerHTML = '';  // Reset error message
+                    submitBtn.disabled = false;  // Enable the button by default
+                    
+                    // Check if the phone number matches the pattern
+                    if (!phonePattern.test(phoneInput)) {
+                        phoneError.innerHTML = 'Phone number must start with 6, 7, 8, or 9 and be exactly 10 digits.';
+                        submitBtn.disabled = true;  // Disable submit button if invalid
+                    }
+                }
+            </script>            
+
+            <div class="col-sm-6 form-group">
+                <label for="house_name">House Name:</label>
+                <input type="text" class="form-control" id="house_name" name="house_name" value="{{ profile.house_name }}" oninput="validateHouseName()" required />
+                <small id="houseNameError" class="form-text text-danger"></small>
+            </div>
+            
+            <div class="col-sm-6 form-group">
+                <label for="city">City:</label>
+                <input type="text" class="form-control" id="city" name="city" value="{{ profile.city }}" oninput="validateCity()" required />
+                <small id="cityError" class="form-text text-danger"></small>
+            </div>
+            
+            <div class="col-sm-4 form-group">
+                <label for="state">State:</label>
+                <input type="text" class="form-control" id="state" name="state" value="{{ profile.state }}" oninput="validateState()" required />
+                <small id="stateError" class="form-text text-danger"></small>
+            </div>
+            <script>
+                // Validate House Name: Can contain letters, digits, and '/'
+                function validateHouseName() {
+                    const houseNameInput = document.getElementById('house_name').value;
+                    const houseNameError = document.getElementById('houseNameError');
+                    const submitBtn = document.getElementById('submitBtn');
+                    const housePattern = /^[A-Za-z0-9\/]+$/;  // Only letters, digits, and '/' allowed
+                    const trimmedInput = houseNameInput.trim();
+            
+                    houseNameError.innerHTML = '';  // Reset error message
+                    submitBtn.disabled = false;
+            
+                    if (trimmedInput === '') {
+                        houseNameError.innerHTML = 'House name cannot start with a space or be empty.';
+                        submitBtn.disabled = true;
+                    } else if (!housePattern.test(trimmedInput)) {
+                        houseNameError.innerHTML = 'House name can only contain letters, digits, and "/".';
+                        submitBtn.disabled = true;
+                    }
+                }
+            
+                // Validate City: Only letters, no digits or special characters
+                function validateCity() {
+                    const cityInput = document.getElementById('city').value;
+                    const cityError = document.getElementById('cityError');
+                    const submitBtn = document.getElementById('submitBtn');
+                    const cityPattern = /^[A-Za-z\s]+$/;  // Only letters allowed
+                    const trimmedInput = cityInput.trim();
+            
+                    cityError.innerHTML = '';  // Reset error message
+                    submitBtn.disabled = false;
+            
+                    if (trimmedInput === '') {
+                        cityError.innerHTML = 'City cannot start with a space or be empty.';
+                        submitBtn.disabled = true;
+                    } else if (!cityPattern.test(trimmedInput)) {
+                        cityError.innerHTML = 'City can only contain letters (no digits or special characters).';
+                        submitBtn.disabled = true;
+                    }
+                }
+            
+                // Validate State: Only letters, no digits or special characters
+                function validateState() {
+                    const stateInput = document.getElementById('state').value;
+                    const stateError = document.getElementById('stateError');
+                    const submitBtn = document.getElementById('submitBtn');
+                    const statePattern = /^[A-Za-z\s]+$/;  // Only letters allowed
+                    const trimmedInput = stateInput.trim();
+            
+                    stateError.innerHTML = '';  // Reset error message
+                    submitBtn.disabled = false;
+            
+                    if (trimmedInput === '') {
+                        stateError.innerHTML = 'State cannot start with a space or be empty.';
+                        submitBtn.disabled = true;
+                    } else if (!statePattern.test(trimmedInput)) {
+                        stateError.innerHTML = 'State can only contain letters (no digits or special characters).';
+                        submitBtn.disabled = true;
+                    }
+                }
+            </script>
+                        
+
+            <div class="col-sm-4 form-group">
+                <label for="zip">Postal Code:</label>
+                <input type="text" class="form-control" id="zip" name="zip" value="{{ profile.zip }}" required />
+            </div>
+
+            <div class="col-sm-12 form-group text-center" style="margin-left:400px;">
+                <button type="submit" class="btn btn-primary" id="submitBtn">Update Profile</button>
+            </div>
+        </div>
+    </form>
+</div>

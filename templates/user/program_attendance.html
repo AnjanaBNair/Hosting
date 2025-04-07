@@ -1,0 +1,233 @@
+{% include 'user/studentindex.html' %}
+{% load static %}
+
+<!-- Add SweetAlert CDN -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<div class="attendance-container">
+    <div class="attendance-header">
+        <h1>{{ program.title }} - Attendance</h1>
+        <div class="program-meta">
+            <div class="meta-item">
+                <i class='bx bx-calendar'></i>
+                <span>{{ program.start_date|date:"M d" }} - {{ program.end_date|date:"M d, Y" }}</span>
+            </div>
+            <div class="meta-item">
+                <i class='bx bx-time'></i>
+                <span>{{ program.session_time|time:"g:i A" }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="attendance-grid">
+        {% for date in attendance_dates %}
+            <div class="attendance-card {% if date.is_marked %}marked{% elif date.is_absent %}absent{% endif %}">
+                <div class="date-info">
+                    <span class="date">{{ date.date|date:"M d, Y" }}</span>
+                    <span class="day">{{ date.date|date:"l" }}</span>
+                </div>
+                
+                {% if date.is_marked %}
+                    <div class="attendance-status marked">
+                        <i class='bx bx-check-circle'></i>
+                        <span>Marked at {{ date.time_marked|time:"g:i A" }}</span>
+                    </div>
+                {% elif date.is_absent %}
+                    <div class="attendance-status absent">
+                        <i class='bx bx-x-circle'></i>
+                        <span>Absent</span>
+                    </div>
+                {% elif date.can_mark %}
+                    <button class="mark-btn" onclick="markAttendance({{ program.id }})">
+                        Mark Attendance
+                    </button>
+                {% else %}
+                    <div class="attendance-status upcoming">
+                        <i class='bx bx-time'></i>
+                        <span>Upcoming</span>
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+.attendance-container {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+}
+
+.attendance-header {
+    background: linear-gradient(135deg, #4361ee, #3a52d8);
+    padding: 30px;
+    border-radius: 15px;
+    color: white;
+    margin-bottom: 30px;
+}
+
+.attendance-header h1 {
+    margin: 0 0 15px 0;
+    font-size: 2rem;
+}
+
+.program-meta {
+    display: flex;
+    gap: 20px;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.attendance-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.attendance-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.date-info {
+    margin-bottom: 15px;
+}
+
+.date-info .date {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #333;
+    display: block;
+}
+
+.date-info .day {
+    color: #666;
+}
+
+.attendance-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+}
+
+.attendance-status.marked {
+    color: #2ecc71;
+}
+
+.attendance-status.absent {
+    color: #e74c3c;
+}
+
+.attendance-status.upcoming {
+    color: #3498db;
+}
+
+.mark-btn {
+    background: #4361ee;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.mark-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+}
+
+.attendance-card.marked {
+    border: 2px solid #2ecc71;
+}
+
+.attendance-card.absent {
+    border: 2px solid #e74c3c;
+}
+
+.attendance-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+</style>
+
+<script>
+function markAttendance(programId) {
+    Swal.fire({
+        title: 'Mark Attendance',
+        text: 'Are you sure you want to mark your attendance for today?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#4361ee',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, mark attendance!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Get CSRF token
+            const csrftoken = getCookie('csrftoken');
+            
+            // Create form data
+            const formData = new FormData();
+            formData.append('program_id', programId);
+            
+            fetch('/mark-attendance/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken,
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    Swal.fire({
+                        title: 'Success!',
+                        text: data.message,
+                        icon: 'success'
+                    }).then(() => {
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: data.message,
+                        icon: 'error'
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Something went wrong. Please try again.',
+                    icon: 'error'
+                });
+            });
+        }
+    });
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script> 

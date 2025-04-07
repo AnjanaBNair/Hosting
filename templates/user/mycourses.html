@@ -1,0 +1,119 @@
+{% load static %}
+{% include 'user/studentindex.html' %}
+<title>Next-Edge</title>
+<link rel="stylesheet" href="https://unpkg.com/boxicons/css/boxicons.min.css">
+<style>
+    @import url("https://fonts.googleapis.com/css2?family=Baloo+2&display=swap");
+
+    
+    .container {
+        max-width: 1200px;
+        margin: auto;
+        padding: 20px;
+        background-color: #eaf6f8; /* Main blue color */
+        border-radius: 10px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    h2 {
+        text-align: center;
+        color: #211d50; /* Darker text for headings */
+        margin-bottom: 30px;
+    }
+
+    .row {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between; /* Even spacing between cards */
+    }
+
+    .postcard {
+        display: flex;
+        flex-direction: column;
+        background: #234950; /* Darker background for cards */
+        border-radius: 10px;
+        color: #ffffff;
+        margin: 15px;
+        overflow: hidden;
+        transition: transform 0.3s ease;
+        flex: 1 1 300px; /* Flex-grow, flex-shrink, and base width */
+        max-width: 300px; /* Max width for uniformity */
+        min-height: 400px; /* Ensure all cards have the same height */
+    }
+
+    .postcard:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .postcard__img {
+        width: 100%;
+        height: 150px;
+        object-fit: cover;
+    }
+
+    .postcard__text {
+        padding: 15px;
+        flex: 1; /* Allow text section to take up remaining space */
+    }
+
+    .postcard__title {
+        font-size: 1.5rem;
+        margin-bottom: 10px;
+    }
+
+    .postcard__tagbox {
+        display: flex;
+        justify-content: space-between;
+        font-size: 14px;
+    }
+
+    .tag__item {
+        background: rgb(128, 202, 118);
+        border-radius: 3px;
+        padding: 5px 10px;
+        margin-right: 5px;
+    }
+
+    .progress-container {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 5px;
+        height: 10px;
+        margin-top: 10px;
+    }
+
+    .progress {
+        background: #79dd09; /* Green for progress */
+        height: 100%;
+        width: {{ enrollment.progress }}%; /* Assuming you have a progress attribute */
+        border-radius: 5px;
+    }
+</style>
+
+<section>
+    <div class="container">
+        <h2>Your Enrolled Courses</h2>
+        <div class="row">
+            {% for enrollment in courses %}
+            <article class="postcard col-md-4">
+                <a class="postcard__img_link" href="{% url 'course_details_view' enrollment.course.id %}">
+                    <img class="postcard__img" src="{{ enrollment.course.content.url }}" alt="{{ enrollment.course.name }}" />
+                </a>
+                <div class="postcard__text">
+                    <h1 class="postcard__title">{{ enrollment.course.name }}</h1>
+                    <h6>{{ enrollment.course.description }}</h6>
+                    <ul class="postcard__tagbox">
+                        <li class="tag__item"><i class="bx bx-trophy mr-2"></i>Level: {{ enrollment.course.mode }}</li>
+                        <li class="tag__item"><i class="bx bx-wallet mr-2"></i>Cost: {{ enrollment.course.payment }}</li>
+                    </ul>
+                    <div class="progress-container">
+                        <div class="progress" style="width: {{ enrollment.progress }}%;"></div>
+                    </div>
+                </div>
+            </article>
+            {% empty %}
+            <p>No courses enrolled yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>

@@ -1,0 +1,119 @@
+{% load static %}
+{% include 'user/studentindex.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Next-Edge</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/edit_profile.css' %}">
+    <script src="{% static 'js/user_pro.js' %}"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
+    <style>
+        h2{
+            color:aliceblue;
+            font-weight: bold;
+        }
+        label{
+            color:white;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="wrapper">
+        <div class="user-card">
+            <h2>Edit Profile</h2><br>
+            <form id="profileForm" method="POST" action="{% url 'edit_profile' %}">
+                {% csrf_token %}
+                <label for="first_name">First Name:</label>
+                <input type="text" id="first_name" name="firstName" value="{{ user_profile.first_name }}" required oninput="validateFirstName()">
+                <div id="firstNameError" style="color: red;font-weight:bold;"></div>
+                
+                <script>
+                    function validateFirstName() {
+                        const firstNameInput = document.getElementById('first_name').value;
+                        const firstNameError = document.getElementById('firstNameError');
+                        const namePattern = /^[A-Za-z]+$/;  // Only alphabets allowed
+                        const trimmedInput = firstNameInput.trim();
+                
+                        // Reset error message
+                        firstNameError.innerHTML = '';
+                        saveChangesButton.disabled = false;
+                
+                        // Check if the field is empty or starts with a space
+                        if (trimmedInput === '') {
+                            firstNameError.innerHTML = 'First name cannot be empty or start with a space.<br>';
+                            saveChangesButton.disabled = true;
+                        } else if (!namePattern.test(trimmedInput)) {
+                            firstNameError.innerHTML = 'First name can only contain alphabets (no digits or special characters).<br>';
+                            saveChangesButton.disabled = true; 
+                        }
+                    }
+                </script>
+                
+                <label for="last_name">Last Name:</label>
+                <input type="text" id="last_name" name="lastName" value="{{ user_profile.last_name }}" required oninput="validateLastName()">
+                <div id="lastNameError" style="color: red;font-weight:bold;"></div>
+                
+                <script>
+                    function validateLastName() {
+                        const lastNameInput = document.getElementById('last_name').value;
+                        const lastNameError = document.getElementById('lastNameError');
+                        const namePattern = /^[A-Za-z]+$/;  // Only alphabets allowed
+                        const trimmedInput = lastNameInput.trim();
+                
+                        // Reset error message
+                        lastNameError.innerHTML = '';
+                        saveChangesButton.disabled = false; 
+                
+                        // Check if the field is empty or starts with a space
+                        if (trimmedInput === '') {
+                            lastNameError.innerHTML = 'Last name cannot be empty or start with a space.';
+                            saveChangesButton.disabled = true; 
+                        } else if (!namePattern.test(trimmedInput)) {
+                            lastNameError.innerHTML = 'Last name can only contain alphabets (no digits or special characters).';
+                            saveChangesButton.disabled = true; 
+                        }
+                    }
+                </script>
+                
+
+                <label for="phone_number">Phone Number:</label>
+                <input type="text" id="phone_number" name="phone_number" value="{{ user_profile.phone_number }}" required oninput="validatePhoneNumber()">
+                <div id="phoneError" style="color: red;font-weight:bold;"></div>
+                
+                <script>
+                    function validatePhoneNumber() {
+                        const phoneNumberInput = document.getElementById('phone_number').value;
+                        const phoneError = document.getElementById('phoneError');
+                        const phonePattern = /^[6-9]\d{9}$/; // Starts with 6-9, followed by 9 more digits
+                
+                        // Reset error message
+                        phoneError.innerHTML = '';
+                        saveChangesButton.disabled = false; 
+                
+                        // Check if the phone number matches the required pattern
+                        if (!phonePattern.test(phoneNumberInput)) {
+                            phoneError.innerHTML = 'Phone number must be 10 digits, starting with 6, 7, 8, or 9.';
+                            saveChangesButton.disabled = true; 
+                        }
+                    }
+                </script>
+                
+
+                <label for="bio">Bio:</label>
+                <input type="text" id="bio" name="bio" value="{{ user_profile.bio }}" required>
+
+                <button type="submit" id="saveChangesButton">Save Changes</button>
+                <button>Cancel</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

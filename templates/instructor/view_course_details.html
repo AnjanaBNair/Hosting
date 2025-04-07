@@ -1,0 +1,306 @@
+{% load static %}
+{% include 'instructor/instructorindex.html' %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+<title>Next-Edge</title>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Module</title>
+    <style>
+       /* Global Styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f6f9;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    width: 1000px;
+    margin: 50px auto;
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    color: #007bff;
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+input[type="text"] {
+    width: calc(100% - 24px);
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-size: 16px;
+    background-color: #f9f9f9;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+input[type="text"]:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    outline: none;
+}
+
+button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+.table-container {
+    margin-top: 30px;
+}
+
+.modules-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.modules-table th {
+    background-color: #007bff;
+    color: white;
+    padding: 12px;
+    border-bottom: 2px solid #dee2e6;
+    text-align: left;
+}
+
+.modules-table td {
+    padding: 12px;
+    border-bottom: 1px solid #dee2e6;
+    vertical-align: top;
+}
+
+.no-modules {
+    text-align: center;
+    padding: 20px;
+    font-style: italic;
+    color: #999;
+    margin-top: 30px;
+}
+/* General Button Styles */
+.action-btn {
+    display: inline-block;
+    padding: 8px 16px;
+    margin: 4px;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    text-align: center;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Ensure font consistency */
+}
+.topics-row {
+    display: none; /* Hidden by default */
+}
+
+.topics-row.visible {
+    display: table-row; /* Show when 'visible' class is added */
+}
+
+/* Add Topic Button */
+.add-topic-btn {
+    background-color: #28a745; /* Green */
+}
+
+.add-topic-btn:hover {
+    background-color: #218838; /* Darker green */
+}
+
+/* View Topic Button */
+.view-topic-btn {
+    background-color: #007bff; /* Blue */
+}
+
+.view-topic-btn:hover {
+    background-color: #0056b3; /* Darker blue */
+}
+
+/* Optional: Add box shadow for a 3D effect */
+.action-btn:focus, .action-btn:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Additional styles for button states */
+.action-btn:disabled {
+    background-color: #c0c0c0; /* Gray for disabled state */
+    cursor: not-allowed;
+}
+
+.view-topic-btn i {
+    margin-right: 5px; /* Space between icon and text */
+    transition: transform 0.3s ease; /* Smooth transition for rotation */
+}
+
+.view-topic-btn .fa-plus {
+    transform: rotate(0deg); /* Default state */
+}
+
+.view-topic-btn .fa-minus {
+    transform: rotate(45deg); /* Rotated state */
+}
+.finish-btn {
+    background-color: #008080; /* Teal */
+    color: white;
+    border: none;
+    padding: 10px 10px;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top:20px;
+}
+
+.finish-btn:hover {
+    background-color: #006666; /* Darker Teal */
+}
+.delete{
+    background-color:red;
+}
+.delete:hover {
+    background-color:rgb(223, 8, 8);
+}
+.delete-topic-btn {
+    position: absolute;
+    right: 10px; /* Distance from the right edge */
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: #dc3545; /* Red color */
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 12px; /* Smaller font size */
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.delete-topic-btn:hover {
+    background-color: #c82333; /* Darker red */
+}
+
+.delete-topic-btn i {
+    margin-right: 5px; /* Space between icon and button edge */
+}
+
+    </style>
+    <script>
+        function toggleTopics(moduleId) {
+            var row = document.getElementById('topics-row-' + moduleId);
+            var icon = document.getElementById('toggle-icon-' + moduleId);
+
+            if (row.classList.contains('visible')) {
+                row.classList.remove('visible');
+                icon.classList.remove('fa-minus');
+                icon.classList.add('fa-plus');
+            } else {
+                row.classList.add('visible');
+                icon.classList.remove('fa-plus');
+                icon.classList.add('fa-minus');
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div id="courseSection">
+            <h2>{{ course.name }}</h2>
+            <h3>{{}}</h3>
+</div>
+        <div id="courseSection">
+            <h2>Add a Module to {{ course.name }}</h2>
+            <form method="POST" action="{% url 'add_module' course.id %}">
+                {% csrf_token %}
+                <input type="text" name="name" placeholder="Module Name" required><br>
+                <button type="submit" style="margin-top:10px;">
+                    <i class="fas fa-plus-circle"></i>Add Module</button>
+            </form><br>
+
+            {% if modules %}
+                <div class="table-container">
+                    <h3 style="color:#0056b3;font-weight:bold;">Modules for {{ course.name }}</h3>
+                    <table class="modules-table">
+                        <thead>
+                            <tr>
+                                <th>Module Name</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for module in modules %}
+                                <tr>
+                                    <td>{{ module.name }}</td>
+                                    <td>
+                                        <a href="{% url 'add_topic' module.id course.id %}">
+                                            <button type="button" class="action-btn add-topic-btn"><i class="fas fa-plus-square"></i> Add Topic</button>
+                                        </a>
+                                        <button type="button" class="action-btn view-topic-btn" onclick="toggleTopics({{ module.id }})">
+                                            <i id="toggle-icon-{{ module.id }}" class="fas fa-plus"></i> View Topics
+                                        </button>
+                                        <a href="{% url 'delete_module' module.id course.id %}">
+                                            <button type="button" class="action-btn delete"><i class="fas fa-trash"></i>  Delete Module</button>
+                                        </a>
+                                    </td>
+                                </tr>
+                                <tr id="topics-row-{{ module.id }}" class="topics-row">
+                                    <td colspan="2">
+                                        <ul>
+                                            {% if module.module.all %}
+                                                {% for topic in module.module.all %}
+                                                    <li style="position: relative; padding-right: 60px;">
+                                                        <div>
+                                                            <strong>{{ topic.name }}</strong><br>
+                                                            {{ topic.description }}<br>
+                                                            <img src="{{ topic.content.url }}" alt="{{ topic.name }}" style="max-width: 100px; max-height: 100px;">
+                                                        </div>
+                                                        <a href="{% url 'delete_topic' module.id course.id %}">
+                                                            <button type="submit" class="delete-topic-btn" style="background-color: red; color: white;">
+                                                                <i class="fas fa-trash"></i> Delete
+                                                            </button>
+                                                        </a>
+                                                        <hr>
+                                                    </li>
+                                                {% endfor %}
+                                            {% else %}
+                                                <li>No topics available.</li>
+                                            {% endif %}
+                                        </ul>
+                                        
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="no-modules">No modules found for this course.</p>
+            {% endif %}
+        </div>
+        <a href="#">
+            <button type="button" class="action-btn finish-btn" style="margin-left:740px;"><i class="fas fa-paper-plane"></i> Finish Course Submission</button>
+        </a>
+        
+    </div>
+</body>
+</html>
+

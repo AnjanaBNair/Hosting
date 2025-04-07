@@ -1,0 +1,288 @@
+{% include 'user/studentindex.html' %}
+{% load static %}
+
+<div class="programs-container">
+    <div class="filters-section">
+        <div class="filter-group">
+            <select id="statusFilter" hx-get="{% url 'all_programs' %}" hx-trigger="change" hx-target="#programsList">
+                <option value="all">All Programs</option>
+                <option value="upcoming">Upcoming Programs</option>
+                <option value="ongoing">Ongoing Programs</option>
+            </select>
+
+            <select id="monthFilter" hx-get="{% url 'all_programs' %}" hx-trigger="change" hx-target="#programsList">
+                <option value="">All Months</option>
+                {% for month in available_months %}
+                    <option value="{{ month|date:'Y-m' }}">{{ month|date:"F Y" }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    <div id="programsList" class="programs-grid">
+        {% for program in programs %}
+        <div class="program-card">
+            <div class="program-status {{ program.status }}">
+                {{ program.status|title }}
+            </div>
+            
+            <div class="program-image">
+                {% if program.speaker_image %}
+                    <img src="{{ program.speaker_image.url }}" alt="{{ program.speaker_name }}">
+                {% else %}
+                    <div class="placeholder-image">
+                        <i class='bx bx-user-voice'></i>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="program-content">
+                <h3>{{ program.title }}</h3>
+                
+                <div class="program-meta">
+                    <div class="meta-item">
+                        <i class='bx bx-calendar'></i>
+                        <span>{{ program.start_date|date:"M d" }} - {{ program.end_date|date:"M d, Y" }}</span>
+                    </div>
+                    <div class="meta-item">
+                        <i class='bx bx-time'></i>
+                        <span>{{ program.session_time|time:"g:i A" }}</span>
+                    </div>
+                    <div class="meta-item">
+                        <i class='bx bx-user'></i>
+                        <span>{{ program.speaker_name }}</span>
+                    </div>
+                </div>
+
+                <p class="program-description">{{ program.description|truncatechars:150 }}</p>
+
+                <div class="program-footer">
+                    <a href="{% url 'program_detail' program.id %}" class="view-details-btn">
+                        View Details
+                    </a>
+                    {% if program.available_seats > 0 %}
+                        <span class="seats-left">{{ program.available_seats }} seats left</span>
+                    {% else %}
+                        <span class="seats-full">Fully Booked</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="no-programs">
+            <i class='bx bx-calendar-x'></i>
+            <p>No programs found for the selected filters.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+.programs-container {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 0 20px;
+}
+
+.filters-section {
+    margin-bottom: 30px;
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.filter-group {
+    display: flex;
+    gap: 20px;
+}
+
+.filter-group select {
+    padding: 10px 15px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    background: white;
+    color: #2d3748;
+    font-size: 0.95rem;
+    cursor: pointer;
+}
+
+.programs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 30px;
+}
+
+.program-card {
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+    position: relative;
+}
+
+.program-card:hover {
+    transform: translateY(-5px);
+}
+
+.program-status {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    padding: 5px 15px;
+    border-radius: 20px;
+    color: white;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.program-status.upcoming {
+    background: #4361ee;
+}
+
+.program-status.ongoing {
+    background: #2ecc71;
+}
+
+.program-image {
+    height: 200px;
+    overflow: hidden;
+}
+
+.program-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.placeholder-image {
+    width: 100%;
+    height: 100%;
+    background: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.placeholder-image i {
+    font-size: 3rem;
+    color: #cbd5e0;
+}
+
+.program-content {
+    padding: 20px;
+}
+
+.program-content h3 {
+    margin: 0 0 15px 0;
+    font-size: 1.3rem;
+    color: #2d3748;
+}
+
+.program-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #718096;
+    font-size: 0.9rem;
+}
+
+.meta-item i {
+    color: #4361ee;
+}
+
+.program-description {
+    color: #718096;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin-bottom: 20px;
+}
+
+.program-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+}
+
+.view-details-btn {
+    background: #4361ee;
+    color: white;
+    padding: 8px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: background 0.3s ease;
+}
+
+.view-details-btn:hover {
+    background: #3a52d8;
+    color: white;
+    text-decoration: none;
+}
+
+.seats-left {
+    color: #4361ee;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.seats-full {
+    color: #e53e3e;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.no-programs {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 50px;
+    background: white;
+    border-radius: 15px;
+    color: #718096;
+}
+
+.no-programs i {
+    font-size: 3rem;
+    margin-bottom: 15px;
+}
+
+@media (max-width: 768px) {
+    .filter-group {
+        flex-direction: column;
+    }
+    
+    .programs-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const statusFilter = document.getElementById('statusFilter');
+    const monthFilter = document.getElementById('monthFilter');
+
+    function updatePrograms() {
+        const status = statusFilter.value;
+        const month = monthFilter.value;
+        
+        fetch(`{% url 'all_programs' %}?status=${status}&month=${month}`)
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('programsList').innerHTML = html;
+            });
+    }
+
+    statusFilter.addEventListener('change', updatePrograms);
+    monthFilter.addEventListener('change', updatePrograms);
+});
+</script> 

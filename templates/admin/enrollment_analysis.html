@@ -1,0 +1,115 @@
+{% load static %}
+{% include 'admin/adminindex.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enrollment Analysis</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif; /* Modern font */
+            background-color: #f4f4f4; /* Light grey background */
+          
+        }
+        h2 {
+            text-align: center; /* Center align the header */
+            color: #333; /* Darker color for text */
+            margin-bottom: 20px; /* Spacing below the header */
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+            margin-left: 200px;
+        }
+        canvas {
+            max-width: 900px; /* Limit max width */
+            height: auto; /* Automatic height */
+            border-radius: 10px; /* Rounded corners */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+        }
+        .chart-container {
+            background-color: white; /* White background for the chart */
+            padding: 20px; /* Padding around the chart */
+            border-radius: 10px; /* Rounded corners */
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Shadow effect */
+            width: 90%; /* Full width minus some margins */
+            max-width: 800px; /* Max width */
+            margin: 0 auto; /* Center the chart */
+        }
+    </style>
+</head>
+<body>
+
+<div class="container mt-5">
+    <h2>Total Enrollments by Course</h2>
+    <div class="chart-container">
+        <canvas id="enrollmentChart" width="800" height="400"></canvas>
+    </div>
+</div>
+
+<script>
+    const ctx = document.getElementById('enrollmentChart').getContext('2d');
+    const enrollmentChart = new Chart(ctx, {
+        type: 'bar', // Bar chart for total enrollments by course
+        data: {
+            labels: {{ courses|safe }}, // Course names
+            datasets: [{
+                label: 'Total Enrollments',
+                data: {{ course_enrollments|safe }}, // Enrollment counts
+                backgroundColor: 'rgba(75, 192, 192, 0.6)', // Bar color
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1,
+                hoverBackgroundColor: 'rgba(75, 192, 192, 0.8)', // Hover color
+                hoverBorderColor: 'rgba(75, 192, 192, 1)', // Hover border color
+                barPercentage: 0.6, // Reduce bar width
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Number of Enrollments', // Y-axis title
+                        font: {
+                            size: 14, // Y-axis title font size
+                            weight: 'bold' // Y-axis title font weight
+                        }
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Courses', // X-axis title
+                        font: {
+                            size: 14, // X-axis title font size
+                            weight: 'bold' // X-axis title font weight
+                        }
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top', // Position of legend
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(tooltipItem) {
+                            return tooltipItem.dataset.label + ': ' + tooltipItem.raw; // Tooltip format
+                        }
+                    }
+                }
+            }
+        }
+    });
+</script>
+
+</body>
+</html>

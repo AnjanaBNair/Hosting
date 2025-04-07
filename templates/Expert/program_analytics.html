@@ -1,0 +1,394 @@
+{% include 'expert/base.html' %}
+
+<div class="program-analytics-container">
+    <div class="page-header">
+        <div class="header-left">
+            <h2 class="main-title">Program Analytics: {{ program.title }}</h2>
+        </div>
+    </div>
+
+    <!-- Program Overview Card -->
+    <div class="overview-card">
+        <div class="overview-header">
+            <h3>Program Overview</h3>
+        </div>
+        <div class="overview-content">
+            <div class="overview-item">
+                <span class="label">Total Registrations</span>
+                <span class="value">{{ total_registrations }}</span>
+            </div>
+            <div class="overview-item">
+                <span class="label">Maximum Capacity</span>
+                <span class="value">{{ program.max_participants }}</span>
+            </div>
+            <div class="overview-item">
+                <span class="label">Start Date</span>
+                <span class="value">{{ program.start_date|date:"F d, Y" }}</span>
+            </div>
+            <div class="overview-item">
+                <span class="label">End Date</span>
+                <span class="value">{{ program.end_date|date:"F d, Y" }}</span>
+            </div>
+            <div class="overview-item">
+                <span class="label">Status</span>
+                <span class="value status-badge {{ program.status_program }}">{{ program.status_program|title }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Enrolled Students Section -->
+    <div class="section-card">
+        <div class="section-header">
+            <h3><i class='bx bx-user-check'></i> Enrolled Students</h3>
+        </div>
+        <div class="section-content">
+            {% if students_data %}
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Student Name</th>
+                                <th>Email</th>
+                                <th>Registration Date</th>
+                                <th>Attendance</th>
+                                <th>Days Attended</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for student_data in students_data %}
+                                <tr>
+                                    <td>{{ student_data.student.username }}</td>
+                                    <td>{{ student_data.student.email }}</td>
+                                    <td>{{ student_data.registration_date|date:"M d, Y" }}</td>
+                                    <td>
+                                        <div class="progress-bar">
+                                            <div class="progress" style="width: {{ student_data.attendance_percentage }}%"></div>
+                                            <span class="progress-text">{{ student_data.attendance_percentage }}%</span>
+                                        </div>
+                                    </td>
+                                    <td>{{ student_data.days_attended }} / {{ student_data.total_days }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <i class='bx bx-user-x'></i>
+                    <p>No students enrolled in this program yet.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Program Materials Section -->
+    <div class="section-card">
+        <div class="section-header">
+            <h3><i class='bx bx-file'></i> Program Materials</h3>
+        </div>
+        <div class="section-content">
+            {% if materials %}
+                <div class="materials-grid">
+                    {% for material in materials %}
+                        <div class="material-card">
+                            <div class="material-icon">
+                                {% if material.file_type == 'pdf' %}
+                                    <i class='bx bxs-file-pdf'></i>
+                                {% elif material.file_type == 'doc' or material.file_type == 'docx' %}
+                                    <i class='bx bxs-file-doc'></i>
+                                {% elif material.file_type == 'ppt' or material.file_type == 'pptx' %}
+                                    <i class='bx bxs-slideshow'></i>
+                                {% elif material.file_type == 'jpg' or material.file_type == 'png' or material.file_type == 'jpeg' %}
+                                    <i class='bx bxs-file-image'></i>
+                                {% else %}
+                                    <i class='bx bxs-file'></i>
+                                {% endif %}
+                            </div>
+                            <div class="material-info">
+                                <h4>{{ material.title }}</h4>
+                                <p class="material-desc">{{ material.description|truncatechars:50 }}</p>
+                                <p class="material-date">Uploaded: {{ material.upload_date|date:"M d, Y" }}</p>
+                                <a href="{{ material.file.url }}" class="material-download" download>
+                                    <i class='bx bx-download'></i> Download
+                                </a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <i class='bx bx-file-blank'></i>
+                    <p>No materials have been uploaded for this program yet.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+    .program-analytics-container {
+        margin-left: 270px;
+        padding: 30px;
+        background: #f8f9ff;
+        min-height: 100vh;
+        width: calc(100% - 270px);
+    }
+
+    .page-header {
+        margin-bottom: 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .header-left {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .btn-back {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 24px;
+        background: #4361ee;
+        color: white;
+        border-radius: 12px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .btn-back:hover {
+        transform: translateX(-5px);
+        background: #3a52d8;
+    }
+
+    .overview-card, .section-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+        margin-bottom: 30px;
+    }
+
+    .overview-header, .section-header {
+        padding: 20px;
+        background: #4361ee;
+        color: white;
+    }
+
+    .overview-header h3, .section-header h3 {
+        margin: 0;
+        font-size: 1.2rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .overview-content {
+        padding: 20px;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 20px;
+    }
+
+    .overview-item {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .label {
+        color: #718096;
+        font-size: 0.9rem;
+    }
+
+    .value {
+        color: #2d3748;
+        font-weight: 500;
+        font-size: 1.1rem;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        background: rgba(67, 97, 238, 0.2);
+        color: #4361ee;
+    }
+
+    .status-badge.pending {
+        background: rgba(234, 179, 8, 0.2);
+        color: #ca8a04;
+    }
+
+    .status-badge.approved {
+        background: rgba(34, 197, 94, 0.2);
+        color: #16a34a;
+    }
+
+    .status-badge.rejected {
+        background: rgba(239, 68, 68, 0.2);
+        color: #dc2626;
+    }
+
+    .section-content {
+        padding: 20px;
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    .data-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .data-table th, .data-table td {
+        padding: 12px 15px;
+        text-align: left;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .data-table th {
+        background-color: #f8fafc;
+        font-weight: 600;
+        color: #4a5568;
+    }
+
+    .data-table tr:hover {
+        background-color: #f8f9ff;
+    }
+
+    .progress-bar {
+        width: 100%;
+        height: 10px;
+        background-color: #e2e8f0;
+        border-radius: 5px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .progress {
+        height: 100%;
+        background-color: #4361ee;
+        border-radius: 5px;
+    }
+
+    .progress-text {
+        position: absolute;
+        right: 0;
+        top: -18px;
+        font-size: 0.8rem;
+        color: #4a5568;
+    }
+
+    .materials-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+    }
+
+    .material-card {
+        display: flex;
+        background: #f8fafc;
+        border-radius: 10px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .material-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .material-icon {
+        width: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #4361ee;
+        color: white;
+        font-size: 2rem;
+    }
+
+    .material-info {
+        padding: 15px;
+        flex: 1;
+    }
+
+    .material-info h4 {
+        margin: 0 0 10px 0;
+        font-size: 1rem;
+    }
+
+    .material-desc {
+        color: #718096;
+        margin: 0 0 10px 0;
+        font-size: 0.9rem;
+    }
+
+    .material-date {
+        color: #a0aec0;
+        margin: 0 0 10px 0;
+        font-size: 0.8rem;
+    }
+
+    .material-download {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        color: #4361ee;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 0.9rem;
+    }
+
+    .material-download:hover {
+        text-decoration: underline;
+    }
+
+    .empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 40px;
+        color: #a0aec0;
+    }
+
+    .empty-state i {
+        font-size: 3rem;
+        margin-bottom: 15px;
+    }
+
+    .empty-state p {
+        font-size: 1.1rem;
+    }
+
+    @media (max-width: 768px) {
+        .program-analytics-container {
+            margin-left: 0;
+            width: 100%;
+            padding: 15px;
+        }
+
+        .header-left {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .overview-content {
+            grid-template-columns: 1fr;
+        }
+
+        .materials-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
